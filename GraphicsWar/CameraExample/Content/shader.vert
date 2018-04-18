@@ -5,8 +5,7 @@ uniform mat4 camera;
 
 in vec3 position;
 in vec3 normal;
-in vec3 instancePosition;
-in vec3 instanceSpeed;
+in mat4 transform;
 
 out vec3 n;
 
@@ -14,8 +13,5 @@ void main()
 {
 	n = normal;
 
-	vec3 pos = position;
-	pos += instancePosition + time * instanceSpeed;
-
-	gl_Position = camera * vec4(pos, 1.0);
+	gl_Position = camera * transform * vec4(position, 1.0);
 }

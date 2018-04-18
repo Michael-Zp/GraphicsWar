@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenseless.OpenGL", "Graphic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenseless.Sound", "GraphicsWar\Zenseless.Sound\Zenseless.Sound.csproj", "{042EE9FC-40F8-4D0C-A6E7-4DE72160BC69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraExample", "GraphicsWar\CameraExample\CameraExample.csproj", "{A30708DD-A61A-4C2E-9A72-6CC9989D3FE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphicsWar", "GraphicsWar\CameraExample\GraphicsWar.csproj", "{A30708DD-A61A-4C2E-9A72-6CC9989D3FE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
