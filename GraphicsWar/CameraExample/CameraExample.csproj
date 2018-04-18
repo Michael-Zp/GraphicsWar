@@ -121,7 +121,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="readme.md" />
     <EmbeddedResource Include="Content\shader.frag" />
     <EmbeddedResource Include="Content\suzanne.obj" />
     <EmbeddedResource Include="Content\shader.vert" />
