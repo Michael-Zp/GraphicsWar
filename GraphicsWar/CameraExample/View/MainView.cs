@@ -24,7 +24,8 @@ namespace GraphicsWar.View
 
             shaderProgram = contentLoader.Load<IShaderProgram>("shader.*");
 
-            var mesh = contentLoader.Load<DefaultMesh>("suzanne");
+            //var mesh = contentLoader.Load<DefaultMesh>("suzanne");
+            var mesh = Meshes.CreateSphere();
 
             geometries.Add(Enums.EntityType.Type1, VAOLoader.FromMesh(mesh, shaderProgram));
             geometries.Add(Enums.EntityType.Type2, VAOLoader.FromMesh(mesh, shaderProgram));
@@ -33,7 +34,7 @@ namespace GraphicsWar.View
         public void Render(IEnumerable<ViewEntity> entities, float time, Transformation3D camera)
         {
             if (shaderProgram is null) return;
-            
+
             transforms.Clear();
             instanceCounts.Clear();
 
@@ -50,11 +51,13 @@ namespace GraphicsWar.View
             }
 
             UpdateAttributes();
-            
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             shaderProgram.Activate();
             shaderProgram.Uniform("time", time);
-            shaderProgram.Uniform("camera", camera.CalcLocalToWorldColumnMajorMatrix());
+            Matrix4x4 cameraMatrix = camera.CalcLocalToWorldColumnMajorMatrix();
+            shaderProgram.Uniform("camera", cameraMatrix);
+            shaderProgram.Uniform("camPos", cameraMatrix.Translation * cameraMatrix.M44);
             foreach (var type in geometries.Keys)
             {
                 geometries[type].Draw(instanceCounts[type]);

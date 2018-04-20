@@ -17,9 +17,9 @@ namespace GraphicsWar.Model
 
         public void Update(float deltaTime)
         {
-            Entities[0].Rotate(new Vector3(2f * deltaTime));
-            Entities[1].Rotate(new Vector3(2f * deltaTime));
-            Entities[2].Rotate(new Vector3(-2f * deltaTime));
+            //Entities[0].Rotate(new Vector3(2f * deltaTime));
+            //Entities[1].Rotate(new Vector3(2f * deltaTime));
+            //Entities[2].Rotate(new Vector3(-2f * deltaTime));
         }
     }
 }

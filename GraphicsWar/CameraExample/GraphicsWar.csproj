@@ -136,28 +136,34 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Zenseless.Base\Zenseless.Base.csproj">
-      <Project>{4DE8BCD3-83DF-48DD-B962-518C06D3491A}</Project>
+    <None Include="Content\lightCalculation.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty1\Zenseless.Base\Zenseless.Base.csproj">
+      <Project>{73c61118-917c-4715-83de-fd209ca50ed0}</Project>
       <Name>Zenseless.Base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenseless.ContentPipeline\Zenseless.ContentPipeline.csproj">
-      <Project>{6810DE78-7764-4C8C-ADA7-E7D31AE6C259}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty1\Zenseless.ContentPipeline\Zenseless.ContentPipeline.csproj">
+      <Project>{e81d899a-7cbb-402e-9ad6-490b82453b67}</Project>
       <Name>Zenseless.ContentPipeline</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenseless.Geometry\Zenseless.Geometry.csproj">
-      <Project>{B37B7DDE-435B-4F27-9A9B-9B6DF8744EBE}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty1\Zenseless.Geometry\Zenseless.Geometry.csproj">
+      <Project>{cf9b3b9f-9c19-4c49-8bdf-36a2eda4b932}</Project>
       <Name>Zenseless.Geometry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenseless.HLGL\Zenseless.HLGL.csproj">
-      <Project>{227D6BE1-BA08-4030-A755-07288540931F}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty1\Zenseless.HLGL\Zenseless.HLGL.csproj">
+      <Project>{537a4b99-2188-4ae6-82b8-f51b981d9c9f}</Project>
       <Name>Zenseless.HLGL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenseless.OpenGL\Zenseless.OpenGL.csproj">
-      <Project>{C660F6AF-C100-4169-A9FB-61E1EBE87F34}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty1\Zenseless.OpenGL\Zenseless.OpenGL.csproj">
+      <Project>{d875fe33-a384-4516-9be2-d5a4416a02c2}</Project>
       <Name>Zenseless.OpenGL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty1\Zenseless.Sound\Zenseless.Sound.csproj">
+      <Project>{aa70b476-7beb-4287-88d8-2d0e9d20ce3b}</Project>
+      <Name>Zenseless.Sound</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
