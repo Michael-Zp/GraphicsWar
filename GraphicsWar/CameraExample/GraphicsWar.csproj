@@ -138,6 +138,7 @@
     <None Include="Content\lightCalculation.glsl" />
     <EmbeddedResource Include="Content\suzanne.obj" />
     <EmbeddedResource Include="Content\vignette.glsl" />
+    <EmbeddedResource Include="Content\normals.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.Base\Zenseless.Base.csproj">

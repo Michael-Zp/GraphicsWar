@@ -1,6 +1,8 @@
-﻿using GraphicsWar.Shared;
+﻿using System;
+using GraphicsWar.Shared;
 using OpenTK.Graphics.OpenGL4;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Zenseless.Geometry;
 using Zenseless.HLGL;
@@ -12,12 +14,14 @@ namespace GraphicsWar.View
     {
         private readonly IRenderState _renderState;
         private readonly IShaderProgram _shaderProgram;
+        private readonly IShaderProgram _copyShaderProgram;
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
         private readonly Dictionary<Enums.EntityType, int> _instanceCounts = new Dictionary<Enums.EntityType, int>();
         private readonly Dictionary<Enums.EntityType, List<Matrix4x4>> _transforms = new Dictionary<Enums.EntityType, List<Matrix4x4>>();
 
-        private readonly List<IRenderSurface> _renderSurfaces = new List<IRenderSurface>();
+        private IRenderSurface _deferredSurface;
+        private readonly List<IRenderSurface> _postProcessingSurfaces = new List<IRenderSurface>();
         private readonly List<IShaderProgram> _postProcessShaders = new List<IShaderProgram>();
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
@@ -26,13 +30,14 @@ namespace GraphicsWar.View
             _renderState.Set(new BackFaceCulling(true));
 
             _shaderProgram = contentLoader.Load<IShaderProgram>("shader.*");
+            _copyShaderProgram = contentLoader.LoadPixelShader("Copy.frag");
 
             //var mesh = contentLoader.Load<DefaultMesh>("suzanne");
             var mesh = Meshes.CreateSphere();
 
             _geometries.Add(Enums.EntityType.Type1, VAOLoader.FromMesh(mesh, _shaderProgram));
             _geometries.Add(Enums.EntityType.Type2, VAOLoader.FromMesh(mesh, _shaderProgram));
-            _postProcessShaders.Add(contentLoader.LoadPixelShader("vignette"));
+            _postProcessShaders.Add(contentLoader.LoadPixelShader("normal"));
         }
 
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
@@ -46,26 +51,31 @@ namespace GraphicsWar.View
             UpdateInstancing(entities);
             UpdateAttributes();
 
-            if (_postProcessShaders.Count > 0)
-            {
-                _renderSurfaces[0].Activate();
-            }
-
             DrawGeometry(time, camera);
 
             if (_postProcessShaders.Count > 0)
             {
-                _renderSurfaces[0].Deactivate();
+                _postProcessingSurfaces[0].Activate();
+            }
+
+            DrawTexture(_deferredSurface.Texture, _copyShaderProgram, time);
+
+            if (_postProcessShaders.Count > 0)
+            {
+                _postProcessingSurfaces[0].Deactivate();
                 ApplyPostProcessing(time);
             }
         }
 
         public void Resize(int width, int height)
         {
-            _renderSurfaces.Clear();
+            _deferredSurface = new FBOwithDepth(Texture2dGL.Create(width, height));
+            _deferredSurface.Attach(Texture2dGL.Create(width, height, 3));
+            _deferredSurface.Attach(Texture2dGL.Create(width, height, 1, true));
+            _postProcessingSurfaces.Clear();
             foreach (var shader in _postProcessShaders)
             {
-                _renderSurfaces.Add(new FBOwithDepth(Texture2dGL.Create(width, height)));
+                _postProcessingSurfaces.Add(new FBO(Texture2dGL.Create(width, height)));
             }
         }
 
@@ -89,6 +99,7 @@ namespace GraphicsWar.View
 
         private void DrawGeometry(float time, ITransformation camera)
         {
+            _deferredSurface.Activate();
             _renderState.Set(new DepthTest(true));
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -97,6 +108,7 @@ namespace GraphicsWar.View
             _shaderProgram.Uniform("camera", camera);
             Matrix4x4.Invert(camera.Matrix, out var invert);
             _shaderProgram.Uniform("camPos", invert.Translation / invert.M44);
+            GL.DrawBuffers(3, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 });
             foreach (var type in _geometries.Keys)
             {
                 _geometries[type].Draw(_instanceCounts[type]);
@@ -104,32 +116,66 @@ namespace GraphicsWar.View
             _shaderProgram.Deactivate();
 
             _renderState.Set(new DepthTest(false));
+            _deferredSurface.Deactivate();
+        }
+
+        private void DrawTexture(ITexture2D texture, IShaderProgram shader, float time)
+        {
+            texture.Activate();
+
+            shader.Activate(); //activate post processing shader
+            shader.Uniform("iGlobalTime", time);
+            GL.DrawArrays(PrimitiveType.Quads, 0, 4); //draw quad
+            shader.Deactivate();
+
+            texture.Deactivate();
+        }
+
+        private void DrawTextures(Dictionary<string, ITexture2D> namedTextures, IShaderProgram shader, float time)
+        {
+            var textures = namedTextures.Values.ToArray();
+            var names = namedTextures.Keys.ToArray();
+
+            shader.Activate(); //activate post processing shader
+
+            for (int i = 0; i < namedTextures.Count; i++)
+            {
+                GL.ActiveTexture(TextureUnit.Texture0 + i);
+                textures[i].Activate();
+                GL.Uniform1(shader.GetResourceLocation(ShaderResourceType.Uniform, names[i]), i);
+            }
+
+            shader.Uniform("iGlobalTime", time);
+            GL.DrawArrays(PrimitiveType.Quads, 0, 4); //draw quad
+            shader.Deactivate();
+
+            foreach (var texture in textures)
+            {
+                texture.Deactivate();
+            }
+            GL.ActiveTexture(TextureUnit.Texture0);
         }
 
         private void ApplyPostProcessing(float time)
         {
+            Dictionary<string, ITexture2D> namedTextures = new Dictionary<string, ITexture2D>();
+            namedTextures.Add("color", null);
+            namedTextures.Add("normal", _deferredSurface.Textures[1]);
+            namedTextures.Add("depth", _deferredSurface.Textures[2]);
+
             for (int i = 0; i < _postProcessShaders.Count - 1; i++)
             {
-                _renderSurfaces[i + 1].Activate();
-                _renderSurfaces[i].Texture.Activate();
+                namedTextures["color"] = _postProcessingSurfaces[i].Texture;
 
-                _postProcessShaders[i].Activate(); //activate post processing shader
-                _postProcessShaders[i].Uniform("iGlobalTime", time);
-                GL.DrawArrays(PrimitiveType.Quads, 0, 4); //draw quad
-                _postProcessShaders[i].Deactivate();
+                _postProcessingSurfaces[i + 1].Activate();
 
-                _renderSurfaces[i].Texture.Deactivate();
-                _renderSurfaces[i + 1].Deactivate();
+                DrawTextures(namedTextures, _postProcessShaders[i], time);
+
+                _postProcessingSurfaces[i + 1].Deactivate();
             }
 
-            _renderSurfaces[_postProcessShaders.Count - 1].Texture.Activate();
-
-            _postProcessShaders[_postProcessShaders.Count - 1].Activate(); //activate post processing shader
-            _postProcessShaders[_postProcessShaders.Count - 1].Uniform("iGlobalTime", time);
-            GL.DrawArrays(PrimitiveType.Quads, 0, 4); //draw quad
-            _postProcessShaders[_postProcessShaders.Count - 1].Deactivate();
-
-            _renderSurfaces[_postProcessShaders.Count - 1].Texture.Deactivate();
+            namedTextures["color"] = _postProcessingSurfaces[_postProcessShaders.Count - 1].Texture;
+            DrawTextures(namedTextures, _postProcessShaders[_postProcessShaders.Count - 1], time);
         }
 
         private void UpdateAttributes()
