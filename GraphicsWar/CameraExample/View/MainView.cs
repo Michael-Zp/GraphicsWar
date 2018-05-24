@@ -1,6 +1,6 @@
-﻿using GraphicsWar.Shared;
+﻿using System;
+using GraphicsWar.Shared;
 using OpenTK.Graphics.OpenGL4;
-using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Zenseless.Geometry;
@@ -19,8 +19,8 @@ namespace GraphicsWar.View
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
-            renderState.Set(BoolState<IDepthState>.Enabled);
-            renderState.Set(BoolState<IBackfaceCullingState>.Enabled);
+            renderState.Set(new DepthTest(true));
+            renderState.Set(new BackFaceCulling(true));
 
             shaderProgram = contentLoader.Load<IShaderProgram>("shader.*");
 
@@ -31,7 +31,7 @@ namespace GraphicsWar.View
             geometries.Add(Enums.EntityType.Type2, VAOLoader.FromMesh(mesh, shaderProgram));
         }
 
-        public void Render(IEnumerable<ViewEntity> entities, float time, Transformation3D camera)
+        public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
         {
             if (shaderProgram is null) return;
 
@@ -55,9 +55,9 @@ namespace GraphicsWar.View
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             shaderProgram.Activate();
             shaderProgram.Uniform("time", time);
-            Matrix4x4 cameraMatrix = camera.CalcLocalToWorldColumnMajorMatrix();
-            shaderProgram.Uniform("camera", cameraMatrix);
-            shaderProgram.Uniform("camPos", cameraMatrix.Translation * cameraMatrix.M44);
+            shaderProgram.Uniform("camera", camera);
+            Matrix4x4.Invert(camera.Matrix, out var invert);
+            shaderProgram.Uniform("camPos", invert.Translation/invert.M44);
             foreach (var type in geometries.Keys)
             {
                 geometries[type].Draw(instanceCounts[type]);

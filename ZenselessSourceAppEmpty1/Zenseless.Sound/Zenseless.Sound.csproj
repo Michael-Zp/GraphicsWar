@@ -41,12 +41,6 @@
     <Compile Include="SoundLoopWaveProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Zenseless.Base\Zenseless.Base.csproj">
-      <Project>{E5FF60A4-46FB-42D2-9430-BC523315C2E0}</Project>
-      <Name>Zenseless.Base</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
     </Reference>

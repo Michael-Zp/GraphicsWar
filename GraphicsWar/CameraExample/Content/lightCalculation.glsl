@@ -5,9 +5,9 @@
 
 float specular(vec3 n, vec3 l, vec3 v, float shininess)
 {
-	if(0 < dot(n, l)) return 0;
 	vec3 r = reflect(-l, n);
-	return pow(max(0, dot(r, v)), shininess);
+	float iluminated = step(dot(n, l),0);
+	return pow(max(0, dot(r, v)), shininess)*iluminated;
 }
 
 vec4 calculateLight(vec3 materialColor, vec3 lightColor, vec3 ambientLightColor, vec3 lightDirection, vec3 viewDirection, vec3 normal)
