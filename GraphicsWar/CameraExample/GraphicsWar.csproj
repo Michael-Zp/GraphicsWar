@@ -139,6 +139,7 @@
     <EmbeddedResource Include="Content\suzanne.obj" />
     <EmbeddedResource Include="Content\vignette.glsl" />
     <EmbeddedResource Include="Content\normals.glsl" />
+    <EmbeddedResource Include="Content\SSAO.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.Base\Zenseless.Base.csproj">

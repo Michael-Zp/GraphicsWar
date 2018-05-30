@@ -24,6 +24,8 @@ namespace GraphicsWar.View
         private readonly List<IRenderSurface> _postProcessingSurfaces = new List<IRenderSurface>();
         private readonly List<IShaderProgram> _postProcessShaders = new List<IShaderProgram>();
 
+        private Vector2 _resolution;
+
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
             _renderState = renderState;
@@ -37,7 +39,7 @@ namespace GraphicsWar.View
 
             _geometries.Add(Enums.EntityType.Type1, VAOLoader.FromMesh(mesh, _shaderProgram));
             _geometries.Add(Enums.EntityType.Type2, VAOLoader.FromMesh(mesh, _shaderProgram));
-            _postProcessShaders.Add(contentLoader.LoadPixelShader("normal"));
+            _postProcessShaders.Add(contentLoader.LoadPixelShader("SSAO"));
         }
 
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
@@ -77,6 +79,8 @@ namespace GraphicsWar.View
             {
                 _postProcessingSurfaces.Add(new FBO(Texture2dGL.Create(width, height)));
             }
+
+            _resolution = new Vector2(width, height);
         }
 
         private void UpdateInstancing(IEnumerable<ViewEntity> entities)
@@ -131,7 +135,7 @@ namespace GraphicsWar.View
             texture.Deactivate();
         }
 
-        private void DrawTextures(Dictionary<string, ITexture2D> namedTextures, IShaderProgram shader, float time)
+        private void DrawTextures(Dictionary<string, ITexture2D> namedTextures, IShaderProgram shader, float time, Vector2 resolution)
         {
             var textures = namedTextures.Values.ToArray();
             var names = namedTextures.Keys.ToArray();
@@ -146,6 +150,7 @@ namespace GraphicsWar.View
             }
 
             shader.Uniform("iGlobalTime", time);
+            shader.Uniform("iResolution", resolution);
             GL.DrawArrays(PrimitiveType.Quads, 0, 4); //draw quad
             shader.Deactivate();
 
@@ -169,13 +174,13 @@ namespace GraphicsWar.View
 
                 _postProcessingSurfaces[i + 1].Activate();
 
-                DrawTextures(namedTextures, _postProcessShaders[i], time);
+                DrawTextures(namedTextures, _postProcessShaders[i], time, new Vector2(_postProcessingSurfaces[i + 1].Texture.Width, _postProcessingSurfaces[i + 1].Texture.Height));
 
                 _postProcessingSurfaces[i + 1].Deactivate();
             }
 
             namedTextures["color"] = _postProcessingSurfaces[_postProcessShaders.Count - 1].Texture;
-            DrawTextures(namedTextures, _postProcessShaders[_postProcessShaders.Count - 1], time);
+            DrawTextures(namedTextures, _postProcessShaders[_postProcessShaders.Count - 1], time, _resolution);
         }
 
         private void UpdateAttributes()

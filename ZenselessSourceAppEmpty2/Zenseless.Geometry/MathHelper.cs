@@ -283,7 +283,7 @@ namespace Zenseless.Geometry
         /// <param name="v">Input normalized floating-point vector. Will be clamped</param>
         /// <returns>The first component of the vector will be written to the least significant bits of the output; 
         /// the last component will be written to the most significant bits.</returns>
-        public static uint PackUnorm4x8(this in Vector4 v)
+        public static uint PackUnorm4x8(this Vector4 v)
         {
             var r = Round(Clamp(v, 0.0f, 1.0f) * 255.0f);
             var x = (uint)r.X;
