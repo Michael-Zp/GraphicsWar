@@ -36,7 +36,7 @@ void main()
 	vec3 materialColor = vec3(0.8);
 	vec3 lightColor = vec3(1.0);
 	vec3 ambientLightColor = vec3(0.15);
-	vec3 lightDirection = vec3(0.0,-1.0,0.0);
+	vec3 lightDirection = normalize(vec3(-1.0,-2.0,-1.0));
 	vec3 viewDirection = normalize(pos - camPos);
 	vec3 norm = normalize(n);
 
