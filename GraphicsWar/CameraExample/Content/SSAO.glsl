@@ -21,13 +21,7 @@ vec3 randomCoord(int seed)
 
 void main() 
 {
-	float depthAtPos = texture2D(depth, uv).x;
-
-	depthAtPos = step(depthAtPos, 0.001) * 1000 + (1 - step(depthAtPos, 0.001)) * depthAtPos;
-
-	float ao = 0.0;
-
-	vec3 randomSampleOffsets[8] = {
+	vec3 randomSampleOffsets[24] = {
 		vec3(1, 0, 0),
 		vec3(-1, 0, 0),
 		vec3(0, 1, 0),
@@ -36,52 +30,42 @@ void main()
 		vec3(1, 1, 0),
 		vec3(-1, 1, 0),
 		vec3(1, -1, 0),
-		vec3(-1, -1, 0)
-
-		/*vec3(1, 0, 1),
-		vec3(1, 0, -1),
-		vec3(1, 1, 0),
-		vec3(1, -1, 0),
-		vec3(-1, 0, 1),
-		vec3(-1, 0, -1),
-		vec3(-1, 1, 0),
 		vec3(-1, -1, 0),
 
 		vec3(1, 0, 1),
 		vec3(-1, 0, 1),
 		vec3(0, 1, 1),
 		vec3(0, -1, 1),
+
+		vec3(1, 1, 1),
+		vec3(-1, 1, 1),
+		vec3(1, -1, 1),
+		vec3(-1, -1, 1),
+
 		vec3(1, 0, -1),
 		vec3(-1, 0, -1),
 		vec3(0, 1, -1),
 		vec3(0, -1, -1),
 
-		vec3(0, 1, 1),
-		vec3(1, 1, 0),
-		vec3(0, 1, -1),
-		vec3(-1, 1, 0),
-		vec3(0, -1, 1),
-		vec3(1, -1, 0),
-		vec3(0, -1, -1),
-		vec3(-1, -1, 0)*/
+		vec3(1, 1, -1),
+		vec3(-1, 1, -1),
+		vec3(1, -1, -1),
+		vec3(-1, -1, -1)
 	};
 
-	for(int i = 0; i < 8; i++)
+	float depthAtPos = texture2D(depth, uv).x;
+
+	float ao = 0.0;
+
+	for(int i = 0; i < 24; i++)
 	{
 		vec3 randomSampleOffset = normalize(randomSampleOffsets[i]);
 
-		//float scale = float(i) / 6.0;
-		//scale *= rand(i * 153);
-		//randomSampleOffset *= mix(0.1, 1.0, scale * scale);
+		float sampleDepth = depthAtPos + randomSampleOffset.z;
 
-		randomSampleOffset.xy *= uvScale;
+		float actualSampleDepth = texture2D(depth, uv + randomSampleOffset.xy * uvScale).x;
 
-		vec3 newPoint = vec3(uv + randomSampleOffset.xy, depthAtPos+randomSampleOffset.z);
-
-		float sampleDepth = texture2D(depth, newPoint.xy).x;
-
-
-		ao += step(newPoint.z, sampleDepth) / 8.0;
+		ao += step(sampleDepth - 2e-4, actualSampleDepth) / 24.0;
 	}
 	
 	vec4 col = texture2D(color, uv);

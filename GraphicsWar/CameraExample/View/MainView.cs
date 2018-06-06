@@ -36,9 +36,11 @@ namespace GraphicsWar.View
 
             //var mesh = contentLoader.Load<DefaultMesh>("suzanne");
             var mesh = Meshes.CreateSphere();
+            mesh = Meshes.CreateCornellBox();
 
             _geometries.Add(Enums.EntityType.Type1, VAOLoader.FromMesh(mesh, _shaderProgram));
             _geometries.Add(Enums.EntityType.Type2, VAOLoader.FromMesh(mesh, _shaderProgram));
+            
             _postProcessShaders.Add(contentLoader.LoadPixelShader("SSAO"));
         }
 
@@ -107,6 +109,7 @@ namespace GraphicsWar.View
             _renderState.Set(new DepthTest(true));
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
             _shaderProgram.Activate();
             _shaderProgram.Uniform("time", time);
             _shaderProgram.Uniform("camera", camera);
