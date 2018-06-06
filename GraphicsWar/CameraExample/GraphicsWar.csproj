@@ -101,6 +101,7 @@
     <Compile Include="Shared\Enums.cs" />
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
+    <Compile Include="View\UniformData.cs" />
     <Compile Include="View\ViewEntity.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -25,6 +25,7 @@ namespace GraphicsWar.View
         private readonly List<IShaderProgram> _postProcessShaders = new List<IShaderProgram>();
 
         private Vector2 _resolution;
+        private UniformData _baseUniformData = new UniformData();
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
@@ -47,6 +48,9 @@ namespace GraphicsWar.View
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
         {
             if (_shaderProgram is null) return;
+
+            UpdateBaseUniformData(time);
+
             foreach (var shader in _postProcessShaders)
             {
                 if (shader is null) return;
@@ -69,6 +73,12 @@ namespace GraphicsWar.View
                 _postProcessingSurfaces[0].Deactivate();
                 ApplyPostProcessing(time);
             }
+        }
+
+        private void UpdateBaseUniformData(float time)
+        {
+            _baseUniformData.SetValue("iGlobalTime", time);
+            _baseUniformData.SetValue("iResolution", _resolution);
         }
 
         public void Resize(int width, int height)
@@ -131,7 +141,7 @@ namespace GraphicsWar.View
             texture.Activate();
 
             shader.Activate(); //activate post processing shader
-            shader.Uniform("iGlobalTime", time);
+            _baseUniformData.ApplyUniforms(shader);
             GL.DrawArrays(PrimitiveType.Quads, 0, 4); //draw quad
             shader.Deactivate();
 
@@ -152,8 +162,7 @@ namespace GraphicsWar.View
                 GL.Uniform1(shader.GetResourceLocation(ShaderResourceType.Uniform, names[i]), i);
             }
 
-            shader.Uniform("iGlobalTime", time);
-            shader.Uniform("iResolution", resolution);
+            _baseUniformData.ApplyUniforms(shader);
             GL.DrawArrays(PrimitiveType.Quads, 0, 4); //draw quad
             shader.Deactivate();
 
