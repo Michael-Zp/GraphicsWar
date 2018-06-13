@@ -101,7 +101,8 @@
     <Compile Include="Shared\Enums.cs" />
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
-    <Compile Include="View\UniformData.cs" />
+    <Compile Include="View\RenderInstances\Deferred.cs" />
+    <Compile Include="View\RenderInstances\IRenderInstance.cs" />
     <Compile Include="View\ViewEntity.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -127,8 +128,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\shader.frag" />
-    <EmbeddedResource Include="Content\shader.vert" />
+    <EmbeddedResource Include="Content\deferred.frag" />
+    <EmbeddedResource Include="Content\deferred.vert" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="OpenTK">
@@ -143,28 +144,28 @@
     <EmbeddedResource Include="Content\SSAO.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.Base\Zenseless.Base.csproj">
-      <Project>{9e355f68-aee5-4991-a03f-346c85135d1f}</Project>
-      <Name>Zenseless.Base</Name>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.ExampleFramework\Zenseless.ExampleFramework.csproj">
+      <Project>{552eb84b-64c5-4e75-911e-3dceb3d8b474}</Project>
+      <Name>Zenseless.ExampleFramework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.ContentPipeline\Zenseless.ContentPipeline.csproj">
-      <Project>{13d7170b-1ac7-4b38-b9e2-2fb401e248ed}</Project>
-      <Name>Zenseless.ContentPipeline</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.Geometry\Zenseless.Geometry.csproj">
-      <Project>{7bf7f44a-9a04-4773-86f4-33aa51f48f39}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.Geometry\Zenseless.Geometry.csproj">
+      <Project>{1bfd9e99-ec4b-4b48-98d5-d1e8b85c8ae3}</Project>
       <Name>Zenseless.Geometry</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.HLGL\Zenseless.HLGL.csproj">
-      <Project>{deca4085-c6b5-457d-84e3-6b8898da79a7}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.HLGL\Zenseless.HLGL.csproj">
+      <Project>{957f6007-e241-4891-b224-3c593b2bb36d}</Project>
       <Name>Zenseless.HLGL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.OpenGL\Zenseless.OpenGL.csproj">
-      <Project>{3a9bfa7f-04e7-417d-be0e-b85f4ee2fb25}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.OpenGL\Zenseless.OpenGL.csproj">
+      <Project>{839f5fbc-dd23-4679-b777-d8556904006f}</Project>
       <Name>Zenseless.OpenGL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty2\Zenseless.Sound\Zenseless.Sound.csproj">
-      <Project>{c554b052-ced2-47f3-952e-0837f991214b}</Project>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.Patterns\Zenseless.Patterns.csproj">
+      <Project>{bbbc40b8-9569-482c-b291-961d73c4c0cd}</Project>
+      <Name>Zenseless.Patterns</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.Sound\Zenseless.Sound.csproj">
+      <Project>{1f1dd8e1-d563-4e31-aa5d-07173d9180da}</Project>
       <Name>Zenseless.Sound</Name>
     </ProjectReference>
   </ItemGroup>

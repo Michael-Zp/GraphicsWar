@@ -65,10 +65,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Zenseless.Base\Zenseless.Base.csproj">
-      <Project>{e5ff60a4-46fb-42d2-9430-bc523315c2e0}</Project>
-      <Name>Zenseless.Base</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Zenseless.Geometry\Zenseless.Geometry.csproj">
       <Project>{B37B7DDE-435B-4F27-9A9B-9B6DF8744EBE}</Project>
       <Name>Zenseless.Geometry</Name>
@@ -80,10 +76,6 @@
     <ProjectReference Include="..\Zenseless.OpenGL\Zenseless.OpenGL.csproj">
       <Project>{C660F6AF-C100-4169-A9FB-61E1EBE87F34}</Project>
       <Name>Zenseless.OpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Zenseless.Sound\Zenseless.Sound.csproj">
-      <Project>{78a88806-ad96-4821-b9ad-8fc060f6feb6}</Project>
-      <Name>Zenseless.Sound</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

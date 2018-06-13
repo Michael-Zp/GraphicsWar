@@ -96,16 +96,6 @@
   <ItemGroup>
     <None Include="Zenseless.HLGL.nuspec" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Zenseless.Base\Zenseless.Base.csproj">
-      <Project>{4DE8BCD3-83DF-48DD-B962-518C06D3491A}</Project>
-      <Name>Zenseless.Base</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Zenseless.Geometry\Zenseless.Geometry.csproj">
-      <Project>{B37B7DDE-435B-4F27-9A9B-9B6DF8744EBE}</Project>
-      <Name>Zenseless.Geometry</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
