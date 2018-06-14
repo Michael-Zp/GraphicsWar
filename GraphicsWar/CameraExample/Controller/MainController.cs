@@ -14,7 +14,9 @@ namespace GraphicsWar.Controller
         {
             GameTime gameTime = new GameTime();
             var window = new ExampleWindow();
-            var orbit = window.GameWindow.CreateOrbitingCameraController(30, 90, 0.1f, 500f);
+
+            
+            var orbit = window.GameWindow.CreateOrbitingCameraController(10f, 90, 0.1f, 500f);
             var visual = new MainView(window.RenderContext.RenderState, window.ContentLoader);
             var model = new MainModel();
             window.Update += (period) => model.Update(gameTime.DeltaTime);

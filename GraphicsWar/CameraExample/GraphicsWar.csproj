@@ -103,6 +103,7 @@
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\RenderInstances\Deferred.cs" />
     <Compile Include="View\RenderInstances\IRenderInstance.cs" />
+    <Compile Include="View\RenderInstances\DirectionalShadowMapping.cs" />
     <Compile Include="View\ViewEntity.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -137,11 +138,15 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Content\depth.frag" />
+    <EmbeddedResource Include="Content\depth.vert" />
     <None Include="Content\lightCalculation.glsl" />
     <EmbeddedResource Include="Content\suzanne.obj" />
     <EmbeddedResource Include="Content\vignette.glsl" />
     <EmbeddedResource Include="Content\normals.glsl" />
     <EmbeddedResource Include="Content\SSAO.glsl" />
+    <EmbeddedResource Include="Content\shadow.vert" />
+    <EmbeddedResource Include="Content\shadow.frag" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.ExampleFramework\Zenseless.ExampleFramework.csproj">

@@ -6,6 +6,7 @@ using Zenseless.Geometry;
 using Zenseless.HLGL;
 using Zenseless.OpenGL;
 using GraphicsWar.View.RenderInstances;
+using GraphicsWar.Shared;
 
 namespace GraphicsWar.View
 {
@@ -14,19 +15,29 @@ namespace GraphicsWar.View
         private readonly IRenderState _renderState;
         private readonly IShaderProgram _copyShaderProgram;
 
+        private readonly Dictionary<Enums.EntityType, Mesh> _meshes = new Dictionary<Enums.EntityType, Mesh>();
+        private readonly Dictionary<Enums.EntityType, int> _instanceCounts = new Dictionary<Enums.EntityType, int>();
+        private readonly Dictionary<Enums.EntityType, List<Matrix4x4>> _transforms = new Dictionary<Enums.EntityType, List<Matrix4x4>>();
+
         private readonly List<IRenderSurface> _postProcessingSurfaces = new List<IRenderSurface>();
         private readonly List<IShaderProgram> _postProcessShaders = new List<IShaderProgram>();
 
         private Vector2 _resolution;
 
         private Deferred _deferred;
+        private DirectionalShadowMapping _directShadowMap;
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
             _renderState = renderState;
             _renderState.Set(new FaceCullingModeState(FaceCullingMode.BACK_SIDE));
 
-            _deferred = new Deferred(contentLoader);
+            _meshes.Add(Enums.EntityType.Type1,Meshes.CreateSphere());
+            _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
+
+            _deferred = new Deferred(contentLoader, _meshes);
+
+            _directShadowMap = new DirectionalShadowMapping(contentLoader, _meshes);
 
             _copyShaderProgram = contentLoader.LoadPixelShader("Copy.frag");
 
@@ -41,22 +52,27 @@ namespace GraphicsWar.View
                 shader.Uniform("iGlobalTime", time);
             }
 
-            _deferred.UpdateInstancing(entities);
+            UpdateInstancing(entities);
 
-            _deferred.Draw(_renderState, camera);
+            _deferred.UpdateAttributes(_transforms);
+            _directShadowMap.UpdateAttributes(_transforms);
 
-            if (_postProcessShaders.Count > 0)
-            {
-                _postProcessingSurfaces[0].Activate();
-            }
+            _deferred.Draw(_renderState, camera, _instanceCounts);
+            
+            _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, Vector3.Normalize(new Vector3(1f,2f,0f)), camera);
 
-            DrawTexture(_deferred.Color, _copyShaderProgram, time);
+            //if (_postProcessShaders.Count > 0)
+            //{
+            //    _postProcessingSurfaces[0].Activate();
+            //}
 
-            if (_postProcessShaders.Count > 0)
-            {
-                _postProcessingSurfaces[0].Deactivate();
-                ApplyPostProcessing(time);
-            }
+            //DrawTexture(_deferred.Color, _copyShaderProgram, time);
+
+            //if (_postProcessShaders.Count > 0)
+            //{
+            //    _postProcessingSurfaces[0].Deactivate();
+            //    ApplyPostProcessing(time);
+            //}
         }
 
         public void Resize(int width, int height)
@@ -64,6 +80,7 @@ namespace GraphicsWar.View
             _postProcessingSurfaces.Clear();
 
             _deferred.UpdateResolution(width, height);
+            _directShadowMap.UpdateResolution(width, height);
 
             foreach (var shader in _postProcessShaders)
             {
@@ -129,6 +146,24 @@ namespace GraphicsWar.View
 
             namedTextures["color"] = _postProcessingSurfaces[_postProcessShaders.Count - 1].Texture;
             DrawTextures(namedTextures, _postProcessShaders[_postProcessShaders.Count - 1], time, _resolution);
+        }
+
+        private void UpdateInstancing(IEnumerable<ViewEntity> entities)
+        {
+            _transforms.Clear();
+            _instanceCounts.Clear();
+
+            foreach (var type in _meshes.Keys)
+            {
+                _instanceCounts.Add(type, 0);
+                _transforms.Add(type, new List<Matrix4x4>());
+            }
+
+            foreach (var entity in entities)
+            {
+                _instanceCounts[entity.Type]++;
+                _transforms[entity.Type].Add(entity.Transform);
+            }
         }
     }
 }

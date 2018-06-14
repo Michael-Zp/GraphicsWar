@@ -16,6 +16,7 @@ void main()
 	pos = (transform * vec4(position, 1.0)).xyz;
 
 	vec4 outPos = camera * vec4(pos, 1.0);
+
 	gl_Position = outPos;
 	d = outPos.z;
 }
