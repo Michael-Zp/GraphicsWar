@@ -9,7 +9,7 @@ using Zenseless.OpenGL;
 
 namespace GraphicsWar.View.RenderInstances
 {
-    public class DirectionalShadowMapping : RenderInstaceBase, IUpdateGeometry, IUpdateResolution
+    public class DirectionalShadowMapping : RenderInstanceBase, IUpdateGeometry, IUpdateResolution
     {
         private readonly IShaderProgram _depthShader;
         private readonly IShaderProgram _shadowShader;
@@ -69,8 +69,6 @@ namespace GraphicsWar.View.RenderInstances
             DrawDepthSurface(lightCamera, instanceCounts);
 
             DrawShadowSurface(lightCamera, camera, instanceCounts);
-
-            TextureDebugger.Draw(_shadowSurface.Texture);
 
             renderState.Set(new DepthTest(false));
         }

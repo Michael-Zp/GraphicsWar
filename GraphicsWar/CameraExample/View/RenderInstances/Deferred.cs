@@ -8,7 +8,7 @@ using Zenseless.OpenGL;
 
 namespace GraphicsWar.View.RenderInstances
 {
-    public class Deferred : RenderInstaceBase, IUpdateGeometry, IUpdateResolution
+    public class Deferred : RenderInstanceBase, IUpdateGeometry, IUpdateResolution
     {
         private readonly IShaderProgram _shaderProgram;
         private IRenderSurface _deferredSurface;
