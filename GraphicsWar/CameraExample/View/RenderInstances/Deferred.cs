@@ -8,7 +8,7 @@ using Zenseless.OpenGL;
 
 namespace GraphicsWar.View.RenderInstances
 {
-    public class Deferred : IRenderInstance, IUpdateGeometry, IUpdateResolution
+    public class Deferred : RenderInstaceBase, IUpdateGeometry, IUpdateResolution
     {
         private readonly IShaderProgram _shaderProgram;
         private IRenderSurface _deferredSurface;
@@ -39,7 +39,7 @@ namespace GraphicsWar.View.RenderInstances
             }
         }
 
-        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes)
+        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes, RenderInstanceGroup group) : base(group)
         {
             _shaderProgram = contentLoader.Load<IShaderProgram>("deferred.*");
 

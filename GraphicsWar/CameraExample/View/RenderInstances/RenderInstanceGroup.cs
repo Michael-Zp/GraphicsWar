@@ -6,7 +6,7 @@ namespace GraphicsWar.View.RenderInstances
 {
     public class RenderInstanceGroup
     {
-        public List<IRenderInstance> RenderInstances = new List<IRenderInstance>();
+        public List<RenderInstaceBase> RenderInstances = new List<RenderInstaceBase>();
 
         public void UpdateGeometry(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
         {

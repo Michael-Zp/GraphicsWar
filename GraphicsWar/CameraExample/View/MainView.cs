@@ -36,11 +36,8 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Type1,Meshes.CreateSphere());
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
 
-            _deferred = new Deferred(contentLoader, _meshes);
-            _directShadowMap = new DirectionalShadowMapping(contentLoader, _meshes);
-
-            _renderInstanceGroup.RenderInstances.Add(_deferred);
-            _renderInstanceGroup.RenderInstances.Add(_directShadowMap);
+            _deferred = new Deferred(contentLoader, _meshes, _renderInstanceGroup);
+            _directShadowMap = new DirectionalShadowMapping(contentLoader, _meshes, _renderInstanceGroup);
 
             _copyShaderProgram = contentLoader.LoadPixelShader("Copy.frag");
 

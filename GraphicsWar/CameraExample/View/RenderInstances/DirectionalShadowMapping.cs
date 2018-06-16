@@ -9,7 +9,7 @@ using Zenseless.OpenGL;
 
 namespace GraphicsWar.View.RenderInstances
 {
-    public class DirectionalShadowMapping : IRenderInstance, IUpdateGeometry, IUpdateResolution
+    public class DirectionalShadowMapping : RenderInstaceBase, IUpdateGeometry, IUpdateResolution
     {
         private readonly IShaderProgram _depthShader;
         private readonly IShaderProgram _shadowShader;
@@ -27,7 +27,7 @@ namespace GraphicsWar.View.RenderInstances
             }
         }
 
-        public DirectionalShadowMapping(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes)
+        public DirectionalShadowMapping(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes, RenderInstanceGroup group) : base(group)
         {
             _depthShader = contentLoader.Load<IShaderProgram>("depth.*");
             _shadowShader = contentLoader.Load<IShaderProgram>("shadow.*");
