@@ -104,6 +104,9 @@
     <Compile Include="View\RenderInstances\Deferred.cs" />
     <Compile Include="View\RenderInstances\IRenderInstance.cs" />
     <Compile Include="View\RenderInstances\DirectionalShadowMapping.cs" />
+    <Compile Include="View\RenderInstances\IUpdateGeometry.cs" />
+    <Compile Include="View\RenderInstances\IUpdateResolution.cs" />
+    <Compile Include="View\RenderInstances\RenderInstanceGroup.cs" />
     <Compile Include="View\ViewEntity.cs" />
   </ItemGroup>
   <ItemGroup>

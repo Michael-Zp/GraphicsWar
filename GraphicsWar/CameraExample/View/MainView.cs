@@ -24,6 +24,7 @@ namespace GraphicsWar.View
 
         private Vector2 _resolution;
 
+        private RenderInstanceGroup _renderInstanceGroup = new RenderInstanceGroup();
         private Deferred _deferred;
         private DirectionalShadowMapping _directShadowMap;
 
@@ -36,8 +37,10 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
 
             _deferred = new Deferred(contentLoader, _meshes);
-
             _directShadowMap = new DirectionalShadowMapping(contentLoader, _meshes);
+
+            _renderInstanceGroup.RenderInstances.Add(_deferred);
+            _renderInstanceGroup.RenderInstances.Add(_directShadowMap);
 
             _copyShaderProgram = contentLoader.LoadPixelShader("Copy.frag");
 
@@ -54,8 +57,7 @@ namespace GraphicsWar.View
 
             UpdateInstancing(entities);
 
-            _deferred.UpdateAttributes(_transforms);
-            _directShadowMap.UpdateAttributes(_transforms);
+            _renderInstanceGroup.UpdateGeometry(_transforms);
 
             _deferred.Draw(_renderState, camera, _instanceCounts);
             
@@ -79,8 +81,7 @@ namespace GraphicsWar.View
         {
             _postProcessingSurfaces.Clear();
 
-            _deferred.UpdateResolution(width, height);
-            _directShadowMap.UpdateResolution(width, height);
+            _renderInstanceGroup.UpdateResolution(width, height);
 
             foreach (var shader in _postProcessShaders)
             {
