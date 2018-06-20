@@ -27,13 +27,13 @@ namespace GraphicsWar.View
             _renderState = renderState;
             _renderState.Set(new FaceCullingModeState(FaceCullingMode.BACK_SIDE));
 
-            _meshes.Add(Enums.EntityType.Type1,Meshes.CreateSphere());
+            _meshes.Add(Enums.EntityType.Type1,Meshes.CreateSphere(subdivision: 5));
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
 
             _deferred = new Deferred(contentLoader, _meshes, _renderInstanceGroup);
             _directShadowMap = new DirectionalShadowMapping(contentLoader, _meshes, _renderInstanceGroup);
-            _copy = new SimplePostProcessShader(contentLoader.LoadPixelShader("Copy.frag"), 4, false, _renderInstanceGroup);
-            _ssao = new SimplePostProcessShader(contentLoader.LoadPixelShader("SSAO"), 4, false, _renderInstanceGroup);
+            _copy = new SimplePostProcessShader(contentLoader.LoadPixelShader("Copy.frag"),_renderInstanceGroup);
+            _ssao = new SimplePostProcessShader(contentLoader.LoadPixelShader("SSAO"), _renderInstanceGroup);
         }
 
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
@@ -44,7 +44,7 @@ namespace GraphicsWar.View
 
             _deferred.Draw(_renderState, camera, _instanceCounts);
             
-            _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, Vector3.Normalize(new Vector3(0f,-1f,0f)), camera);
+            _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, Vector3.Normalize(new Vector3(0.5f,-1f,0.2f)), camera);
 
             _ssao.Draw(_deferred.Depth);
 

@@ -4,10 +4,12 @@ using Zenseless.OpenGL;
 
 namespace GraphicsWar.View.RenderInstances
 {
-    public class PostProcessBase : RenderInstanceBase, IUpdateResolution
+    public abstract class PostProcessBase : RenderInstanceBase, IUpdateResolution
     {
-        public ITexture2D Output {
-            get {
+        public ITexture2D Output
+        {
+            get
+            {
                 return _renderSurface.Texture;
             }
         }
@@ -17,13 +19,13 @@ namespace GraphicsWar.View.RenderInstances
         protected byte _fboTexComponentCount;
         protected bool _fboTexFloat;
 
-        public PostProcessBase(IShaderProgram postProcessShader, byte fboTexComponentCount, bool fboTexFloat, RenderInstanceGroup group) : base(group)
+        public PostProcessBase(IShaderProgram postProcessShader, RenderInstanceGroup group, byte fboTexComponentCount, bool fboTexFloat) : base(group)
         {
             _postProcessShader = postProcessShader;
             _fboTexComponentCount = fboTexComponentCount;
             _fboTexFloat = fboTexFloat;
         }
-        
+
         public void UpdateResolution(int width, int height)
         {
             _renderSurface = new FBO(Texture2dGL.Create(width, height, _fboTexComponentCount, _fboTexFloat));

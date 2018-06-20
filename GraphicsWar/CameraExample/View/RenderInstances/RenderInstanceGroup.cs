@@ -12,9 +12,9 @@ namespace GraphicsWar.View.RenderInstances
         {
             foreach(var instance in RenderInstances)
             {
-                var geom = instance as IUpdateGeometry;
+                var geom = instance as IUpdateTransforms;
 
-                geom?.UpdateAttributes(transforms);
+                geom?.UpdateTransforms(transforms);
             }
         }
 

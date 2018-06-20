@@ -8,8 +8,8 @@ namespace GraphicsWar.View.RenderInstances
     /// </summary>
     public class SimplePostProcessShader : PostProcessBase
     {
-        public SimplePostProcessShader(IShaderProgram postProcessShader, byte fboTexComponentCount, bool fboTexFloat, RenderInstanceGroup group) : base(postProcessShader, fboTexComponentCount, fboTexFloat, group)
-        {}
+        public SimplePostProcessShader(IShaderProgram postProcessShader, RenderInstanceGroup group, byte fboTexComponentCount = 4, bool fboTexFloat = false) : base(postProcessShader, group, fboTexComponentCount, fboTexFloat)
+        { }
 
         public void Draw(ITexture2D inputTexture)
         {

@@ -8,7 +8,7 @@ using Zenseless.OpenGL;
 
 namespace GraphicsWar.View.RenderInstances
 {
-    public class Deferred : RenderInstanceBase, IUpdateGeometry, IUpdateResolution
+    public class Deferred : RenderInstanceBase, IUpdateTransforms, IUpdateResolution
     {
         private readonly IShaderProgram _shaderProgram;
         private IRenderSurface _deferredSurface;
@@ -38,6 +38,13 @@ namespace GraphicsWar.View.RenderInstances
                 return _deferredSurface.Textures[2];
             }
         }
+        public ITexture2D Position
+        {
+            get
+            {
+                return _deferredSurface.Textures[3];
+            }
+        }
 
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes, RenderInstanceGroup group) : base(group)
         {
@@ -54,6 +61,7 @@ namespace GraphicsWar.View.RenderInstances
             _deferredSurface = new FBOwithDepth(Texture2dGL.Create(width, height));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 3));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 1, true));
+            _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
 
             _shaderProgram.Uniform("iResolution", new Vector2(width, height));
         }
@@ -69,7 +77,7 @@ namespace GraphicsWar.View.RenderInstances
             _shaderProgram.Uniform("camera", camera);
             Matrix4x4.Invert(camera.Matrix, out var invert);
             _shaderProgram.Uniform("camPos", invert.Translation / invert.M44);
-            GL.DrawBuffers(3, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2 });
+            GL.DrawBuffers(3, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });
             foreach (var type in _geometries.Keys)
             {
                 _geometries[type].Draw(instanceCounts[type]);
@@ -80,7 +88,7 @@ namespace GraphicsWar.View.RenderInstances
             _deferredSurface.Deactivate();
         }
 
-        public void UpdateAttributes(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
         {
             foreach (var type in _geometries.Keys)
             {

@@ -103,8 +103,9 @@
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\RenderInstances\Deferred.cs" />
+    <Compile Include="View\RenderInstances\DeferredLighting.cs" />
     <Compile Include="View\RenderInstances\DirectionalShadowMapping.cs" />
-    <Compile Include="View\RenderInstances\IUpdateGeometry.cs" />
+    <Compile Include="View\RenderInstances\IUpdateTransforms.cs" />
     <Compile Include="View\RenderInstances\IUpdateResolution.cs" />
     <Compile Include="View\RenderInstances\PostProcessBase.cs" />
     <Compile Include="View\RenderInstances\RenderInstanceBase.cs" />
@@ -146,6 +147,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Content\depth.frag" />
     <EmbeddedResource Include="Content\depth.vert" />
+    <None Include="Content\deferredLighting.glsl" />
     <None Include="Content\lightCalculation.glsl" />
     <EmbeddedResource Include="Content\suzanne.obj" />
     <EmbeddedResource Include="Content\vignette.glsl" />

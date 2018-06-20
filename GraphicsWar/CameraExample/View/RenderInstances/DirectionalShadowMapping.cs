@@ -9,7 +9,7 @@ using Zenseless.OpenGL;
 
 namespace GraphicsWar.View.RenderInstances
 {
-    public class DirectionalShadowMapping : RenderInstanceBase, IUpdateGeometry, IUpdateResolution
+    public class DirectionalShadowMapping : RenderInstanceBase, IUpdateTransforms, IUpdateResolution
     {
         private readonly IShaderProgram _depthShader;
         private readonly IShaderProgram _shadowShader;
@@ -68,21 +68,24 @@ namespace GraphicsWar.View.RenderInstances
 
             DrawDepthSurface(lightCamera, instanceCounts);
 
-            DrawShadowSurface(lightCamera, camera, instanceCounts);
+
+            lightDirection.X *= -1;
+
+            DrawShadowSurface(lightDirection, lightCamera, camera, instanceCounts);
 
             renderState.Set(new DepthTest(false));
         }
 
-        public void UpdateAttributes(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
         {
             foreach (var type in _geometriesDepth.Keys)
             {
                 _geometriesDepth[type].SetAttribute(_depthShader.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
             }
 
-            foreach (var type in _geometriesDepth.Keys)
+            foreach (var type in _geometriesShadow.Keys)
             {
-                _geometriesShadow[type].SetAttribute(_depthShader.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
+                _geometriesShadow[type].SetAttribute(_shadowShader.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
             }
         }
 
@@ -106,15 +109,18 @@ namespace GraphicsWar.View.RenderInstances
             _depthSurface.Deactivate();
         }
 
-        private void DrawShadowSurface(ITransformation lightCamera, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts)
+        private void DrawShadowSurface(Vector3 lightDirection, ITransformation lightCamera, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts)
         {
             _shadowSurface.Activate();
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             _shadowShader.Activate();
+            
+            //GL.PolygonOffset(1f, 1f);
 
             _depthSurface.Texture.Activate();
+            _shadowShader.Uniform("lightDirection", lightDirection);
             _shadowShader.Uniform("lightCamera", lightCamera);
             _shadowShader.Uniform("camera", camera);
 
