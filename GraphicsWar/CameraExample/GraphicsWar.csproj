@@ -101,6 +101,7 @@
     <Compile Include="Shared\Enums.cs" />
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
+    <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\RenderInstances\Deferred.cs" />
     <Compile Include="View\RenderInstances\DirectionalShadowMapping.cs" />
     <Compile Include="View\RenderInstances\IUpdateGeometry.cs" />

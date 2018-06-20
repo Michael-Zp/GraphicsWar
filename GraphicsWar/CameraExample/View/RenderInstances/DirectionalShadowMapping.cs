@@ -64,7 +64,7 @@ namespace GraphicsWar.View.RenderInstances
                 basedVector = (Vector3.Normalize(basedVector));
             }
             var elevation = Math.Acos(Vector3.Dot(lightDirection, basedVector));
-            ITransformation lightCamera = new Camera<Orbit, Perspective>(new Orbit(6, MathHelper.RadiansToDegrees((float)azimuth), MathHelper.RadiansToDegrees((float)elevation)), new Perspective(farClip: 50));
+            ITransformation lightCamera = new Camera<Orbit, Ortographic>(new Orbit(6, MathHelper.RadiansToDegrees((float)azimuth), MathHelper.RadiansToDegrees((float)elevation)), new Ortographic(10, 10));
 
             DrawDepthSurface(lightCamera, instanceCounts);
 

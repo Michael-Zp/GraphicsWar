@@ -44,15 +44,11 @@ namespace GraphicsWar.View
 
             _deferred.Draw(_renderState, camera, _instanceCounts);
             
-            _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, Vector3.Normalize(new Vector3(1f,2f,0f)), camera);
+            _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, Vector3.Normalize(new Vector3(0f,-1f,0f)), camera);
 
             _ssao.Draw(_deferred.Depth);
 
-            TextureDebugger.Draw(_ssao.Output);
-
-            _copy.Draw(_ssao.Output);
-
-            TextureDebugger.Draw(_copy.Output);
+            TextureDebugger.Draw(_directShadowMap.ShadowSurface);
         }
 
         public void Resize(int width, int height)
