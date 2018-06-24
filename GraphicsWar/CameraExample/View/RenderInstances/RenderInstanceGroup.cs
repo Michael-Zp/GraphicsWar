@@ -6,7 +6,7 @@ namespace GraphicsWar.View.RenderInstances
 {
     public class RenderInstanceGroup
     {
-        public List<RenderInstanceBase> RenderInstances = new List<RenderInstanceBase>();
+        private List<IRenderInstance> RenderInstances = new List<IRenderInstance>();
 
         public void UpdateGeometry(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
         {
@@ -26,6 +26,12 @@ namespace GraphicsWar.View.RenderInstances
 
                 reso?.UpdateResolution(width, height);
             }
+        }
+
+        public T AddShader<T>(IRenderInstance shader) where T : IRenderInstance
+        {
+            RenderInstances.Add(shader);
+            return (T)shader;
         }
     }
 }

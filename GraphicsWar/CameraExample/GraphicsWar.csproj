@@ -102,15 +102,15 @@
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
+    <Compile Include="View\RenderInstances\TwoPassPostProcessShader.cs" />
     <Compile Include="View\RenderInstances\Deferred.cs" />
     <Compile Include="View\RenderInstances\DeferredLighting.cs" />
     <Compile Include="View\RenderInstances\DirectionalShadowMapping.cs" />
     <Compile Include="View\RenderInstances\IUpdateTransforms.cs" />
     <Compile Include="View\RenderInstances\IUpdateResolution.cs" />
-    <Compile Include="View\RenderInstances\PostProcessBase.cs" />
-    <Compile Include="View\RenderInstances\RenderInstanceBase.cs" />
+    <Compile Include="View\RenderInstances\IRenderInstance.cs" />
     <Compile Include="View\RenderInstances\RenderInstanceGroup.cs" />
-    <Compile Include="View\RenderInstances\SimplePostProcessShader.cs" />
+    <Compile Include="View\RenderInstances\OnePassPostProcessShader.cs" />
     <Compile Include="View\ViewEntity.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +147,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Content\depth.frag" />
     <EmbeddedResource Include="Content\depth.vert" />
+    <EmbeddedResource Include="Content\BloomGausPass1.glsl" />
+    <EmbeddedResource Include="Content\BloomGausPass2.glsl" />
+    <EmbeddedResource Include="Content\BlurGausPass1.glsl" />
+    <EmbeddedResource Include="Content\BlurGausPass2.glsl" />
     <None Include="Content\deferredLighting.glsl" />
     <None Include="Content\lightCalculation.glsl" />
     <EmbeddedResource Include="Content\suzanne.obj" />
@@ -181,6 +185,9 @@
       <Project>{1f1dd8e1-d563-4e31-aa5d-07173d9180da}</Project>
       <Name>Zenseless.Sound</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Models\ModelLinks.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

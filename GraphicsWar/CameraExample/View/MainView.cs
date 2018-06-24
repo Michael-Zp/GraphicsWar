@@ -19,8 +19,10 @@ namespace GraphicsWar.View
         private RenderInstanceGroup _renderInstanceGroup = new RenderInstanceGroup();
         private Deferred _deferred;
         private DirectionalShadowMapping _directShadowMap;
-        private SimplePostProcessShader _copy;
-        private SimplePostProcessShader _ssao;
+        private OnePassPostProcessShader _copy;
+        private OnePassPostProcessShader _ssao;
+        private TwoPassPostProcessShader _bloom;
+        private TwoPassPostProcessShader _blur;
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
@@ -30,10 +32,12 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Type1,Meshes.CreateSphere(subdivision: 5));
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
 
-            _deferred = new Deferred(contentLoader, _meshes, _renderInstanceGroup);
-            _directShadowMap = new DirectionalShadowMapping(contentLoader, _meshes, _renderInstanceGroup);
-            _copy = new SimplePostProcessShader(contentLoader.LoadPixelShader("Copy.frag"),_renderInstanceGroup);
-            _ssao = new SimplePostProcessShader(contentLoader.LoadPixelShader("SSAO"), _renderInstanceGroup);
+            _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
+            _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
+            _copy = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("Copy.frag")));
+            _ssao = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("SSAO")));
+            _blur = _renderInstanceGroup.AddShader<TwoPassPostProcessShader>(new TwoPassPostProcessShader(contentLoader.LoadPixelShader("BlurGausPass1"), contentLoader.LoadPixelShader("BlurGausPass2")));
+            _bloom = _renderInstanceGroup.AddShader<TwoPassPostProcessShader>(new TwoPassPostProcessShader(contentLoader.LoadPixelShader("BloomGausPass1"), contentLoader.LoadPixelShader("BloomGausPass2")));
         }
 
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
