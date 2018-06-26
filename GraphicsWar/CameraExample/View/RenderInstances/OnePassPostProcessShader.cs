@@ -24,6 +24,8 @@ namespace GraphicsWar.View.RenderInstances
         public OnePassPostProcessShader(IShaderProgram postProcessShader, byte fboTexComponentCount = 4, bool fboTexFloat = false)
         {
             _postProcessShader = postProcessShader;
+            _fboTexComponentCount = fboTexComponentCount;
+            _fboTexFloat = fboTexFloat;
         }
 
         public void Draw(ITexture2D inputTexture)

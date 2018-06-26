@@ -61,7 +61,7 @@ void main()
 
 	float ao = 0.0;
 
-	float sampleSize = 200.0;
+	float sampleSize = 30.0;
 
 	for(float i = 0.0; i < sampleSize; i += 1.0)
 	{

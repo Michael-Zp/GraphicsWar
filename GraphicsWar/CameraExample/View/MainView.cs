@@ -23,6 +23,7 @@ namespace GraphicsWar.View
         private OnePassPostProcessShader _ssao;
         private TwoPassPostProcessShader _bloom;
         private TwoPassPostProcessShader _blur;
+        private SSAOWithBlur _ssaoWithBlur;
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
@@ -35,9 +36,10 @@ namespace GraphicsWar.View
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
             _copy = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("Copy.frag")));
-            _ssao = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("SSAO")));
+            _ssao = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("SSAO.glsl")));
             _blur = _renderInstanceGroup.AddShader<TwoPassPostProcessShader>(new TwoPassPostProcessShader(contentLoader.LoadPixelShader("BlurGausPass1"), contentLoader.LoadPixelShader("BlurGausPass2")));
             _bloom = _renderInstanceGroup.AddShader<TwoPassPostProcessShader>(new TwoPassPostProcessShader(contentLoader.LoadPixelShader("BloomGausPass1"), contentLoader.LoadPixelShader("BloomGausPass2")));
+            _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
         }
 
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
@@ -52,7 +54,9 @@ namespace GraphicsWar.View
 
             _ssao.Draw(_deferred.Depth);
 
-            TextureDebugger.Draw(_directShadowMap.ShadowSurface);
+            _ssaoWithBlur.Draw(_deferred.Depth);
+
+            TextureDebugger.Draw(_ssaoWithBlur.Output);
         }
 
         public void Resize(int width, int height)

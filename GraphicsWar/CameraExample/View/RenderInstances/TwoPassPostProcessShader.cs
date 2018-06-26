@@ -12,17 +12,19 @@ namespace GraphicsWar.View.RenderInstances
             }
         }
 
-        private readonly IShaderProgram _passOne;
-        private readonly IShaderProgram _passTwo;
-        private IRenderSurface _passOneSurface;
-        private IRenderSurface _passTwoSurface;
-        private readonly byte _fboTexComponentCount;
-        private readonly bool _fboTexFloat;
+        protected readonly IShaderProgram _passOne;
+        protected readonly IShaderProgram _passTwo;
+        protected IRenderSurface _passOneSurface;
+        protected IRenderSurface _passTwoSurface;
+        protected readonly byte _fboTexComponentCount;
+        protected readonly bool _fboTexFloat;
 
         public TwoPassPostProcessShader(IShaderProgram blurPassOne, IShaderProgram blurPassTwo, byte fboTexComponentCount = 4, bool fboTexFloat = false)
         {
             _passOne = blurPassOne;
             _passTwo = blurPassTwo;
+            _fboTexComponentCount = fboTexComponentCount;
+            _fboTexFloat = fboTexFloat;
         }
 
         public void Draw(ITexture2D inputTexture)
@@ -31,7 +33,7 @@ namespace GraphicsWar.View.RenderInstances
             DrawPass(_passOneSurface.Texture, _passTwoSurface, _passTwo);
         }
 
-        private void DrawPass(ITexture2D inputTexture, IRenderSurface surface, IShaderProgram shader)
+        protected void DrawPass(ITexture2D inputTexture, IRenderSurface surface, IShaderProgram shader)
         {
             surface.Activate();
 

@@ -11,6 +11,9 @@
     <AssemblyName>GraphicsWar</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,11 +26,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -102,9 +102,10 @@
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
+    <Compile Include="View\RenderInstances\Blur.cs" />
+    <Compile Include="View\RenderInstances\SSAOWithBlur.cs" />
     <Compile Include="View\RenderInstances\TwoPassPostProcessShader.cs" />
     <Compile Include="View\RenderInstances\Deferred.cs" />
-    <Compile Include="View\RenderInstances\DeferredLighting.cs" />
     <Compile Include="View\RenderInstances\DirectionalShadowMapping.cs" />
     <Compile Include="View\RenderInstances\IUpdateTransforms.cs" />
     <Compile Include="View\RenderInstances\IUpdateResolution.cs" />

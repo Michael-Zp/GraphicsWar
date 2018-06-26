@@ -116,8 +116,6 @@ namespace GraphicsWar.View.RenderInstances
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             _shadowShader.Activate();
-            
-            //GL.PolygonOffset(1f, 1f);
 
             _depthSurface.Texture.Activate();
             _shadowShader.Uniform("lightDirection", lightDirection);

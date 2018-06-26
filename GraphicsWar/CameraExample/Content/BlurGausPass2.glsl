@@ -3,10 +3,10 @@
 const float PI = 3.14159265359;
 const float Euler = 2.71828182846;
 const float GaussSigma = 20;
-const int GaussSize = 20;
 
 uniform sampler2D image;
 uniform float effectScale = 0.3;
+uniform float GaussSize = 20;
 
 in vec2 uv;
 
