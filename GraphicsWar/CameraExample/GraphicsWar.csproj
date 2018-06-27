@@ -103,6 +103,7 @@
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\RenderInstances\Blur.cs" />
+    <Compile Include="View\RenderInstances\DeferredLighting.cs" />
     <Compile Include="View\RenderInstances\SSAOWithBlur.cs" />
     <Compile Include="View\RenderInstances\TwoPassPostProcessShader.cs" />
     <Compile Include="View\RenderInstances\Deferred.cs" />
