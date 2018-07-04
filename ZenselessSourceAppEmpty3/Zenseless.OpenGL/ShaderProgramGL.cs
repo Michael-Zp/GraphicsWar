@@ -237,7 +237,8 @@
         /// <returns></returns>
         private int GetResourceIndex(string name, ProgramInterface type)
         {
-            return GL.GetProgramResourceIndex(ProgramID, type, name);
+            var index = GL.GetProgramResourceIndex(ProgramID, type, name);
+            return index;
         }
 
         /// <summary>

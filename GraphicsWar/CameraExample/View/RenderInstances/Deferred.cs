@@ -59,7 +59,7 @@ namespace GraphicsWar.View.RenderInstances
         public void UpdateResolution(int width, int height)
         {
             _deferredSurface = new FBOwithDepth(Texture2dGL.Create(width, height));
-            _deferredSurface.Attach(Texture2dGL.Create(width, height, 3));
+            _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 1, true));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
 
@@ -77,7 +77,7 @@ namespace GraphicsWar.View.RenderInstances
             _shaderProgram.Uniform("camera", camera);
             Matrix4x4.Invert(camera.Matrix, out var invert);
             _shaderProgram.Uniform("camPos", invert.Translation / invert.M44);
-            GL.DrawBuffers(3, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });
+            GL.DrawBuffers(4, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });
             foreach (var type in _geometries.Keys)
             {
                 _geometries[type].Draw(instanceCounts[type]);
