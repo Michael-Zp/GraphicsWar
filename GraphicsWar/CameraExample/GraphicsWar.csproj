@@ -102,6 +102,7 @@
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
+    <Compile Include="View\RenderInstances\ApplySSAO.cs" />
     <Compile Include="View\RenderInstances\Blur.cs" />
     <Compile Include="View\RenderInstances\DeferredLighting.cs" />
     <Compile Include="ExtensionMethods\IShaderProgramExtensionMethods.cs" />
@@ -193,7 +194,9 @@
   <ItemGroup>
     <Content Include="Content\Models\ModelLinks.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Content\ApplySSAOToImage.glsl" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

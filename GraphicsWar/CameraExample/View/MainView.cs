@@ -35,8 +35,7 @@ namespace GraphicsWar.View
             _renderState.Set(new FaceCullingModeState(FaceCullingMode.BACK_SIDE));
 
             _meshes.Add(Enums.EntityType.Type1, Meshes.CreateSphere(subdivision: 5));
-            _meshes.Add(Enums.EntityType.Type2, Meshes.CreateSphere(subdivision: 5));
-            //_meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
+            _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
@@ -59,14 +58,12 @@ namespace GraphicsWar.View
             _deferred.Draw(_renderState, camera, _instanceCounts);
             
             _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, _lights[0].Direction, camera);
-
-            _ssao.Draw(_deferred.Depth);
-
-            _ssaoWithBlur.Draw(_deferred.Depth);
             
             _deferredLighting.Draw(camera, _deferred.Color, _deferred.Normals, _deferred.Position, _directShadowMap.ShadowSurface, _lights, new Vector3(0.2f, 0.2f, 0.2f));
+            
+            _ssaoWithBlur.Draw(_deferred.Depth, _deferredLighting.Output);
 
-            TextureDebugger.Draw(_deferredLighting.Output);
+            TextureDebugger.Draw(_ssaoWithBlur.Output);
         }
 
         public void Resize(int width, int height)
