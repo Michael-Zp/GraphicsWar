@@ -198,7 +198,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Content\ApplySSAOToImage.glsl" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Content\deferredNormalMap.frag" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\deferredNormalMap.vert" />
   </ItemGroup>

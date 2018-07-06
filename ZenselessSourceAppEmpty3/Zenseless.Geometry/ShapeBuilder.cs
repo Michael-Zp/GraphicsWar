@@ -184,7 +184,7 @@ namespace Zenseless.Geometry
         /// <param name="subdivision">subdivision count, each subdivision creates 4 times more faces</param>
         /// <param name="createNormal">callback for each vertex normal creation</param>
         public static void Sphere(Action<float, float, float> createPosition, Action<uint> createID, float radius_ = 1.0f, uint subdivision = 1
-            , Action<float, float, float> createNormal = null, Action<float, float> createTexCoord = null)
+            , Action<float, float, float> createNormal = null)
         {
             if (createPosition is null) throw new ArgumentNullException(nameof(createPosition) + " must not be null");
             if (createID is null) throw new ArgumentNullException(nameof(createID) + " must not be null");
@@ -197,12 +197,6 @@ namespace Zenseless.Geometry
                 { 0.0f, Z, X }, { 0.0f, Z, -X }, { 0.0f, -Z, X }, { 0.0f, -Z, -X },
                 { Z, X, 0.0f }, { -Z, X, 0.0f }, { Z, -X, 0.0f }, { -Z, -X, 0.0f }
             };
-            var texCoordData = new float[12, 2]
-            {
-                { 0.875f, 0.5f }, { 0.625f, 0.5f }, { 0.375f, 0.5f}, { 0.125f, 0.5f },
-                { 0.75f, 0.75f }, { 0.25f, 0.75f }, { 0.75f, 0.25f}, { 0.25f, 0.25f },
-                { 0.5f, 0.75f }, { 0.5f, 0.25f }, { 0.0f, 0.75f }, { 0.0f, 0.25f },
-            };
             var tindices = new uint[20, 3] {
                 { 0, 1, 4 }, { 0, 4, 9 }, { 9, 4, 5 }, { 4, 8, 5 }, { 4, 1, 8 },
                 { 8, 1, 10 }, { 8, 10, 3 }, { 5, 8, 3 }, { 5, 3, 2 }, { 2, 3, 7 },
@@ -214,7 +208,6 @@ namespace Zenseless.Geometry
             {
                 uniformPositions.Add(new Vector3(vdata[i, 0], vdata[i, 1], vdata[i, 2]));
                 createNormal?.Invoke(vdata[i, 0], vdata[i, 1], vdata[i, 2]);
-                createTexCoord?.Invoke(texCoordData[i, 0], texCoordData[i, 1]);
             }
             for (int i = 0; i < 20; ++i)
             {

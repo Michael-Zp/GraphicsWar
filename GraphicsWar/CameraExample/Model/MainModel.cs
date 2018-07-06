@@ -13,6 +13,7 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Type1, new Vector3(2.5f, 0, 0), new Vector3(0)));
             Entities.Add(new Entity(Enums.EntityType.Type2, new Vector3(-2.5f, 0, 0), new Vector3(0)));
             Entities.Add(new Entity(Enums.EntityType.Type2, new Vector3(0, 0, 0), new Vector3(0)));
+            Entities.Add(new Entity(Enums.EntityType.Type3, new Vector3(0, -2, 2), new Vector3(0)));
         }
 
         public void Update(float deltaTime)

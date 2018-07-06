@@ -50,7 +50,7 @@ namespace GraphicsWar.View.RenderInstances
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes, Dictionary<Enums.EntityType, ITexture2D> normalMaps)
         {
             _shaderWithGeometryNormals = contentLoader.Load<IShaderProgram>("deferred.*");
-            _shaderWithNormalMap = contentLoader.Load<IShaderProgram>( new string[] { "deferredNormalMap.vert", "deferred.frag" } );
+            _shaderWithNormalMap = contentLoader.Load<IShaderProgram>("deferredNormalMap.*");
 
             foreach (var meshContainer in meshes)
             {

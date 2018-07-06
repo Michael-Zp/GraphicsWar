@@ -37,8 +37,9 @@ namespace GraphicsWar.View
 
             _meshes.Add(Enums.EntityType.Type1, Meshes.CreateSphere(subdivision: 0));
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
+            _meshes.Add(Enums.EntityType.Type3, Meshes.CreatePlane(2, 2, 10, 10));
 
-            _normalMaps.Add(Enums.EntityType.Type1, contentLoader.Load<ITexture2D>("testNormalMap.jpg"));
+            _normalMaps.Add(Enums.EntityType.Type3, contentLoader.Load<ITexture2D>("testNormalMap.jpg"));
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes, _normalMaps));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
@@ -66,7 +67,7 @@ namespace GraphicsWar.View
             
             _ssaoWithBlur.Draw(_deferred.Depth, _deferredLighting.Output);
 
-            TextureDebugger.Draw(_deferred.Color);
+            TextureDebugger.Draw(_deferredLighting.Output);
         }
 
         public void Resize(int width, int height)
