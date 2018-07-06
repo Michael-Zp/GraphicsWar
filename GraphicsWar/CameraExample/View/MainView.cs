@@ -13,6 +13,7 @@ namespace GraphicsWar.View
     {
         private readonly IRenderState _renderState;
 
+        private readonly Dictionary<Enums.EntityType, ITexture2D> _normalMaps = new Dictionary<Enums.EntityType, ITexture2D>();
         private readonly Dictionary<Enums.EntityType, Mesh> _meshes = new Dictionary<Enums.EntityType, Mesh>();
         private readonly Dictionary<Enums.EntityType, int> _instanceCounts = new Dictionary<Enums.EntityType, int>();
         private readonly Dictionary<Enums.EntityType, List<Matrix4x4>> _transforms = new Dictionary<Enums.EntityType, List<Matrix4x4>>();
@@ -34,10 +35,12 @@ namespace GraphicsWar.View
             _renderState = renderState;
             _renderState.Set(new FaceCullingModeState(FaceCullingMode.BACK_SIDE));
 
-            _meshes.Add(Enums.EntityType.Type1, Meshes.CreateSphere(subdivision: 5));
+            _meshes.Add(Enums.EntityType.Type1, Meshes.CreateSphere(subdivision: 0));
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
 
-            _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
+            _normalMaps.Add(Enums.EntityType.Type1, contentLoader.Load<ITexture2D>("testNormalMap.jpg"));
+
+            _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes, _normalMaps));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
             _copy = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("Copy.frag")));
             _ssao = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("SSAO.glsl")));
@@ -55,7 +58,7 @@ namespace GraphicsWar.View
             
             _renderInstanceGroup.UpdateGeometry(_transforms);
 
-            _deferred.Draw(_renderState, camera, _instanceCounts);
+            _deferred.Draw(_renderState, camera, _instanceCounts, _normalMaps);
             
             _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, _lights[0].Direction, camera);
             
@@ -63,7 +66,7 @@ namespace GraphicsWar.View
             
             _ssaoWithBlur.Draw(_deferred.Depth, _deferredLighting.Output);
 
-            TextureDebugger.Draw(_ssaoWithBlur.Output);
+            TextureDebugger.Draw(_deferred.Color);
         }
 
         public void Resize(int width, int height)

@@ -252,7 +252,8 @@
             void createPosition(float x, float y, float z) => m.Position.Add(new Vector3(x, y, z));
             void createID(uint id) => m.IDs.Add(id);
             void createNormal(float x, float y, float z) => m.Normal.Add(new Vector3(x, y, z));
-            ShapeBuilder.Sphere(createPosition, createID, radius, subdivision, createNormal);
+            void createTexCoord(float x, float y) => m.TexCoord.Add(new Vector2(x, y));
+            ShapeBuilder.Sphere(createPosition, createID, radius, subdivision, createNormal, createTexCoord);
             return m;
         }
 

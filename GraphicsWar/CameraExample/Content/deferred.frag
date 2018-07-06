@@ -15,9 +15,10 @@ out vec3 position;
 
 void main() 
 {
-	vec4 materialColor = vec4(0.8,0.8,0.8,1);
+	//vec4 materialColor = vec4(0.8,0.8,0.8,1);
 	
-	/*
+	
+	
 	vec3 materialColor = vec3(1.0);
 	vec3 lightColor = vec3(1.0);
 	vec3 ambientLightColor = vec3(0.15);
@@ -26,10 +27,10 @@ void main()
 	vec3 norm = normalize(n);
 
 	color = calculateLight(materialColor, lightColor, ambientLightColor, lightDirection, viewDirection, norm);
-	*/
+	
 
 
-	color = materialColor;
+	//color = materialColor;
 	normal = normalize(n);
 	depth = d;
 	position = pos, 0.0;
