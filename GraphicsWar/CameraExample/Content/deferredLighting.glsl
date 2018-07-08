@@ -42,5 +42,5 @@ void main()
 		color += calculateLight(matColor, light[i].lightCol, ambientColor, light[i].lightDir, viewDirection, norm) * light[i].lightIntense;
 	}
 
-	color *= texture2D(shadowSurface, uv).x;
+	//color *= texture2D(shadowSurface, uv).x;
 }

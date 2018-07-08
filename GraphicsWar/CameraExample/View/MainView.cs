@@ -6,6 +6,7 @@ using Zenseless.OpenGL;
 using GraphicsWar.View.RenderInstances;
 using GraphicsWar.Shared;
 using System.Drawing;
+using GraphicsWar.ExtensionMethods;
 
 namespace GraphicsWar.View
 {
@@ -35,9 +36,11 @@ namespace GraphicsWar.View
             _renderState = renderState;
             _renderState.Set(new FaceCullingModeState(FaceCullingMode.BACK_SIDE));
 
-            _meshes.Add(Enums.EntityType.Type1, Meshes.CreateSphere(subdivision: 0));
-            _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
-            _meshes.Add(Enums.EntityType.Type3, Meshes.CreatePlane(2, 2, 10, 10));
+            _meshes.Add(Enums.EntityType.Type1, MyMeshes.CreateSphere(subdivision: 0));
+            _meshes.Add(Enums.EntityType.Type2, MyMeshes.CreateCornellBox());
+            _meshes.Add(Enums.EntityType.Type3, MyMeshes.CreatePlane<TBNMesh>(2, 2, 10, 10));
+
+            (_meshes[Enums.EntityType.Type3] as TBNMesh).CalcTangentsAndBitangents();
 
             _normalMaps.Add(Enums.EntityType.Type3, contentLoader.Load<ITexture2D>("testNormalMap.jpg"));
 
@@ -67,6 +70,7 @@ namespace GraphicsWar.View
             
             _ssaoWithBlur.Draw(_deferred.Depth, _deferredLighting.Output);
 
+            //TextureDebugger.Draw(_deferred.Normals);
             TextureDebugger.Draw(_deferredLighting.Output);
         }
 

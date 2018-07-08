@@ -33,7 +33,7 @@
         /// <param name="attribute"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        internal void AddAttribute(string name, MeshAttribute attribute)
+        protected void AddAttribute(string name, MeshAttribute attribute)
         {
             if (Contains(name)) throw new ArgumentException($"Attribute '{name}' already exists");
             if (attribute is null) throw new ArgumentNullException(nameof(attribute));
