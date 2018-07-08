@@ -47,7 +47,7 @@ namespace GraphicsWar.View.RenderInstances
             }
         }
 
-        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes, Dictionary<Enums.EntityType, ITexture2D> normalMaps)
+        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, Dictionary<Enums.EntityType, ITexture2D> normalMaps)
         {
             _shaderWithGeometryNormals = contentLoader.Load<IShaderProgram>("deferred.*");
             _shaderWithNormalMap = contentLoader.Load<IShaderProgram>("deferredNormalMap.*");
@@ -56,7 +56,16 @@ namespace GraphicsWar.View.RenderInstances
             {
                 if(normalMaps.ContainsKey(meshContainer.Key))
                 {
-                    _geometries.Add(meshContainer.Key, VAOLoader.FromMesh(meshContainer.Value, _shaderWithNormalMap));
+                    VAO geometry = VAOLoader.FromMesh(meshContainer.Value, _shaderWithNormalMap);
+                    if (meshContainer.Value is TBNMesh mesh)
+                    {
+                        var loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.TangentName);
+                        geometry.SetAttribute(loc, mesh.Tangent.ToArray(), VertexAttribPointerType.Float, 3);
+
+                        loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.BitangentName);
+                        geometry.SetAttribute(loc, mesh.Bitangent.ToArray(), VertexAttribPointerType.Float, 3);
+                    }
+                    _geometries.Add(meshContainer.Key, geometry);
                 }
                 else
                 {

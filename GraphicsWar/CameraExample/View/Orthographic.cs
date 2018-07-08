@@ -2,13 +2,12 @@
 {
     using System;
     using System.Numerics;
-    using Zenseless.Patterns;
 
     /// <summary>
     /// Implements a Perspective transformation that allows incremental changes
     /// </summary>
     /// <seealso cref="ITransformation" />
-    public class Ortographic : NotifyPropertyChanged, INotifyingTransform
+    public class Ortographic : NotifyPropertyChanged, ITransformation
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Perspective"/> class.

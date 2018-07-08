@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using GraphicsWar.ExtensionMethods;
 using Zenseless.Geometry;
 using Zenseless.HLGL;
-using Zenseless.OpenGL;
 using GraphicsWar.View.RenderInstances;
 using GraphicsWar.Shared;
-using System.Drawing;
-using GraphicsWar.ExtensionMethods;
 
 namespace GraphicsWar.View
 {
@@ -15,32 +13,30 @@ namespace GraphicsWar.View
         private readonly IRenderState _renderState;
 
         private readonly Dictionary<Enums.EntityType, ITexture2D> _normalMaps = new Dictionary<Enums.EntityType, ITexture2D>();
-        private readonly Dictionary<Enums.EntityType, Mesh> _meshes = new Dictionary<Enums.EntityType, Mesh>();
+        private readonly Dictionary<Enums.EntityType, DefaultMesh> _meshes = new Dictionary<Enums.EntityType, DefaultMesh>();
         private readonly Dictionary<Enums.EntityType, int> _instanceCounts = new Dictionary<Enums.EntityType, int>();
         private readonly Dictionary<Enums.EntityType, List<Matrix4x4>> _transforms = new Dictionary<Enums.EntityType, List<Matrix4x4>>();
 
-        private RenderInstanceGroup _renderInstanceGroup = new RenderInstanceGroup();
-        private Deferred _deferred;
-        private DirectionalShadowMapping _directShadowMap;
+        private readonly RenderInstanceGroup _renderInstanceGroup = new RenderInstanceGroup();
+        private readonly Deferred _deferred;
+        private readonly DirectionalShadowMapping _directShadowMap;
         private OnePassPostProcessShader _copy;
         private OnePassPostProcessShader _ssao;
         private TwoPassPostProcessShader _bloom;
         private TwoPassPostProcessShader _blur;
-        private SSAOWithBlur _ssaoWithBlur;
-        private DeferredLighting _deferredLighting;
+        private readonly SSAOWithBlur _ssaoWithBlur;
+        private readonly DeferredLighting _deferredLighting;
 
-        private List<LightSource> _lights = new List<LightSource>();
+        private readonly List<LightSource> _lights = new List<LightSource>();
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
             _renderState = renderState;
-            _renderState.Set(new FaceCullingModeState(FaceCullingMode.BACK_SIDE));
+            _renderState.Set(new BackFaceCulling(true));
 
-            _meshes.Add(Enums.EntityType.Type1, MyMeshes.CreateSphere(subdivision: 0));
-            _meshes.Add(Enums.EntityType.Type2, MyMeshes.CreateCornellBox());
-            _meshes.Add(Enums.EntityType.Type3, MyMeshes.CreatePlane<TBNMesh>(2, 2, 10, 10));
-
-            (_meshes[Enums.EntityType.Type3] as TBNMesh).CalcTangentsAndBitangents();
+            _meshes.Add(Enums.EntityType.Type1, Meshes.CreateSphere(subdivision: 0));
+            _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
+            _meshes.Add(Enums.EntityType.Type3, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
 
             _normalMaps.Add(Enums.EntityType.Type3, contentLoader.Load<ITexture2D>("testNormalMap.jpg"));
 
@@ -59,15 +55,15 @@ namespace GraphicsWar.View
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
         {
             UpdateInstancing(entities);
-            
+
             _renderInstanceGroup.UpdateGeometry(_transforms);
 
             _deferred.Draw(_renderState, camera, _instanceCounts, _normalMaps);
-            
+
             _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, _lights[0].Direction, camera);
-            
+
             _deferredLighting.Draw(camera, _deferred.Color, _deferred.Normals, _deferred.Position, _directShadowMap.ShadowSurface, _lights, new Vector3(0.2f, 0.2f, 0.2f));
-            
+
             _ssaoWithBlur.Draw(_deferred.Depth, _deferredLighting.Output);
 
             //TextureDebugger.Draw(_deferred.Normals);

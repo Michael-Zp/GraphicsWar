@@ -98,7 +98,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Controller\Utilities.cs" />
-    <Compile Include="ExtensionMethods\MyMeshes.cs" />
+    <Compile Include="ExtensionMethods\TextureDebugger.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\MainModel.cs" />
     <Compile Include="Shared\Enums.cs" />
@@ -145,8 +145,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\deferred.frag" />
-    <EmbeddedResource Include="Content\deferred.vert" />
+    <EmbeddedResource Include="Content\Shaders\deferred.frag" />
+    <EmbeddedResource Include="Content\Shaders\deferred.vert" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="OpenTK">
@@ -154,65 +154,65 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\depth.frag" />
-    <EmbeddedResource Include="Content\depth.vert" />
-    <EmbeddedResource Include="Content\BloomGausPass1.glsl" />
-    <EmbeddedResource Include="Content\BloomGausPass2.glsl" />
-    <EmbeddedResource Include="Content\BlurGausPass1.glsl" />
-    <EmbeddedResource Include="Content\BlurGausPass2.glsl" />
-    <EmbeddedResource Include="Content\deferredLighting.glsl" />
-    <EmbeddedResource Include="Content\lightCalculation.glsl" />
-    <EmbeddedResource Include="Content\suzanne.obj" />
-    <EmbeddedResource Include="Content\vignette.glsl" />
-    <EmbeddedResource Include="Content\normals.glsl" />
-    <EmbeddedResource Include="Content\SSAO.glsl" />
-    <EmbeddedResource Include="Content\shadow.vert" />
-    <EmbeddedResource Include="Content\shadow.frag" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.ExampleFramework\Zenseless.ExampleFramework.csproj">
-      <Project>{552eb84b-64c5-4e75-911e-3dceb3d8b474}</Project>
-      <Name>Zenseless.ExampleFramework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.Geometry\Zenseless.Geometry.csproj">
-      <Project>{1bfd9e99-ec4b-4b48-98d5-d1e8b85c8ae3}</Project>
-      <Name>Zenseless.Geometry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.HLGL\Zenseless.HLGL.csproj">
-      <Project>{957f6007-e241-4891-b224-3c593b2bb36d}</Project>
-      <Name>Zenseless.HLGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.OpenGL\Zenseless.OpenGL.csproj">
-      <Project>{839f5fbc-dd23-4679-b777-d8556904006f}</Project>
-      <Name>Zenseless.OpenGL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.Patterns\Zenseless.Patterns.csproj">
-      <Project>{bbbc40b8-9569-482c-b291-961d73c4c0cd}</Project>
-      <Name>Zenseless.Patterns</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ZenselessSourceAppEmpty3\Zenseless.Sound\Zenseless.Sound.csproj">
-      <Project>{1f1dd8e1-d563-4e31-aa5d-07173d9180da}</Project>
-      <Name>Zenseless.Sound</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Content\Shaders\depth.frag" />
+    <EmbeddedResource Include="Content\Shaders\depth.vert" />
+    <EmbeddedResource Include="Content\Shaders\BloomGausPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\BloomGausPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\BlurGausPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\BlurGausPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\deferredLighting.glsl" />
+    <EmbeddedResource Include="Content\Shaders\lightCalculation.glsl" />
+    <EmbeddedResource Include="Content\Models\suzanne.obj" />
+    <EmbeddedResource Include="Content\Shaders\vignette.glsl" />
+    <EmbeddedResource Include="Content\Shaders\normals.glsl" />
+    <EmbeddedResource Include="Content\Shaders\SSAO.glsl" />
+    <EmbeddedResource Include="Content\Shaders\shadow.vert" />
+    <EmbeddedResource Include="Content\Shaders\shadow.frag" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Models\ModelLinks.txt" />
     <EmbeddedResource Include="Content\Textures\testNormalMap.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\ApplySSAOToImage.glsl" />
+    <EmbeddedResource Include="Content\Shaders\ApplySSAOToImage.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\deferredNormalMap.frag" />
+    <EmbeddedResource Include="Content\Shaders\deferredNormalMap.frag" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\deferredNormalMap.vert" />
+    <EmbeddedResource Include="Content\Shaders\deferredNormalMap.vert" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\deferredNormalMapParalax.frag" />
+    <EmbeddedResource Include="Content\Shaders\deferredNormalMapParalax.frag" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\deferredNormalMapParalax.vert" />
+    <EmbeddedResource Include="Content\Shaders\deferredNormalMapParalax.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.Base\Zenseless.Base.csproj">
+      <Project>{481f886f-da6f-445e-ba83-c276646a0b16}</Project>
+      <Name>Zenseless.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.ContentPipeline\Zenseless.ContentPipeline.csproj">
+      <Project>{188903c5-dc11-483b-8baa-25ab1d7a57f1}</Project>
+      <Name>Zenseless.ContentPipeline</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.Geometry\Zenseless.Geometry.csproj">
+      <Project>{2c1aeefc-3559-4391-8909-f546d006a27c}</Project>
+      <Name>Zenseless.Geometry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.HLGL\Zenseless.HLGL.csproj">
+      <Project>{8e564b23-43e0-44c7-b921-53c23c79cb79}</Project>
+      <Name>Zenseless.HLGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.OpenGL\Zenseless.OpenGL.csproj">
+      <Project>{20bd3f8a-0948-4d9f-aaa6-84d366730169}</Project>
+      <Name>Zenseless.OpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.Sound\Zenseless.Sound.csproj">
+      <Project>{10e2d3ed-a669-4adb-892e-7b13c7b52ca3}</Project>
+      <Name>Zenseless.Sound</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

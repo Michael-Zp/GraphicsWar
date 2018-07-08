@@ -96,14 +96,6 @@
       <Project>{4de8bcd3-83df-48dd-b962-518c06d3491a}</Project>
       <Name>Zenseless.Patterns</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Zenseless.Geometry\Zenseless.Geometry.csproj">
-      <Project>{b37b7dde-435b-4f27-9a9b-9b6df8744ebe}</Project>
-      <Name>Zenseless.Geometry</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Zenseless.HLGL\Zenseless.HLGL.csproj">
-      <Project>{227d6be1-ba08-4030-a755-07288540931f}</Project>
-      <Name>Zenseless.HLGL</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\ScreenQuad.vert" />

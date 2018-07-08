@@ -27,7 +27,7 @@ namespace GraphicsWar.View.RenderInstances
             }
         }
 
-        public DirectionalShadowMapping(IContentLoader contentLoader, Dictionary<Enums.EntityType, Mesh> meshes)
+        public DirectionalShadowMapping(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
             _depthShader = contentLoader.Load<IShaderProgram>("depth.*");
             _shadowShader = contentLoader.Load<IShaderProgram>("shadow.*");

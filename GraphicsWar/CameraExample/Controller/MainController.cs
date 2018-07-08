@@ -1,9 +1,9 @@
 ﻿using GraphicsWar.Model;
 using GraphicsWar.View;
 using System;
+using Zenseless.Base;
 using Zenseless.ExampleFramework;
 using Zenseless.OpenGL;
-using Zenseless.Patterns;
 
 namespace GraphicsWar.Controller
 {

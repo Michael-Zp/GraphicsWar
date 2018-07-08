@@ -20,7 +20,9 @@ namespace GraphicsWar.View
         /// <value>
         /// The position.
         /// </value>
-        public List<Vector3> Tangent { get; }
+        public List<Vector3> Tangent => tangent;
+
+        private List<Vector3> tangent;
 
         /// <summary>
         /// BitangentName
@@ -33,28 +35,35 @@ namespace GraphicsWar.View
         /// <value>
         /// The position.
         /// </value>
-        public List<Vector3> Bitangent { get; }
+        public List<Vector3> Bitangent => bitangent;
+
+        private List<Vector3> bitangent;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultMesh"/> class.
         /// </summary>
-        public TBNMesh() : base()
+
+        public TBNMesh(DefaultMesh mesh) : base()
         {
-            AddAttribute(TangentName, MeshAttribute.Create<Vector3>());
-            Tangent = GetAttribute(TangentName).GetList<Vector3>();
-            AddAttribute(BitangentName, MeshAttribute.Create<Vector3>());
-            Bitangent = GetAttribute(BitangentName).GetList<Vector3>();
+            Position.AddRange(mesh.Position);
+            Normal.AddRange(mesh.Normal);
+            TexCoord.AddRange(mesh.TexCoord);
+            IDs.AddRange(mesh.IDs);
+
+            tangent = AddAttribute<Vector3>(TangentName);
+            bitangent = AddAttribute<Vector3>(BitangentName);
+            CalcTangentsAndBitangents();
         }
 
         /// <summary>
         /// The matricies can only be calculated if the mesh has all positions, indices and uv coordinates initialized.
         /// Thus call this after initializing the mesh.
         /// </summary>
-        public void CalcTangentsAndBitangents()
+        private void CalcTangentsAndBitangents()
         {
             float maxId = IDs.Max();
 
-            if(maxId > TexCoord.Count)
+            if (maxId > TexCoord.Count)
             {
                 throw new ArgumentException("Not all TexCoords are set, tangents and bitangents can not be calculated.");
             }
@@ -93,15 +102,15 @@ namespace GraphicsWar.View
 
                 Matrix4x4 tb = Matrix4x4.Multiply(Matrix4x4.Multiply(leftSide, det), rightSide);
 
-                Vector3 tangent = new Vector3(tb.M11, tb.M12, tb.M13);
-                Vector3 bitangent = new Vector3(tb.M21, tb.M22, tb.M23);
+                Vector3 tan = new Vector3(tb.M11, tb.M12, tb.M13);
+                Vector3 bitan = new Vector3(tb.M21, tb.M22, tb.M23);
 
-                tangentPerTriangle.Add(Vector3.Normalize(tangent));
-                bitangentPerTriangle.Add(Vector3.Normalize(bitangent));
+                tangentPerTriangle.Add(Vector3.Normalize(tan));
+                bitangentPerTriangle.Add(Vector3.Normalize(bitan));
             }
 
             //Average TBN on every vertex
-            for(int i = 0; i < Position.Count; i++)
+            for (int i = 0; i < Position.Count; i++)
             {
                 float countOfPointMatches = 0;
                 Vector3 resultingTangent = Vector3.Zero;
@@ -113,7 +122,7 @@ namespace GraphicsWar.View
                     int id1 = (int)IDs[k + 1];
                     int id2 = (int)IDs[k + 2];
 
-                    if(id0 == i || id1 == i || id2 == i)
+                    if (id0 == i || id1 == i || id2 == i)
                     {
                         countOfPointMatches++;
                         resultingTangent += tangentPerTriangle[(k - k % 3) / 3];
@@ -121,7 +130,7 @@ namespace GraphicsWar.View
                     }
                 }
 
-                if(countOfPointMatches != 0)
+                if (countOfPointMatches != 0)
                 {
                     resultingTangent = resultingTangent / countOfPointMatches;
                     resultingBitangent = resultingBitangent / countOfPointMatches;
