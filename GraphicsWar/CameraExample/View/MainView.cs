@@ -3,8 +3,9 @@ using System.Numerics;
 using GraphicsWar.ExtensionMethods;
 using Zenseless.Geometry;
 using Zenseless.HLGL;
-using GraphicsWar.View.RenderInstances;
 using GraphicsWar.Shared;
+using GraphicsWar.View.Rendering.Instances;
+using GraphicsWar.View.Rendering.Management;
 
 namespace GraphicsWar.View
 {
@@ -20,10 +21,6 @@ namespace GraphicsWar.View
         private readonly RenderInstanceGroup _renderInstanceGroup = new RenderInstanceGroup();
         private readonly Deferred _deferred;
         private readonly DirectionalShadowMapping _directShadowMap;
-        private OnePassPostProcessShader _copy;
-        private OnePassPostProcessShader _ssao;
-        private TwoPassPostProcessShader _bloom;
-        private TwoPassPostProcessShader _blur;
         private readonly SSAOWithBlur _ssaoWithBlur;
         private readonly DeferredLighting _deferredLighting;
 
@@ -42,12 +39,8 @@ namespace GraphicsWar.View
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes, _normalMaps));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
-            _copy = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("Copy.frag")));
-            _ssao = _renderInstanceGroup.AddShader<OnePassPostProcessShader>(new OnePassPostProcessShader(contentLoader.LoadPixelShader("SSAO.glsl")));
-            _blur = _renderInstanceGroup.AddShader<TwoPassPostProcessShader>(new TwoPassPostProcessShader(contentLoader.LoadPixelShader("BlurGausPass1"), contentLoader.LoadPixelShader("BlurGausPass2")));
-            _bloom = _renderInstanceGroup.AddShader<TwoPassPostProcessShader>(new TwoPassPostProcessShader(contentLoader.LoadPixelShader("BloomGausPass1"), contentLoader.LoadPixelShader("BloomGausPass2")));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
-            _deferredLighting = _renderInstanceGroup.AddShader<DeferredLighting>(new DeferredLighting(contentLoader.LoadPixelShader("deferredLighting.glsl")));
+            _deferredLighting = _renderInstanceGroup.AddShader<DeferredLighting>(new DeferredLighting(contentLoader.LoadPixelShader("lighting.glsl")));
 
             _lights.Add(new LightSource(Vector3.Zero, new Vector3(0f, -1f, 0f), Vector3.One, 1));
         }

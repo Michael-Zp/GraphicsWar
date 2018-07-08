@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using Zenseless.HLGL;
 
-namespace GraphicsWar.View.RenderInstances
+namespace GraphicsWar.View.Rendering.Instances
 {
     public class Blur : TwoPassPostProcessShader
     {
@@ -14,8 +14,8 @@ namespace GraphicsWar.View.RenderInstances
 
         public new void Draw(ITexture2D inputTexture)
         {
-            DrawPass(inputTexture, _passOneSurface, _passOne);
-            DrawPass(_passOneSurface.Texture, _passTwoSurface, _passTwo);
+            DrawPass(inputTexture, PassOneSurface, PassOne);
+            DrawPass(PassOneSurface.Texture, PassTwoSurface, PassTwo);
         }
 
         private new void DrawPass(ITexture2D inputTexture, IRenderSurface surface, IShaderProgram shader)

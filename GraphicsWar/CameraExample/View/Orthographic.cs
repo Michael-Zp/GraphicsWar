@@ -1,8 +1,9 @@
-﻿namespace Zenseless.Geometry
-{
-    using System;
-    using System.Numerics;
+﻿using System;
+using System.Numerics;
+using Zenseless.Geometry;
 
+namespace GraphicsWar.View
+{
     /// <summary>
     /// Implements a Perspective transformation that allows incremental changes
     /// </summary>
@@ -12,14 +13,14 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Perspective"/> class.
         /// </summary>
-        /// <param name="fieldOfViewY">The field-of-view in y-direction.</param>
-        /// <param name="aspect">The aspect ratio.</param>
+        /// <param name="height"></param>
         /// <param name="nearClip">The near clip plane distance.</param>
         /// <param name="farClip">The far clip plane distance.</param>
+        /// <param name="width"></param>
         public Ortographic(float width, float height, float nearClip = 0.1f, float farClip = 100)
         {
-            cachedMatrix = new CachedCalculatedValue<Matrix4x4>(CalculateProjectionMatrix);
-            PropertyChanged += (s, a) => cachedMatrix.Invalidate();
+            _cachedMatrix = new CachedCalculatedValue<Matrix4x4>(CalculateProjectionMatrix);
+            PropertyChanged += (s, a) => _cachedMatrix.Invalidate();
             _width = width;
             _height = height;
             _nearClip = nearClip;
@@ -33,7 +34,7 @@
         /// <value>
         /// The matrix.
         /// </value>
-        public Matrix4x4 Matrix => cachedMatrix.Value;
+        public Matrix4x4 Matrix => _cachedMatrix.Value;
 
         /// <summary>
         /// Gets or sets the far clipping plane distance.
@@ -45,7 +46,7 @@
         {
             get => _width; set
             {
-                Width = value;
+                _width = value;
                 RaisePropertyChanged();
             }
         }
@@ -95,11 +96,11 @@
             }
         }
 
-        private float _width = 10;
-        private float _height = 10;
-        private float _farClip = 1f;
-        private float _nearClip = 0.1f;
-        private CachedCalculatedValue<Matrix4x4> cachedMatrix;
+        private float _width;
+        private float _height;
+        private float _farClip;
+        private float _nearClip;
+        private readonly CachedCalculatedValue<Matrix4x4> _cachedMatrix;
 
         private Matrix4x4 CalculateProjectionMatrix()
         {

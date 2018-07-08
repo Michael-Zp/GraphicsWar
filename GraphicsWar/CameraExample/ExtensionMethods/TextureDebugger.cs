@@ -16,16 +16,19 @@ namespace GraphicsWar.ExtensionMethods
         /// <param name="texture">The texture.</param>
         public static void Draw(ITexture2D texture)
         {
-            if (shaderProgram is null) InitShader();
+            if (_shaderProgram is null) InitShader();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             texture.Activate();
-            shaderProgram.Activate();
-            GL.DrawArrays(PrimitiveType.Quads, 0, 4);
-            shaderProgram.Deactivate();
+            if (_shaderProgram != null)
+            {
+                _shaderProgram.Activate();
+                GL.DrawArrays(PrimitiveType.Quads, 0, 4);
+                _shaderProgram.Deactivate();
+            }
             texture.Deactivate();
         }
 
-        private static ShaderProgramGL shaderProgram;
+        private static ShaderProgramGL _shaderProgram;
 
         private static void InitShader()
         {
@@ -50,7 +53,7 @@ namespace GraphicsWar.ExtensionMethods
 				{
 					gl_FragColor = abs(texture(image, uv));
 				}";
-            shaderProgram = ShaderLoader.FromStrings(sVertexShader, sFragmentShd);
+            _shaderProgram = ShaderLoader.FromStrings(sVertexShader, sFragmentShd);
         }
     }
 }

@@ -3,7 +3,7 @@ using Zenseless.HLGL;
 
 namespace GraphicsWar.ExtensionMethods
 {
-    public static class IShaderProgramExtensionMethods
+    public static class ShaderProgramExtensionMethods
     {
         public static void ActivateOneOfMultipleTextures(this IShaderProgram shader, string name, int id, ITexture2D texture)
         {

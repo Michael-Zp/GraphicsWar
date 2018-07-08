@@ -1,4 +1,4 @@
-﻿namespace GraphicsWar.View.RenderInstances
+﻿namespace GraphicsWar.View.Rendering.Management
 {
     public interface IRenderInstance
     {

@@ -1,19 +1,12 @@
 ﻿using GraphicsWar.Shared;
-using System.Collections.Generic;
 using System.Numerics;
 
 namespace GraphicsWar.Model
 {
     public class Entity
     {
-        public Enums.EntityType Type { get; private set; }
-        public Matrix4x4 Transformation
-        {
-            get
-            {
-                return CalculateRotation(_rotation) * Matrix4x4.CreateTranslation(_position);
-            }
-        }
+        public Enums.EntityType Type { get; }
+        public Matrix4x4 Transformation => CalculateRotation(_rotation) * Matrix4x4.CreateTranslation(_position);
 
         private Vector3 _position;
         private Vector3 _rotation;

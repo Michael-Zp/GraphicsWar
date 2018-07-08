@@ -20,9 +20,7 @@ namespace GraphicsWar.View
         /// <value>
         /// The position.
         /// </value>
-        public List<Vector3> Tangent => tangent;
-
-        private List<Vector3> tangent;
+        public List<Vector3> Tangent { get; }
 
         /// <summary>
         /// BitangentName
@@ -35,23 +33,21 @@ namespace GraphicsWar.View
         /// <value>
         /// The position.
         /// </value>
-        public List<Vector3> Bitangent => bitangent;
-
-        private List<Vector3> bitangent;
+        public List<Vector3> Bitangent { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultMesh"/> class.
         /// </summary>
 
-        public TBNMesh(DefaultMesh mesh) : base()
+        public TBNMesh(DefaultMesh mesh)
         {
             Position.AddRange(mesh.Position);
             Normal.AddRange(mesh.Normal);
             TexCoord.AddRange(mesh.TexCoord);
             IDs.AddRange(mesh.IDs);
 
-            tangent = AddAttribute<Vector3>(TangentName);
-            bitangent = AddAttribute<Vector3>(BitangentName);
+            Tangent = AddAttribute<Vector3>(TangentName);
+            Bitangent = AddAttribute<Vector3>(BitangentName);
             CalcTangentsAndBitangents();
         }
 
@@ -112,7 +108,7 @@ namespace GraphicsWar.View
             //Average TBN on every vertex
             for (int i = 0; i < Position.Count; i++)
             {
-                float countOfPointMatches = 0;
+                int countOfPointMatches = 0;
                 Vector3 resultingTangent = Vector3.Zero;
                 Vector3 resultingBitangent = Vector3.Zero;
 

@@ -1,14 +1,14 @@
-﻿using GraphicsWar.ExtensionMethods;
-using OpenTK.Graphics.OpenGL4;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using GraphicsWar.ExtensionMethods;
+using GraphicsWar.View.Rendering.Management;
+using OpenTK.Graphics.OpenGL4;
 using Zenseless.Geometry;
 using Zenseless.HLGL;
 using Zenseless.OpenGL;
 
-
-namespace GraphicsWar.View.RenderInstances
+namespace GraphicsWar.View.Rendering.Instances
 {
     struct LightInShader
     {
@@ -20,17 +20,11 @@ namespace GraphicsWar.View.RenderInstances
         public float Intensity;
     }
 
-    public class DeferredLighting : IRenderInstance, IUpdateResolution
+    public class DeferredLighting : IUpdateResolution
     {
-        public ITexture2D Output
-        {
-            get
-            {
-                return _renderSurface.Texture;
-            }
-        }
+        public ITexture2D Output => _renderSurface.Texture;
 
-        private IShaderProgram _shader;
+        private readonly IShaderProgram _shader;
         private IRenderSurface _renderSurface;
         private readonly int _lightArraySizeInShader = 8;
         

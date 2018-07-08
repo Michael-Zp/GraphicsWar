@@ -1,25 +1,22 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using System.Numerics;
+﻿using System.Numerics;
+using GraphicsWar.View.Rendering.Management;
+using OpenTK.Graphics.OpenGL4;
 using Zenseless.HLGL;
 using Zenseless.OpenGL;
 
-namespace GraphicsWar.View.RenderInstances
+namespace GraphicsWar.View.Rendering.Instances
 {
     /// <summary>
     /// Takes one input and one output texture and draws a simple quad over the whole screen
     /// </summary>
-    public class OnePassPostProcessShader : IRenderInstance, IUpdateResolution
+    public class OnePassPostProcessShader : IUpdateResolution
     {
-        public ITexture2D Output {
-            get {
-                return _renderSurface.Texture;
-            }
-        }
+        public ITexture2D Output => _renderSurface.Texture;
 
-        private IShaderProgram _postProcessShader;
+        private readonly IShaderProgram _postProcessShader;
         private IRenderSurface _renderSurface;
-        private byte _fboTexComponentCount;
-        private bool _fboTexFloat;
+        private readonly byte _fboTexComponentCount;
+        private readonly bool _fboTexFloat;
 
         public OnePassPostProcessShader(IShaderProgram postProcessShader, byte fboTexComponentCount = 4, bool fboTexFloat = false)
         {

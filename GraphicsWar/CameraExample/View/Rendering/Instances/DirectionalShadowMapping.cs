@@ -1,15 +1,16 @@
-﻿using GraphicsWar.Shared;
-using OpenTK.Graphics.OpenGL4;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using GraphicsWar.Shared;
+using GraphicsWar.View.Rendering.Management;
+using OpenTK.Graphics.OpenGL4;
 using Zenseless.Geometry;
 using Zenseless.HLGL;
 using Zenseless.OpenGL;
 
-namespace GraphicsWar.View.RenderInstances
+namespace GraphicsWar.View.Rendering.Instances
 {
-    public class DirectionalShadowMapping : IRenderInstance, IUpdateTransforms, IUpdateResolution
+    public class DirectionalShadowMapping : IUpdateTransforms, IUpdateResolution
     {
         private readonly IShaderProgram _depthShader;
         private readonly IShaderProgram _shadowShader;
@@ -19,13 +20,7 @@ namespace GraphicsWar.View.RenderInstances
         private readonly Dictionary<Enums.EntityType, VAO> _geometriesDepth = new Dictionary<Enums.EntityType, VAO>();
         private readonly Dictionary<Enums.EntityType, VAO> _geometriesShadow = new Dictionary<Enums.EntityType, VAO>();
 
-        public ITexture2D ShadowSurface
-        {
-            get
-            {
-                return _shadowSurface.Texture;
-            }
-        }
+        public ITexture2D ShadowSurface => _shadowSurface.Texture;
 
         public DirectionalShadowMapping(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {

@@ -1,14 +1,15 @@
-﻿using GraphicsWar.Shared;
-using OpenTK.Graphics.OpenGL4;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
+using GraphicsWar.Shared;
+using GraphicsWar.View.Rendering.Management;
+using OpenTK.Graphics.OpenGL4;
 using Zenseless.Geometry;
 using Zenseless.HLGL;
 using Zenseless.OpenGL;
 
-namespace GraphicsWar.View.RenderInstances
+namespace GraphicsWar.View.Rendering.Instances
 {
-    public class Deferred : IRenderInstance, IUpdateTransforms, IUpdateResolution
+    public class Deferred : IUpdateTransforms, IUpdateResolution
     {
         private readonly IShaderProgram _shaderWithGeometryNormals;
         private readonly IShaderProgram _shaderWithNormalMap;
@@ -16,36 +17,13 @@ namespace GraphicsWar.View.RenderInstances
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
 
-        public ITexture2D Color
-        {
-            get
-            {
-                return _deferredSurface.Textures[0];
-            }
-        }
+        public ITexture2D Color => _deferredSurface.Textures[0];
 
-        public ITexture2D Normals
-        {
-            get
-            {
-                return _deferredSurface.Textures[1];
-            }
-        }
+        public ITexture2D Normals => _deferredSurface.Textures[1];
 
-        public ITexture2D Depth
-        {
-            get
-            {
-                return _deferredSurface.Textures[2];
-            }
-        }
-        public ITexture2D Position
-        {
-            get
-            {
-                return _deferredSurface.Textures[3];
-            }
-        }
+        public ITexture2D Depth => _deferredSurface.Textures[2];
+
+        public ITexture2D Position => _deferredSurface.Textures[3];
 
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, Dictionary<Enums.EntityType, ITexture2D> normalMaps)
         {
@@ -91,7 +69,7 @@ namespace GraphicsWar.View.RenderInstances
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
-            GL.DrawBuffers(4, new DrawBuffersEnum[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });
+            GL.DrawBuffers(4, new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });
 
             SetUniforms(_shaderWithGeometryNormals, camera);
             SetUniforms(_shaderWithNormalMap, camera);

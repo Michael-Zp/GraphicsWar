@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace GraphicsWar.View.RenderInstances
+namespace GraphicsWar.View
 {
     public class LightSource
     {

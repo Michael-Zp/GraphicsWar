@@ -1,16 +1,16 @@
-﻿using GraphicsWar.Shared;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
+using GraphicsWar.Shared;
 
-namespace GraphicsWar.View.RenderInstances
+namespace GraphicsWar.View.Rendering.Management
 {
     public class RenderInstanceGroup
     {
-        private List<IRenderInstance> RenderInstances = new List<IRenderInstance>();
+        private readonly List<IRenderInstance> _renderInstances = new List<IRenderInstance>();
 
         public void UpdateGeometry(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
         {
-            foreach(var instance in RenderInstances)
+            foreach(var instance in _renderInstances)
             {
                 var geom = instance as IUpdateTransforms;
 
@@ -20,7 +20,7 @@ namespace GraphicsWar.View.RenderInstances
 
         public void UpdateResolution(int width, int height)
         {
-            foreach (var instance in RenderInstances)
+            foreach (var instance in _renderInstances)
             {
                 var reso = instance as IUpdateResolution;
 
@@ -30,7 +30,7 @@ namespace GraphicsWar.View.RenderInstances
 
         public T AddShader<T>(IRenderInstance shader) where T : IRenderInstance
         {
-            RenderInstances.Add(shader);
+            _renderInstances.Add(shader);
             return (T)shader;
         }
     }
