@@ -25,12 +25,16 @@ vec4 calculateLight(vec3 materialColor, vec3 lightColor, vec3 ambientLightColor,
 
 uniform vec3 camPos;
 uniform sampler2D normalMap;
+uniform sampler2D heightMap;
 
 in Data {
 	vec3 normal;
 	vec3 position;
 	float depth;
 	vec2 uv;
+	mat4 transform;
+	vec3 tangent;
+	vec3 bitangent;
 } i;
 
 out vec4 color;
@@ -41,8 +45,32 @@ out vec3 position;
 void main() 
 {
 	vec4 materialColor = vec4(0.8,0.8,0.8,1);
+	vec3 t = normalize(i.tangent);
+	vec3 b = normalize(i.bitangent);
+	vec3 n = normalize(i.normal);
+
+	mat4 tbn = mat4(t.x, t.y, t.z, 0, b.x, b.y, b.z, 0, n.x, n.y, n.z, 0, 0, 0, 0, 0);
+
+
+	mat4 inverseTbn = inverse(tbn);
+	mat4 inverseTransform = inverse(i.transform);
+
+	vec4 eyeDirection = vec4(normalize(camPos - i.position), 0);
+
+	vec2 viewDirectionInTangent = normalize(inverseTbn * inverseTransform * eyeDirection).xz;
+
+	float height = texture2D(heightMap, i.uv).x * 2 - 1;
+
+	float hn = height * 0.01 - 0.5 * 0.01;
+
+	vec2 tn = i.uv + vec2(hn * viewDirectionInTangent);
+	
 	vec3 norm = normalize(texture2D(normalMap, i.uv).xyz);
 	
+	norm = (vec4(norm, 0) * tbn).xyz;
+
+	norm = (i.transform * vec4(norm, 0.0)).xyz;
+
 	/*
 	vec3 materialColor = vec3(1.0);
 	vec3 lightColor = vec3(1.0);

@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL4;
 using Zenseless.Geometry;
 using Zenseless.HLGL;
 using Zenseless.OpenGL;
+using GraphicsWar.ExtensionMethods;
 
 namespace GraphicsWar.View.Rendering.Instances
 {
@@ -13,6 +14,7 @@ namespace GraphicsWar.View.Rendering.Instances
     {
         private readonly IShaderProgram _shaderWithGeometryNormals;
         private readonly IShaderProgram _shaderWithNormalMap;
+        private readonly IShaderProgram _shaderParalax;
         private IRenderSurface _deferredSurface;
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
@@ -25,24 +27,44 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public ITexture2D Position => _deferredSurface.Textures[3];
 
-        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, Dictionary<Enums.EntityType, ITexture2D> normalMaps)
+        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps)
         {
             _shaderWithGeometryNormals = contentLoader.Load<IShaderProgram>("deferred.*");
             _shaderWithNormalMap = contentLoader.Load<IShaderProgram>("deferredNormalMap.*");
+            _shaderParalax = contentLoader.Load<IShaderProgram>("deferredNormalMapParalax.*");
 
             foreach (var meshContainer in meshes)
             {
                 if(normalMaps.ContainsKey(meshContainer.Key))
                 {
-                    VAO geometry = VAOLoader.FromMesh(meshContainer.Value, _shaderWithNormalMap);
-                    if (meshContainer.Value is TBNMesh mesh)
+                    VAO geometry;
+                    if(heightMaps.ContainsKey(meshContainer.Key))
                     {
-                        var loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.TangentName);
-                        geometry.SetAttribute(loc, mesh.Tangent.ToArray(), VertexAttribPointerType.Float, 3);
+                        geometry = VAOLoader.FromMesh(meshContainer.Value, _shaderParalax);
 
-                        loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.BitangentName);
-                        geometry.SetAttribute(loc, mesh.Bitangent.ToArray(), VertexAttribPointerType.Float, 3);
+                        if (meshContainer.Value is TBNMesh mesh)
+                        {
+                            var loc = _shaderParalax.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.TangentName);
+                            geometry.SetAttribute(loc, mesh.Tangent.ToArray(), VertexAttribPointerType.Float, 3);
+
+                            loc = _shaderParalax.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.BitangentName);
+                            geometry.SetAttribute(loc, mesh.Bitangent.ToArray(), VertexAttribPointerType.Float, 3);
+                        }
                     }
+                    else
+                    {
+                        geometry = VAOLoader.FromMesh(meshContainer.Value, _shaderWithNormalMap);
+
+                        if (meshContainer.Value is TBNMesh mesh)
+                        {
+                            var loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.TangentName);
+                            geometry.SetAttribute(loc, mesh.Tangent.ToArray(), VertexAttribPointerType.Float, 3);
+
+                            loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.BitangentName);
+                            geometry.SetAttribute(loc, mesh.Bitangent.ToArray(), VertexAttribPointerType.Float, 3);
+                        }
+                    }
+
                     _geometries.Add(meshContainer.Key, geometry);
                 }
                 else
@@ -62,7 +84,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _shaderWithGeometryNormals.Uniform("iResolution", new Vector2(width, height));
         }
 
-        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> normalMaps)
+        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps)
         {
             _deferredSurface.Activate();
             renderState.Set(new DepthTest(true));
@@ -73,26 +95,35 @@ namespace GraphicsWar.View.Rendering.Instances
 
             SetUniforms(_shaderWithGeometryNormals, camera);
             SetUniforms(_shaderWithNormalMap, camera);
+            SetUniforms(_shaderParalax, camera);
 
             //TODO: Can be accelerated with sorting the normal map and not normal map useage beforhand
             foreach (var type in _geometries.Keys)
             {
-
-                //_shaderWithGeometryNormals.Activate();
-
-                //_geometries[type].Draw(instanceCounts[type]);
-
-                //_shaderWithGeometryNormals.Deactivate();
-
                 if (normalMaps.ContainsKey(type))
                 {
-                    _shaderWithNormalMap.Activate();
-                    normalMaps[type].Activate();
+                    if(heightMaps.ContainsKey(type))
+                    {
+                        _shaderParalax.Activate();
+                        _shaderParalax.ActivateOneOfMultipleTextures("normalMap", 0, normalMaps[type]);
+                        _shaderParalax.ActivateOneOfMultipleTextures("heightMap", 1, heightMaps[type]);
 
-                    _geometries[type].Draw(instanceCounts[type]);
+                        _geometries[type].Draw(instanceCounts[type]);
 
-                    normalMaps[type].Deactivate();
-                    _shaderWithNormalMap.Deactivate();
+                        _shaderParalax.DeativateOneOfMultipleTextures(1, heightMaps[type]);
+                        _shaderParalax.DeativateOneOfMultipleTextures(0, normalMaps[type]);
+                        _shaderParalax.Deactivate();
+                    }
+                    else
+                    {
+                        _shaderWithNormalMap.Activate();
+                        normalMaps[type].Activate();
+
+                        _geometries[type].Draw(instanceCounts[type]);
+
+                        normalMaps[type].Deactivate();
+                        _shaderWithNormalMap.Deactivate();
+                    }
                 }
                 else
                 {
