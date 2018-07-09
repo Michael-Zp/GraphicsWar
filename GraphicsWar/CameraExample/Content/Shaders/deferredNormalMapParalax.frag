@@ -49,15 +49,16 @@ void main()
 	vec3 b = normalize(i.bitangent);
 	vec3 n = normalize(i.normal);
 
-	mat4 tbn = mat4(t.x, t.y, t.z, 0, b.x, b.y, b.z, 0, n.x, n.y, n.z, 0, 0, 0, 0, 0);
+	mat3 tbn = mat3(t.x, t.y, t.z, b.x, b.y, b.z, n.x, n.y, n.z);
 
 
-	mat4 inverseTbn = inverse(tbn);
+	mat3 tempInverse = inverse(tbn);
+	mat4 inverseTbn = mat4(tempInverse[0].x, tempInverse[1].y, tempInverse[2].z, 0, tempInverse[0].x, tempInverse[1].y, tempInverse[2].z, 0, tempInverse[0].x, tempInverse[1].y, tempInverse[2].z, 0, 0, 0, 0, 0);
 	mat4 inverseTransform = inverse(i.transform);
 
 	vec4 eyeDirection = vec4(normalize(camPos - i.position), 0);
 
-	vec2 viewDirectionInTangent = normalize(inverseTbn * inverseTransform * eyeDirection).xz;
+	vec2 viewDirectionInTangent = normalize(inverseTbn * inverseTransform * eyeDirection).xy;
 
 	float height = texture2D(heightMap, i.uv).x * 2 - 1;
 
@@ -65,9 +66,9 @@ void main()
 
 	vec2 tn = i.uv + vec2(hn * viewDirectionInTangent);
 	
-	vec3 norm = normalize(texture2D(normalMap, i.uv).xyz);
+	vec3 norm = normalize(texture2D(normalMap, tn).xyz);
 	
-	norm = (vec4(norm, 0) * tbn).xyz;
+	norm = norm * tbn;
 
 	norm = (i.transform * vec4(norm, 0.0)).xyz;
 
@@ -82,6 +83,7 @@ void main()
 	*/
 
 	color = materialColor;
+	//color = vec4(inverseTbn[0].xyz, 1);
 	normal = normalize(norm);
 	depth = i.depth;
 	position = i.position;

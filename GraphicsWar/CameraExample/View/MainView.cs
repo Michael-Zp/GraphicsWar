@@ -63,7 +63,7 @@ namespace GraphicsWar.View
 
             _ssaoWithBlur.Draw(_deferred.Depth, _deferredLighting.Output);
 
-            //TextureDebugger.Draw(_deferred.Normals);
+            //TextureDebugger.Draw(_deferred.Color);
             TextureDebugger.Draw(_deferredLighting.Output);
         }
 
