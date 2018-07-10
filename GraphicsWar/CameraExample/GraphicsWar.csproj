@@ -106,6 +106,7 @@
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\Rendering\Instances\Blur.cs" />
+    <Compile Include="View\Rendering\Instances\EnvironmentMap.cs" />
     <Compile Include="View\Rendering\Instances\Lighting.cs" />
     <Compile Include="ExtensionMethods\IShaderProgramExtensionMethods.cs" />
     <Compile Include="View\LightSource.cs" />

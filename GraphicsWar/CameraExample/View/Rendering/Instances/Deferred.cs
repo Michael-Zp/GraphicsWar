@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Management;
@@ -27,7 +28,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public ITexture2D Position => _deferredSurface.Textures[3];
 
-        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps)
+        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, ICollection<Enums.EntityType> normalMapped, ICollection<Enums.EntityType> heightMapped)
         {
             _shaderWithGeometryNormals = contentLoader.Load<IShaderProgram>("deferred.*");
             _shaderWithNormalMap = contentLoader.Load<IShaderProgram>("deferredNormalMap.*");
@@ -35,10 +36,10 @@ namespace GraphicsWar.View.Rendering.Instances
 
             foreach (var meshContainer in meshes)
             {
-                if(normalMaps.ContainsKey(meshContainer.Key))
+                if (normalMapped.Contains(meshContainer.Key))
                 {
                     VAO geometry;
-                    if(heightMaps.ContainsKey(meshContainer.Key))
+                    if (heightMapped.Contains(meshContainer.Key))
                     {
                         geometry = VAOLoader.FromMesh(meshContainer.Value, _shaderParalax);
 
@@ -84,6 +85,14 @@ namespace GraphicsWar.View.Rendering.Instances
             _shaderWithGeometryNormals.Uniform("iResolution", new Vector2(width, height));
         }
 
+        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        {
+            foreach (var type in _geometries.Keys)
+            {
+                _geometries[type].SetAttribute(_shaderWithGeometryNormals.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
+            }
+        }
+
         public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps)
         {
             _deferredSurface.Activate();
@@ -102,7 +111,7 @@ namespace GraphicsWar.View.Rendering.Instances
             {
                 if (normalMaps.ContainsKey(type))
                 {
-                    if(heightMaps.ContainsKey(type))
+                    if (heightMaps.ContainsKey(type))
                     {
                         _shaderParalax.Activate();
                         _shaderParalax.ActivateOneOfMultipleTextures("normalMap", 0, normalMaps[type]);
@@ -146,14 +155,6 @@ namespace GraphicsWar.View.Rendering.Instances
             Matrix4x4.Invert(camera.Matrix, out var invert);
             shader.Uniform("camPos", invert.Translation / invert.M44);
             shader.Deactivate();
-        }
-
-        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
-        {
-            foreach (var type in _geometries.Keys)
-            {
-                _geometries[type].SetAttribute(_shaderWithGeometryNormals.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
-            }
         }
     }
 }

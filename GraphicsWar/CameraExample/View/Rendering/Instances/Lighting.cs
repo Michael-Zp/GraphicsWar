@@ -20,7 +20,7 @@ namespace GraphicsWar.View.Rendering.Instances
         public float Intensity;
     }
 
-    public class DeferredLighting : IUpdateResolution
+    public class Lighting : IUpdateResolution
     {
         public ITexture2D Output => _renderSurface.Texture;
 
@@ -28,9 +28,9 @@ namespace GraphicsWar.View.Rendering.Instances
         private IRenderSurface _renderSurface;
         private readonly int _lightArraySizeInShader = 8;
         
-        public DeferredLighting(IShaderProgram shader)
+        public Lighting(IContentLoader contentLoader)
         {
-            _shader = shader;
+            _shader = contentLoader.LoadPixelShader("lighting.glsl");
         }
 
         public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor)

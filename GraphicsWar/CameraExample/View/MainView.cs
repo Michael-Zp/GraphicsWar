@@ -23,7 +23,7 @@ namespace GraphicsWar.View
         private readonly Deferred _deferred;
         private readonly DirectionalShadowMapping _directShadowMap;
         private readonly SSAOWithBlur _ssaoWithBlur;
-        private readonly DeferredLighting _deferredLighting;
+        private readonly Lighting _lighting;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
 
@@ -41,10 +41,10 @@ namespace GraphicsWar.View
             _normalMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("n3.png"));
             _heightMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("h3.jpg"));
 
-            _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes, _normalMaps, _heightMaps));
+            _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes, _normalMaps.Keys, _heightMaps.Keys));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
-            _deferredLighting = _renderInstanceGroup.AddShader<DeferredLighting>(new DeferredLighting(contentLoader.LoadPixelShader("lighting.glsl")));
+            _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
 
             _lights.Add(new LightSource(Vector3.Zero, new Vector3(0f, -1f, 0f), Vector3.One, 1));
         }
@@ -59,12 +59,12 @@ namespace GraphicsWar.View
 
             _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, _lights[0].Direction, camera);
 
-            _deferredLighting.Draw(camera, _deferred.Color, _deferred.Normals, _deferred.Position, _directShadowMap.ShadowSurface, _lights, new Vector3(0.2f, 0.2f, 0.2f));
+            _lighting.Draw(camera, _deferred.Color, _deferred.Normals, _deferred.Position, _directShadowMap.ShadowSurface, _lights, new Vector3(0.2f, 0.2f, 0.2f));
 
-            _ssaoWithBlur.Draw(_deferred.Depth, _deferredLighting.Output);
+            _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
 
             //TextureDebugger.Draw(_deferred.Color);
-            TextureDebugger.Draw(_deferredLighting.Output);
+            TextureDebugger.Draw(_lighting.Output);
         }
 
         public void Resize(int width, int height)
