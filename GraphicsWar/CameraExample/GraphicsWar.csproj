@@ -82,6 +82,7 @@
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <LangVersion>7.2</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -98,7 +99,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Controller\Utilities.cs" />
-    <Compile Include="ExtensionMethods\TextureDebugger.cs" />
+    <Compile Include="ExtensionMethods\CubeMapFBO.cs" />
+    <Compile Include="ExtensionMethods\Position.cs" />
+    <Compile Include="ExtensionMethods\TextureDrawer.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\MainModel.cs" />
     <Compile Include="Shared\Enums.cs" />
@@ -219,6 +222,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Shaders\deferredNormalMapParalax.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Shaders\debugCubeMap.vert" />
+    <EmbeddedResource Include="Content\Shaders\debugCubeMap.frag" />
+    <None Include="Content\Shaders\environmentMapping.glsl" />
+    <EmbeddedResource Include="Content\Shaders\testCubeMap.glsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

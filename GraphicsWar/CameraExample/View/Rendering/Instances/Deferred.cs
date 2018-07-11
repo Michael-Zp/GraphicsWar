@@ -114,13 +114,13 @@ namespace GraphicsWar.View.Rendering.Instances
                     if (heightMaps.ContainsKey(type))
                     {
                         _shaderParalax.Activate();
-                        _shaderParalax.ActivateOneOfMultipleTextures("normalMap", 0, normalMaps[type]);
-                        _shaderParalax.ActivateOneOfMultipleTextures("heightMap", 1, heightMaps[type]);
+                        _shaderParalax.ActivateTexture("normalMap", 0, normalMaps[type]);
+                        _shaderParalax.ActivateTexture("heightMap", 1, heightMaps[type]);
 
                         _geometries[type].Draw(instanceCounts[type]);
 
-                        _shaderParalax.DeativateOneOfMultipleTextures(1, heightMaps[type]);
-                        _shaderParalax.DeativateOneOfMultipleTextures(0, normalMaps[type]);
+                        _shaderParalax.DeactivateTexture(1, heightMaps[type]);
+                        _shaderParalax.DeactivateTexture(0, normalMaps[type]);
                         _shaderParalax.Deactivate();
                     }
                     else

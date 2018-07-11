@@ -35,13 +35,13 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _shader.Activate();
 
-            _shader.ActivateOneOfMultipleTextures("saturation", 0, _blur.Output);
-            _shader.ActivateOneOfMultipleTextures("image", 1, image);
+            _shader.ActivateTexture("saturation", 0, _blur.Output);
+            _shader.ActivateTexture("image", 1, image);
 
             GL.DrawArrays(PrimitiveType.Quads, 0, 4);
 
-            _shader.DeativateOneOfMultipleTextures(1, image);
-            _shader.DeativateOneOfMultipleTextures(0, _blur.Output);
+            _shader.DeactivateTexture(1, image);
+            _shader.DeactivateTexture(0, _blur.Output);
 
             _shader.Deactivate();
 

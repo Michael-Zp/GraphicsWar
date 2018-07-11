@@ -24,6 +24,7 @@ namespace GraphicsWar.View
         private readonly DirectionalShadowMapping _directShadowMap;
         private readonly SSAOWithBlur _ssaoWithBlur;
         private readonly Lighting _lighting;
+        private readonly EnvironmentMap _environmentMap;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
 
@@ -45,6 +46,8 @@ namespace GraphicsWar.View
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
             _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
+            _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader,
+                _meshes, _normalMaps.Keys, _heightMaps.Keys));
 
             _lights.Add(new LightSource(Vector3.Zero, new Vector3(0f, -1f, 0f), Vector3.One, 1));
         }
@@ -57,14 +60,18 @@ namespace GraphicsWar.View
 
             _deferred.Draw(_renderState, camera, _instanceCounts, _normalMaps, _heightMaps);
 
-            _directShadowMap.Draw(_renderState, _instanceCounts, _deferred.Depth, _lights[0].Direction, camera);
+            _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction);
 
-            _lighting.Draw(camera, _deferred.Color, _deferred.Normals, _deferred.Position, _directShadowMap.ShadowSurface, _lights, new Vector3(0.2f, 0.2f, 0.2f));
+            _lighting.Draw(camera, _deferred.Color, _deferred.Normals, _deferred.Position, _directShadowMap.Output, _lights, new Vector3(0.2f, 0.2f, 0.2f));
 
             _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
 
-            //TextureDebugger.Draw(_deferred.Color);
-            TextureDebugger.Draw(_lighting.Output);
+            _environmentMap.CreateMap(Vector3.UnitY*0.1f, _renderState,_instanceCounts, _normalMaps, _heightMaps, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
+
+            //TextureDrawer.Draw(_deferred.Color);
+            //TextureDrawer.Draw(_lighting.Output);
+
+            _environmentMap.DrawCubeMap(camera);
         }
 
         public void Resize(int width, int height)

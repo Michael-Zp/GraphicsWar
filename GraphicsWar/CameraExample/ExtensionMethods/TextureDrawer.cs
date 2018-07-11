@@ -8,7 +8,7 @@ namespace GraphicsWar.ExtensionMethods
     /// <summary>
     /// Quickly draw a texture full-screen
     /// </summary>
-    public class TextureDebugger
+    public class TextureDrawer
     {
         /// <summary>
         /// Draws the specified texture.

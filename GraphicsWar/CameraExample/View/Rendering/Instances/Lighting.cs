@@ -27,7 +27,7 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly IShaderProgram _shader;
         private IRenderSurface _renderSurface;
         private readonly int _lightArraySizeInShader = 8;
-        
+
         public Lighting(IContentLoader contentLoader)
         {
             _shader = contentLoader.LoadPixelShader("lighting.glsl");
@@ -35,12 +35,17 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor)
         {
+            Draw(camera, materialColor, normals, position, shadowSurface, lightSources, ambientColor, _renderSurface);
+        }
+
+        public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor, IRenderSurface renderSurface)
+        {
             if (lightSources.Count > _lightArraySizeInShader)
             {
                 throw new ArgumentException("A maximum of " + _lightArraySizeInShader + " light sources is possible. See shader 'deferredLighting.glsl' for details.");
             }
 
-            _renderSurface.Activate();
+            renderSurface.Activate();
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -50,26 +55,26 @@ namespace GraphicsWar.View.Rendering.Instances
             Matrix4x4.Invert(camera.Matrix, out var invert);
             _shader.Uniform("camPos", invert.Translation / invert.M44);
 
-            _shader.ActivateOneOfMultipleTextures("materialColor", 0, materialColor);
-            _shader.ActivateOneOfMultipleTextures("normals", 1, normals);
-            _shader.ActivateOneOfMultipleTextures("position", 2, position);
-            _shader.ActivateOneOfMultipleTextures("shadowSurface", 3, shadowSurface);
+            _shader.ActivateTexture("materialColor", 0, materialColor);
+            _shader.ActivateTexture("normals", 1, normals);
+            _shader.ActivateTexture("position", 2, position);
+            _shader.ActivateTexture("shadowSurface", 3, shadowSurface);
 
             var bufferObject = LightSourcesToBufferObject(lightSources);
             var loc = _shader.GetResourceLocation(ShaderResourceType.RWBuffer, "Lights");
             bufferObject.ActivateBind(loc);
-            
+
 
             GL.DrawArrays(PrimitiveType.Quads, 0, 4);
 
-            _shader.DeativateOneOfMultipleTextures(3, shadowSurface);
-            _shader.DeativateOneOfMultipleTextures(2, position);
-            _shader.DeativateOneOfMultipleTextures(1, normals);
-            _shader.DeativateOneOfMultipleTextures(0, materialColor);
+            _shader.DeactivateTexture(3, shadowSurface);
+            _shader.DeactivateTexture(2, position);
+            _shader.DeactivateTexture(1, normals);
+            _shader.DeactivateTexture(0, materialColor);
 
             _shader.Deactivate();
 
-            _renderSurface.Deactivate();
+            renderSurface.Deactivate();
         }
 
         private BufferObject LightSourcesToBufferObject(List<LightSource> lightSources)

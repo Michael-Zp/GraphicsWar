@@ -15,12 +15,12 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly IShaderProgram _depthShader;
         private readonly IShaderProgram _shadowShader;
         private IRenderSurface _depthSurface;
-        private IRenderSurface _shadowSurface;
+        private IRenderSurface _outputSurface;
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometriesDepth = new Dictionary<Enums.EntityType, VAO>();
         private readonly Dictionary<Enums.EntityType, VAO> _geometriesShadow = new Dictionary<Enums.EntityType, VAO>();
 
-        public ITexture2D ShadowSurface => _shadowSurface.Texture;
+        public ITexture2D Output => _outputSurface.Texture;
 
         public DirectionalShadowMapping(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
@@ -40,14 +40,14 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void UpdateResolution(int width, int height)
         {
-            _depthSurface = new FBOwithDepth(Texture2dGL.Create(width*4, height*4, 1, true));
-            _shadowSurface = new FBOwithDepth(Texture2dGL.Create(width, height, 1));
+            _depthSurface = new FBOwithDepth(Texture2dGL.Create(width * 4, height * 4, 1, true));
+            _outputSurface = new FBOwithDepth(Texture2dGL.Create(width, height, 1));
 
             _depthShader.Uniform("iResolution", new Vector2(width, height));
             _shadowShader.Uniform("iResolution", new Vector2(width, height));
         }
 
-        public void Draw(IRenderState renderState, Dictionary<Enums.EntityType, int> instanceCounts, ITexture2D sceneDepth, Vector3 lightDirection, ITransformation camera)
+        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, ITexture2D sceneDepth, Vector3 lightDirection)
         {
             renderState.Set(new DepthTest(true));
 
@@ -106,7 +106,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         private void DrawShadowSurface(Vector3 lightDirection, ITransformation lightCamera, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts)
         {
-            _shadowSurface.Activate();
+            _outputSurface.Activate();
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -128,7 +128,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _shadowShader.Deactivate();
 
-            _shadowSurface.Deactivate();
+            _outputSurface.Deactivate();
         }
     }
 }
