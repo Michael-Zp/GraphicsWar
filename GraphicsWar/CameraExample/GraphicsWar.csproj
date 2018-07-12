@@ -99,8 +99,11 @@
   <ItemGroup>
     <Compile Include="Controller\Utilities.cs" />
     <Compile Include="ExtensionMethods\TextureDebugger.cs" />
+    <Compile Include="Model\CollisionDetection.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\MainModel.cs" />
+    <Compile Include="Model\CollisionSphereEntity.cs" />
+    <Compile Include="Model\OctreeNode.cs" />
     <Compile Include="Shared\Enums.cs" />
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
