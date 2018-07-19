@@ -4,8 +4,9 @@ namespace GraphicsWar.Model
 {
     public class OctreeNode
     {
-        public OctreeNode firstChild = null;
-        public OctreeNode nextSibling = null;
+        public OctreeNode FirstChild = null;
+        public OctreeNode NextSibling = null;
+        public OctreeNode Parent = null;
 
         
         public void AddChilds()
@@ -23,16 +24,16 @@ namespace GraphicsWar.Model
             float childHalfSize = childSize / 2;
             float childQuaterSize = childSize / 4;
 
-            OctreeNode currentChild = new OctreeNode(xMin, yMin, zMin, childSize, childHalfSize, childQuaterSize, 0); //---
-            firstChild = currentChild;
+            OctreeNode currentChild = new OctreeNode(xMin, yMin, zMin, childSize, childHalfSize, childQuaterSize, 0, this); //---
+            FirstChild = currentChild;
 
-            currentChild = currentChild.nextSibling = new OctreeNode(xMin, yMin, zMax, childSize, childHalfSize, childQuaterSize, 1); //--+
-            currentChild = currentChild.nextSibling = new OctreeNode(xMin, yMax, zMin, childSize, childHalfSize, childQuaterSize, 2); //-+-
-            currentChild = currentChild.nextSibling = new OctreeNode(xMin, yMax, zMax, childSize, childHalfSize, childQuaterSize, 3); //-++
-            currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMin, zMin, childSize, childHalfSize, childQuaterSize, 4); //+--
-            currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMin, zMax, childSize, childHalfSize, childQuaterSize, 5); //+-+
-            currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMin, childSize, childHalfSize, childQuaterSize, 6); //++-
-            currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMax, childSize, childHalfSize, childQuaterSize, 7); //+++
+            currentChild = currentChild.NextSibling = new OctreeNode(xMin, yMin, zMax, childSize, childHalfSize, childQuaterSize, 1, this); //--+
+            currentChild = currentChild.NextSibling = new OctreeNode(xMin, yMax, zMin, childSize, childHalfSize, childQuaterSize, 2, this); //-+-
+            currentChild = currentChild.NextSibling = new OctreeNode(xMin, yMax, zMax, childSize, childHalfSize, childQuaterSize, 3, this); //-++
+            currentChild = currentChild.NextSibling = new OctreeNode(xMax, yMin, zMin, childSize, childHalfSize, childQuaterSize, 4, this); //+--
+            currentChild = currentChild.NextSibling = new OctreeNode(xMax, yMin, zMax, childSize, childHalfSize, childQuaterSize, 5, this); //+-+
+            currentChild = currentChild.NextSibling = new OctreeNode(xMax, yMax, zMin, childSize, childHalfSize, childQuaterSize, 6, this); //++-
+            currentChild = currentChild.NextSibling = new OctreeNode(xMax, yMax, zMax, childSize, childHalfSize, childQuaterSize, 7, this); //+++
 
             ChildsAreInitialized = true;
         }
@@ -60,7 +61,7 @@ namespace GraphicsWar.Model
             collisionSphereEntities.Clear();
         }
 
-        public OctreeNode(float centerX, float centerY, float centerZ, float size, float halfSize, float quaterSize, int index)
+        public OctreeNode(float centerX, float centerY, float centerZ, float size, float halfSize, float quaterSize, int index, OctreeNode parent)
         {
             CenterX = centerX;
             CenterY = centerY;
@@ -78,6 +79,8 @@ namespace GraphicsWar.Model
             MaxCoordsX = centerX + halfSize;
             MaxCoordsY = centerY + halfSize;
             MaxCoordsZ = centerZ + halfSize;
+
+            Parent = parent;
         }
     }
 }

@@ -1,70 +1,121 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 
 namespace GraphicsWar.Model
 {
-    public static class CollisionDetection
+    public class CollisionOctree
     {
-        private static OctreeNode _octreeRoot;
+        private OctreeNode _octreeRoot;
 
-        private static readonly int _levels = 7;
+        private int _levels;
 
-        public static void InitializeCollisionDetectionForFrame(List<Entity> entities, float size, Vector3 center)
+        public void InitializeNewOctree(int levels, Vector3 center, float size)
         {
+            _levels = levels;
 
-            _octreeRoot = new OctreeNode(center.X, center.Y, center.Z, size, size / 2, size / 4, 0);
+            _octreeRoot = new OctreeNode(center.X, center.Y, center.Z, size, size / 2, size / 4, 0, null);
+            InitializeOctreeRoot(_octreeRoot, _levels);
+        }
 
-            Stopwatch sw = new Stopwatch();
-
-            sw.Start();
-
+        public void InsertIntoOctree(List<Entity> entities)
+        {
             IEnumerable<CollisionSphereEntity> collisionEntities =
                 from entity in entities
                 where entity is CollisionSphereEntity
                 select entity as CollisionSphereEntity;
 
-            sw.Stop();
-
-            float time1 = sw.ElapsedMilliseconds;
-            float ticks1 = sw.ElapsedTicks;
-
-            sw.Restart();
-
-            InitializeOctreeRoot(_octreeRoot, _levels); //Move into static part
-
-            float time2 = sw.ElapsedMilliseconds;
-            float ticks2 = sw.ElapsedTicks;
-
-
-            sw.Restart();
-
-            //Should be faster but I really dont know how I could do that.
-            ResetOctree(_octreeRoot, _levels);
-
-            float time3 = sw.ElapsedMilliseconds;
-            float ticks3 = sw.ElapsedTicks;
-
-
-            sw.Restart();
-
             foreach (var entity in collisionEntities)
             {
                 InsertIntoOctree(_octreeRoot, entity);
             }
-
-            float time4 = sw.ElapsedMilliseconds;
-            float ticks4 = sw.ElapsedTicks;
-
-            Console.WriteLine("");
         }
 
+        public void CheckCollsiionsInTree() => CheckCollisionsInTree(_octreeRoot);
+
+        public void ResetOctree() => ResetOctree(_octreeRoot);
         
-        private static void InsertIntoOctree(OctreeNode currentNode, CollisionSphereEntity entity)
+
+        //Private
+
+        private void InitializeOctreeRoot(OctreeNode current, int level)
         {
-            //As you might see in this method there is much code that look rather similar
+            if (level == 0)
+            {
+                return;
+            }
+
+            current.AddChilds();
+
+            OctreeNode currentChild = current.FirstChild;
+
+            while (currentChild != null)
+            {
+                InitializeOctreeRoot(currentChild, level - 1);
+                currentChild = currentChild.NextSibling;
+            }
+        }
+
+
+        private void CheckCollisionsInTree(OctreeNode current)
+        {
+            if (current == null)
+            {
+                return;
+            }
+
+            CheckCollisionsInNode(current);
+            
+            OctreeNode currentChild = current.FirstChild;
+            
+            while (currentChild != null)
+            {
+                CheckCollisionsInTree(currentChild);
+                currentChild = currentChild.NextSibling;
+            }
+        }
+        
+        private void CheckCollisionsInNode(OctreeNode entityNode)
+        {
+            while(entityNode != null)
+            {
+                int entityCount = entityNode.collisionSphereEntities.Count;
+
+                for (int i = 0; i < entityCount; i++)
+                {
+                    CollisionSphereEntity currEntity = entityNode.collisionSphereEntities[i];
+                    for (int k = i + 1; k < entityCount; k++)
+                    {
+                        CollisionSphereEntity otherEntity = entityNode.collisionSphereEntities[k];
+                        float distX = currEntity.PosX - otherEntity.PosX;
+                        float distY = currEntity.PosY - otherEntity.PosY;
+                        float distZ = currEntity.PosZ - otherEntity.PosZ;
+
+
+                        float distSquare = (distX * distX + distY * distY + distZ * distZ);
+
+
+                        float radiusSquare = entityNode.collisionSphereEntities[i].CollisionSphereRadius + entityNode.collisionSphereEntities[k].CollisionSphereRadius;
+                        radiusSquare *= radiusSquare;
+
+
+                        if (distSquare < radiusSquare)
+                        {
+                            //Do collision code
+                        }
+                    }
+                }
+
+                entityNode = entityNode.Parent;
+            }
+        }
+
+
+
+        private void InsertIntoOctree(OctreeNode currentNode, CollisionSphereEntity entity)
+        {
+            //As you might see in this method there is much code that looks rather similar
             //Thank c# for not having macros or use inline methods too often
             //Because of one function call that would cut down the method drastically the algorithm works 1.5 times slower
             //Thus there is a lot of similar but not equal code
@@ -89,7 +140,7 @@ namespace GraphicsWar.Model
             float distX = currentNode.CenterX - entity.PosX;
             float distY = currentNode.CenterY - entity.PosY;
             float distZ = currentNode.CenterZ - entity.PosZ;
-            
+
             //Slice parent into left/right, top/bottom and front/back sections
             float distToCenterLeftX = (currentNode.CenterX - currentNode.QuaterSize) - entity.PosX;
             float distToCenterRightX = (currentNode.CenterX + currentNode.QuaterSize) - entity.PosX;
@@ -112,55 +163,62 @@ namespace GraphicsWar.Model
             float lengthFrontToCenter = (float)Math.Sqrt(distXSquare + distYSquare + distToCenterFrontZ * distToCenterFrontZ);
 
 
-            float nearestPointXLeft = distX / lengthLeftToCenter * entity.CollisionSphereRadius;
-            float nearestPointYLeft = distY / lengthLeftToCenter * entity.CollisionSphereRadius;
-            float nearestPointZLeft = distZ / lengthLeftToCenter * entity.CollisionSphereRadius;
 
-            float nearestPointXRight = distX / lengthRightToCenter * entity.CollisionSphereRadius;
-            float nearestPointYRight = distY / lengthRightToCenter * entity.CollisionSphereRadius;
-            float nearestPointZRight = distZ / lengthRightToCenter * entity.CollisionSphereRadius;
+            float minimumOfSphereRadiusAndLengthToCenter = entity.CollisionSphereRadius < lengthLeftToCenter ? entity.CollisionSphereRadius : lengthLeftToCenter;
+            float nearestPointXLeft = distX / lengthLeftToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosX;
+            float nearestPointYLeft = distY / lengthLeftToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosY;
+            float nearestPointZLeft = distZ / lengthLeftToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosZ;
 
-            float nearestPointXBottom = distX / lengthBottomToCenter * entity.CollisionSphereRadius;
-            float nearestPointYBottom = distY / lengthBottomToCenter * entity.CollisionSphereRadius;
-            float nearestPointZBottom = distZ / lengthBottomToCenter * entity.CollisionSphereRadius;
+            minimumOfSphereRadiusAndLengthToCenter = entity.CollisionSphereRadius < lengthRightToCenter ? entity.CollisionSphereRadius : lengthRightToCenter;
+            float nearestPointXRight = distX / lengthRightToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosX;
+            float nearestPointYRight = distY / lengthRightToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosY;
+            float nearestPointZRight = distZ / lengthRightToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosZ;
 
-            float nearestPointXTop = distX / lengthTopToCenter * entity.CollisionSphereRadius;
-            float nearestPointYTop = distY / lengthTopToCenter * entity.CollisionSphereRadius;
-            float nearestPointZTop = distZ / lengthTopToCenter * entity.CollisionSphereRadius;
+            minimumOfSphereRadiusAndLengthToCenter = entity.CollisionSphereRadius < lengthBottomToCenter ? entity.CollisionSphereRadius : lengthBottomToCenter;
+            float nearestPointXBottom = distX / lengthBottomToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosX;
+            float nearestPointYBottom = distY / lengthBottomToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosY;
+            float nearestPointZBottom = distZ / lengthBottomToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosZ;
 
-            float nearestPointXBack = distX / lengthBackToCenter * entity.CollisionSphereRadius;
-            float nearestPointYBack = distY / lengthBackToCenter * entity.CollisionSphereRadius;
-            float nearestPointZBack = distZ / lengthBackToCenter * entity.CollisionSphereRadius;
+            minimumOfSphereRadiusAndLengthToCenter = entity.CollisionSphereRadius < lengthTopToCenter ? entity.CollisionSphereRadius : lengthTopToCenter;
+            float nearestPointXTop = distX / lengthTopToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosX;
+            float nearestPointYTop = distY / lengthTopToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosY;
+            float nearestPointZTop = distZ / lengthTopToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosZ;
 
-            float nearestPointXFront = distX / lengthFrontToCenter * entity.CollisionSphereRadius;
-            float nearestPointYFront = distY / lengthFrontToCenter * entity.CollisionSphereRadius;
-            float nearestPointZFront = distZ / lengthFrontToCenter * entity.CollisionSphereRadius;
+            minimumOfSphereRadiusAndLengthToCenter = entity.CollisionSphereRadius < lengthBackToCenter ? entity.CollisionSphereRadius : lengthBackToCenter;
+            float nearestPointXBack = distX / lengthBackToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosX;
+            float nearestPointYBack = distY / lengthBackToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosY;
+            float nearestPointZBack = distZ / lengthBackToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosZ;
+
+            minimumOfSphereRadiusAndLengthToCenter = entity.CollisionSphereRadius < lengthFrontToCenter ? entity.CollisionSphereRadius : lengthFrontToCenter;
+            float nearestPointXFront = distX / lengthFrontToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosX;
+            float nearestPointYFront = distY / lengthFrontToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosY;
+            float nearestPointZFront = distZ / lengthFrontToCenter * minimumOfSphereRadiusAndLengthToCenter + entity.PosZ;
 
 
             //Check if points are in the sections
-            bool xIncludeLeft = nearestPointXLeft > currentNode.MinCoordsX && nearestPointXLeft < currentNode.CenterX;
-            bool yIncludeLeft = nearestPointYLeft > currentNode.MinCoordsY && nearestPointYLeft < currentNode.MaxCoordsY;
-            bool zIncludeLeft = nearestPointZLeft > currentNode.MinCoordsZ && nearestPointZLeft < currentNode.MaxCoordsZ;
+            bool xIncludeLeft = nearestPointXLeft >= currentNode.MinCoordsX && nearestPointXLeft <= currentNode.CenterX;
+            bool yIncludeLeft = nearestPointYLeft >= currentNode.MinCoordsY && nearestPointYLeft <= currentNode.MaxCoordsY;
+            bool zIncludeLeft = nearestPointZLeft >= currentNode.MinCoordsZ && nearestPointZLeft <= currentNode.MaxCoordsZ;
 
-            bool xIncludeRight = nearestPointXRight > currentNode.CenterX && nearestPointXRight < currentNode.MaxCoordsX;
-            bool yIncludeRight = nearestPointYRight > currentNode.MinCoordsY && nearestPointYRight < currentNode.MaxCoordsY;
-            bool zIncludeRight = nearestPointZRight > currentNode.MinCoordsZ && nearestPointZRight < currentNode.MaxCoordsZ;
+            bool xIncludeRight = nearestPointXRight >= currentNode.CenterX && nearestPointXRight <= currentNode.MaxCoordsX;
+            bool yIncludeRight = nearestPointYRight >= currentNode.MinCoordsY && nearestPointYRight <= currentNode.MaxCoordsY;
+            bool zIncludeRight = nearestPointZRight >= currentNode.MinCoordsZ && nearestPointZRight <= currentNode.MaxCoordsZ;
 
-            bool xIncludeBottom = nearestPointXBottom > currentNode.MinCoordsX && nearestPointXBottom < currentNode.MaxCoordsX;
-            bool yIncludeBottom = nearestPointYBottom > currentNode.MinCoordsY && nearestPointYBottom < currentNode.CenterY;
-            bool zIncludeBottom = nearestPointZBottom > currentNode.MinCoordsZ && nearestPointZBottom < currentNode.MaxCoordsZ;
+            bool xIncludeBottom = nearestPointXBottom >= currentNode.MinCoordsX && nearestPointXBottom <= currentNode.MaxCoordsX;
+            bool yIncludeBottom = nearestPointYBottom >= currentNode.MinCoordsY && nearestPointYBottom <= currentNode.CenterY;
+            bool zIncludeBottom = nearestPointZBottom >= currentNode.MinCoordsZ && nearestPointZBottom <= currentNode.MaxCoordsZ;
 
-            bool xIncludeTop = nearestPointXTop > currentNode.MinCoordsX && nearestPointXTop < currentNode.MaxCoordsX;
-            bool yIncludeTop = nearestPointYTop > currentNode.CenterY && nearestPointYTop < currentNode.MaxCoordsY;
-            bool zIncludeTop = nearestPointZTop > currentNode.MinCoordsZ && nearestPointZTop < currentNode.MaxCoordsZ;
+            bool xIncludeTop = nearestPointXTop >= currentNode.MinCoordsX && nearestPointXTop <= currentNode.MaxCoordsX;
+            bool yIncludeTop = nearestPointYTop >= currentNode.CenterY && nearestPointYTop <= currentNode.MaxCoordsY;
+            bool zIncludeTop = nearestPointZTop >= currentNode.MinCoordsZ && nearestPointZTop <= currentNode.MaxCoordsZ;
 
-            bool xIncludeBack = nearestPointXBack > currentNode.MinCoordsX && nearestPointXBack < currentNode.MaxCoordsZ;
-            bool yIncludeBack = nearestPointYBack > currentNode.MinCoordsY && nearestPointYBack < currentNode.MaxCoordsY;
-            bool zIncludeBack = nearestPointZBack > currentNode.MinCoordsZ && nearestPointZBack < currentNode.CenterZ;
+            bool xIncludeBack = nearestPointXBack >= currentNode.MinCoordsX && nearestPointXBack <= currentNode.MaxCoordsZ;
+            bool yIncludeBack = nearestPointYBack >= currentNode.MinCoordsY && nearestPointYBack <= currentNode.MaxCoordsY;
+            bool zIncludeBack = nearestPointZBack >= currentNode.MinCoordsZ && nearestPointZBack <= currentNode.CenterZ;
 
-            bool xIncludeFront = nearestPointXFront > currentNode.MinCoordsX && nearestPointXFront < currentNode.MaxCoordsZ;
-            bool yIncludeFront = nearestPointYFront > currentNode.MinCoordsY && nearestPointYFront < currentNode.MaxCoordsY;
-            bool zIncludeFront = nearestPointZFront > currentNode.MinCoordsZ && nearestPointZFront < currentNode.CenterZ;
+            bool xIncludeFront = nearestPointXFront >= currentNode.MinCoordsX && nearestPointXFront <= currentNode.MaxCoordsZ;
+            bool yIncludeFront = nearestPointYFront >= currentNode.MinCoordsY && nearestPointYFront <= currentNode.MaxCoordsY;
+            bool zIncludeFront = nearestPointZFront >= currentNode.CenterZ && nearestPointZFront <= currentNode.MaxCoordsZ;
 
 
             //check collisions with sections
@@ -182,7 +240,7 @@ namespace GraphicsWar.Model
             //currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMin, childSize, childHalfSize, childQuaterSize, 6); //++-
             //currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMax, childSize, childHalfSize, childQuaterSize, 7); //+++
 
-            OctreeNode currentChild = currentNode.firstChild;
+            OctreeNode currentChild = currentNode.FirstChild;
 
             //left = 0 right = 1; bottom = 0 top = 1; back = 0 front = 1
             //Conditions are binary counted up like the child arrangement
@@ -191,59 +249,59 @@ namespace GraphicsWar.Model
             //leftBotBack; leftBotFront; leftTopBack; leftTopFront...
             if (collidesWithLeft && collidesWithBottom && collidesWithBack)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(0);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
             if (collidesWithLeft && collidesWithBottom && collidesWithFront)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(1);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
             if (collidesWithLeft && collidesWithTop && collidesWithBack)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(2);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
             if (collidesWithLeft && collidesWithTop && collidesWithFront)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(3);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
             if (collidesWithRight && collidesWithBottom && collidesWithBack)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(4);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
             if (collidesWithRight && collidesWithBottom && collidesWithFront)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(5);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
             if (collidesWithRight && collidesWithTop && collidesWithBack)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(6);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
             if (collidesWithRight && collidesWithTop && collidesWithFront)
             {
-                currentChild.collisionSphereEntities.Add(entity);
                 collisionCount++;
+                collisions.Add(7);
             }
-            currentChild = currentChild.nextSibling;
+            currentChild = currentChild.NextSibling;
 
 
 
@@ -253,13 +311,13 @@ namespace GraphicsWar.Model
                 return;
             }
 
-            currentChild = currentNode.firstChild;
+            currentChild = currentNode.FirstChild;
             int lastIdx = 0;
             foreach (var idx in collisions)
             {
                 for (int i = 0; i < idx - lastIdx; i++)
                 {
-                    currentChild = currentChild.nextSibling;
+                    currentChild = currentChild.NextSibling;
                 }
 
                 InsertIntoOctree(currentChild, entity);
@@ -267,8 +325,34 @@ namespace GraphicsWar.Model
             }
         }
 
+        private void ResetOctree(OctreeNode current)
+        {
+            if (current == null)
+            {
+                return;
+            }
 
-        //private static void InsertIntoOctree(OctreeNode currentNode, CollisionSphereEntity entity)
+
+            current.Reset();
+
+            OctreeNode currentChild = current.FirstChild;
+
+
+            while (currentChild != null)
+            {
+                ResetOctree(currentChild);
+                currentChild = currentChild.NextSibling;
+            }
+        }
+
+
+
+
+
+
+        //Old insert
+
+        //private void InsertIntoOctree(OctreeNode currentNode, CollisionSphereEntity entity)
         //{
         //    //Last level of octree
         //    if (currentNode.ChildsAreInitialized == false)
@@ -387,43 +471,5 @@ namespace GraphicsWar.Model
         //        lastIdx = idx;
         //    }
         //}
-
-        private static void InitializeOctreeRoot(OctreeNode current, int level)
-        {
-            if (level == 0)
-            {
-                return;
-            }
-
-            current.AddChilds();
-
-            OctreeNode currentChild = current.firstChild;
-
-            while (currentChild != null)
-            {
-                InitializeOctreeRoot(currentChild, level - 1);
-                currentChild = currentChild.nextSibling;
-            }
-        }
-
-        private static void ResetOctree(OctreeNode current, int level)
-        {
-            if (level == 0)
-            {
-                return;
-            }
-
-            current.Reset();
-
-            int lowerLevel = level - 1;
-
-            OctreeNode currentChild = current.firstChild;
-
-            while (currentChild != null)
-            {
-                ResetOctree(currentChild, lowerLevel);
-                currentChild = currentChild.nextSibling;
-            }
-        }
     }
 }

@@ -27,10 +27,13 @@ namespace GraphicsWar.Model
         public float PosY;
         public float PosZ;
 
-        public CollisionSphereEntity(Enums.EntityType type, Vector3 position, Vector3 rotation, float collisionSphereRadius) : base(type, position, rotation)
+        public int Index;
+
+        public CollisionSphereEntity(Enums.EntityType type, Vector3 position, Vector3 rotation, float collisionSphereRadius, int index) : base(type, position, rotation)
         {
             CollisionSphereRadius = collisionSphereRadius;
             Transformation = base.Transformation;
+            Index = index;
         }
     }
 }

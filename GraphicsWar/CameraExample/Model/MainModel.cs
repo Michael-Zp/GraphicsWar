@@ -18,19 +18,32 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Type4, new Vector3(-3, 0, 0), new Vector3(0, 0, 0)));
 
 
-            List<Entity> collisionSpheres = new List<Entity>();
-            
-            for(int i = 0; i < 30000; i++)
-            {
-                float rand1 = (i * 50 - 25) % 25;
-                float rand2 = (i * 50 - 25) % 25;
-                float rand3 = (i * 50 - 25) % 25;
-                float rand4 = ((i * 10) % 10) + 1;
+            int sphereCount = 60000;
+            float treeSize = 100;
 
-                collisionSpheres.Add(new CollisionSphereEntity(Enums.EntityType.Type1, new Vector3(rand1, rand2, rand3), new Vector3(0), rand4));
+            List<Entity> collisionSpheres = new List<Entity>();
+            CollisionOctree collisionOctree = new CollisionOctree();
+            collisionOctree.InitializeNewOctree(5, new Vector3(0, 0, 0), treeSize);
+
+
+            for (int i = 0; i < sphereCount; i++)
+            {
+                float radius = (float)Math.Pow((treeSize * treeSize * treeSize) / sphereCount, 1.0f / 3.0f);
+
+                float rowColumnDepthSize = 100.0f / radius;
+
+                int row = (int)(i % rowColumnDepthSize);
+                int column = (int)(((float)Math.Floor((radius * i) / treeSize) % rowColumnDepthSize));
+                int depth = (int)(((float)Math.Floor((radius * i) / (treeSize * treeSize)) % rowColumnDepthSize));
+
+                float xPos = -(treeSize / 2.0f) + radius / 2.0f + radius * row;
+                float yPos = -(treeSize / 2.0f) + radius / 2.0f + radius * column;
+                float zPos = -(treeSize / 2.0f) + radius / 2.0f + radius * depth;
+                
+                collisionSpheres.Add(new CollisionSphereEntity(Enums.EntityType.Type1, new Vector3(xPos, yPos, zPos), new Vector3(0), radius / 8.0f, i));
             }
-            
-            CollisionDetection.InitializeCollisionDetectionForFrame(collisionSpheres, 100, new Vector3(0));
+
+            collisionOctree.InsertIntoOctree(collisionSpheres);
         }
 
         public void Update(float deltaTime)
