@@ -21,7 +21,7 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Type4, new Vector3(-3, 0, 0), new Vector3(0, 0, 0)));
 
 
-            int sphereCount = 1500;
+            int sphereCount = 6000;
             float treeSize = 100;
 
             List<Entity> collisionSpheres = new List<Entity>();
@@ -46,7 +46,7 @@ namespace GraphicsWar.Model
                 //float yPos = 0;
                 //float zPos = -i;
 
-                collisionSpheres.Add(new CollisionSphereEntity(Enums.EntityType.Type5, new Vector3(xPos, yPos, zPos), new Vector3(0), radius / 8.0f, 1, true, true));
+                collisionSpheres.Add(new CollisionSphereEntity(Enums.EntityType.Type5, new Vector3(xPos, yPos, zPos), new Vector3(0), 0.3f, 1, true, true));
 
                 row++;
                 if (row > rowColumnDepthSize)
@@ -74,11 +74,11 @@ namespace GraphicsWar.Model
             //Entities[1].Rotate(new Vector3(2f * deltaTime));
             //Entities[2].Rotate(new Vector3(-2f * deltaTime));
             //Entities[1].Rotate(new Vector3(1, 0, 0) * deltaTime);
-            
+
             _collisionOctree.ResetOctree();
             _collisionOctree.InsertIntoOctree(Entities);
             _collisionOctree.CheckCollisionsInTree();
-            
+
             PhysicsEngine.ApplyPhysics(Entities, deltaTime);
         }
     }

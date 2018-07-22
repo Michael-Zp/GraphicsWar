@@ -37,7 +37,7 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
             _meshes.Add(Enums.EntityType.Type3, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
             _meshes.Add(Enums.EntityType.Type4, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
-            _meshes.Add(Enums.EntityType.Type5, Meshes.CreateSphere(0.5f, 2));
+            _meshes.Add(Enums.EntityType.Type5, Meshes.CreateSphere(0.3f, 2));
             _meshes.Add(Enums.EntityType.Type6, Meshes.CreatePlane(1, 1, 1, 1));
 
             _normalMaps.Add(Enums.EntityType.Type3, contentLoader.Load<ITexture2D>("n3.png"));

@@ -10,11 +10,15 @@ namespace GraphicsWar.Model.Physics
     {
         private OctreeNode _octreeRoot;
 
+        private Random _random;
+
         private int _levels;
-        
+
         public void InitializeNewOctree(int levels, Vector3 center, float size)
         {
             _levels = levels;
+
+            _random = new Random(DateTime.Now.Millisecond);
 
             _octreeRoot = new OctreeNode(center.X, center.Y, center.Z, size, size / 2, size / 4, 0, null);
             InitializeOctreeRoot(_octreeRoot, _levels);
@@ -149,9 +153,7 @@ namespace GraphicsWar.Model.Physics
                         float distY = baseSphere.PosY - currentSphere.PosY;
                         float distZ = baseSphere.PosZ - currentSphere.PosZ;
 
-
                         float distSquare = (distX * distX + distY * distY + distZ * distZ);
-
 
                         float radiusSquare = baseSphere.CollisionSphereRadius + currentSphere.CollisionSphereRadius;
                         radiusSquare *= radiusSquare;
@@ -159,7 +161,184 @@ namespace GraphicsWar.Model.Physics
 
                         if (distSquare < radiusSquare)
                         {
+                            float baseToCurrentX = currentSphere.PosX - baseSphere.PosX;
+                            float baseToCurrentY = currentSphere.PosY - baseSphere.PosY;
+                            float baseToCurrentZ = currentSphere.PosZ - baseSphere.PosZ;
 
+                            //Fast square root
+                            //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
+                            FloatIntUnion b;
+                            b.tmp = 0;
+                            b.f = distSquare;
+                            b.tmp -= 1 << 23; /* Subtract 2^m. */
+                            b.tmp >>= 1; /* Divide by 2. */
+                            b.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+
+                            float lengthBaseToCurrent = b.f;
+
+                            baseToCurrentX = baseToCurrentX / lengthBaseToCurrent;
+                            baseToCurrentY = baseToCurrentY / lengthBaseToCurrent;
+                            baseToCurrentZ = baseToCurrentZ / lengthBaseToCurrent;
+
+                            float combinedMass = baseSphere.Mass + currentSphere.Mass;
+                            float baseMassRatio = baseSphere.Mass / combinedMass;
+                            float currentMassRatio = currentSphere.Mass / combinedMass;
+
+                            float centerX = (currentSphere.PosX + baseSphere.PosX) / 2.0f;
+                            float centerY = (currentSphere.PosY + baseSphere.PosY) / 2.0f;
+                            float centerZ = (currentSphere.PosZ + baseSphere.PosZ) / 2.0f;
+
+                            float combinedRadius = baseSphere.CollisionSphereRadius + currentSphere.CollisionSphereRadius;
+
+                            baseSphere.PosX = centerX + (1 - baseMassRatio) * -baseToCurrentX * combinedRadius * 1.01f;
+                            baseSphere.PosY = centerY + (1 - baseMassRatio) * -baseToCurrentY * combinedRadius * 1.01f;
+                            baseSphere.PosZ = centerZ + (1 - baseMassRatio) * -baseToCurrentZ * combinedRadius * 1.01f;
+
+                            currentSphere.PosX = centerX + (1 - currentMassRatio) * baseToCurrentX * combinedRadius * 1.01f;
+                            currentSphere.PosY = centerY + (1 - currentMassRatio) * baseToCurrentY * combinedRadius * 1.01f;
+                            currentSphere.PosZ = centerZ + (1 - currentMassRatio) * baseToCurrentZ * combinedRadius * 1.01f;
+                            
+
+                            if (baseSphere.MoveableByForce)
+                            {
+                                if (currentSphere.MoveableByForce)
+                                {
+
+                                    float baseNormalX = baseSphere.PosX - currentSphere.PosX;
+                                    float baseNormalY = baseSphere.PosY - currentSphere.PosY;
+                                    float baseNormalZ = baseSphere.PosZ - currentSphere.PosZ;
+
+                                    float lengthNorm = baseNormalX * baseNormalX + baseNormalY * baseNormalY + baseNormalZ * baseNormalZ;
+
+                                    //Fast square root
+                                    //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
+                                    FloatIntUnion u;
+                                    u.tmp = 0;
+                                    u.f = lengthNorm;
+                                    u.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u.tmp >>= 1; /* Divide by 2. */
+                                    u.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+
+                                    lengthNorm = u.f;
+
+                                    baseNormalX = baseNormalX / lengthNorm;
+                                    baseNormalY = baseNormalY / lengthNorm;
+                                    baseNormalZ = baseNormalZ / lengthNorm;
+
+
+                                    float lengthVelBase = baseSphere.VelocityX * baseSphere.VelocityX + baseSphere.VelocityY * baseSphere.VelocityY + baseSphere.VelocityZ * baseSphere.VelocityZ;
+
+                                    //Fast square root
+                                    //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
+                                    FloatIntUnion u2;
+                                    u2.tmp = 0;
+                                    u2.f = lengthVelBase;
+                                    u2.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u2.tmp >>= 1; /* Divide by 2. */
+                                    u2.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+
+                                    lengthVelBase = u2.f;
+
+                                    float baseVelocityX = baseSphere.VelocityX / lengthVelBase;
+                                    float baseVelocityY = baseSphere.VelocityY / lengthVelBase;
+                                    float baseVelocityZ = baseSphere.VelocityZ / lengthVelBase;
+
+                                    float dotProduct = baseNormalX * baseVelocityX + baseNormalY * baseVelocityY + baseNormalZ * baseVelocityZ;
+
+                                    //I - 2.0 * dot(N, I) * N.
+                                    //https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+                                    float xBaseReflect = baseVelocityX - 2.0f * dotProduct * baseNormalX;
+                                    float yBaseReflect = baseVelocityY - 2.0f * dotProduct * baseNormalY;
+                                    float zBaseReflect = baseVelocityZ - 2.0f * dotProduct * baseNormalZ;
+
+                                    float baseForce = baseMassRatio * lengthVelBase;
+
+                                    baseSphere.VelocityX = xBaseReflect * baseForce;
+                                    baseSphere.VelocityY = yBaseReflect * baseForce;
+                                    baseSphere.VelocityZ = zBaseReflect * baseForce;
+
+                                    baseSphere.VelocityX += ((float)_random.NextDouble() * 2 - 1) * 0.03f;
+                                    baseSphere.VelocityY += ((float)_random.NextDouble() * 2 - 1) * 0.03f;
+                                    baseSphere.VelocityZ += ((float)_random.NextDouble() * 2 - 1) * 0.03f;
+
+
+                                    //-------
+                                    //CurrentSphereVel
+                                    //-------
+
+                                    float currentNormalX = -baseNormalX;
+                                    float currentNormalY = -baseNormalY;
+                                    float currentNormalZ = -baseNormalZ;
+
+                                    lengthNorm = currentNormalX * currentNormalX + currentNormalY * currentNormalY + currentNormalZ * currentNormalZ;
+
+                                    //Fast square root
+                                    //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
+                                    FloatIntUnion u3;
+                                    u3.tmp = 0;
+                                    u3.f = lengthNorm;
+                                    u3.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u3.tmp >>= 1; /* Divide by 2. */
+                                    u3.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+
+                                    lengthNorm = u3.f;
+
+                                    currentNormalX = currentNormalX / lengthNorm;
+                                    currentNormalY = currentNormalY / lengthNorm;
+                                    currentNormalZ = currentNormalZ / lengthNorm;
+
+
+                                    float lengthVelCurrent = currentSphere.VelocityX * currentSphere.VelocityX + currentSphere.VelocityY * currentSphere.VelocityY + currentSphere.VelocityZ * currentSphere.VelocityZ;
+
+                                    //Fast square root
+                                    //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
+                                    FloatIntUnion u4;
+                                    u4.tmp = 0;
+                                    u4.f = lengthVelCurrent;
+                                    u4.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u4.tmp >>= 1; /* Divide by 2. */
+                                    u4.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+
+                                    lengthVelCurrent = u4.f;
+
+                                    float currentVelocityX = currentSphere.VelocityX / lengthVelCurrent;
+                                    float currentVelocityY = currentSphere.VelocityY / lengthVelCurrent;
+                                    float currentVelocityZ = currentSphere.VelocityZ / lengthVelCurrent;
+
+                                    dotProduct = currentNormalX * currentVelocityX + currentNormalY * currentVelocityY + currentNormalZ * currentVelocityZ;
+
+                                    //I - 2.0 * dot(N, I) * N.
+                                    //https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+                                    float xCurrentReflect = currentVelocityX - 2.0f * dotProduct * currentNormalX;
+                                    float yCurrentReflect = currentVelocityY - 2.0f * dotProduct * currentNormalY;
+                                    float zCurrentReflect = currentVelocityZ - 2.0f * dotProduct * currentNormalZ;
+
+                                    float currentForce = currentMassRatio * lengthVelCurrent;
+
+                                    currentSphere.VelocityX = xCurrentReflect * currentForce;
+                                    currentSphere.VelocityY = yCurrentReflect * currentForce;
+                                    currentSphere.VelocityZ = zCurrentReflect * currentForce;
+
+                                    currentSphere.VelocityX += ((float)_random.NextDouble() * 2 - 1) * 0.03f;
+                                    currentSphere.VelocityY += ((float)_random.NextDouble() * 2 - 1) * 0.03f;
+                                    currentSphere.VelocityZ += ((float)_random.NextDouble() * 2 - 1) * 0.03f;
+                                }
+                                else
+                                {
+                                    //No need
+                                }
+                            }
+                            else
+                            {
+                                if (currentSphere.MoveableByForce)
+                                {
+                                    //No need
+                                }
+                                else
+                                {
+                                    //No need
+                                }
+                            }
                         }
                     }
 
@@ -186,64 +365,136 @@ namespace GraphicsWar.Model.Physics
                         distZ = distZ > 0 ? distZ : -distZ;
                         distZ -= currentCube.SizeZ / 2;
                         distZ = distZ > 0 ? distZ : 0;
-                        
 
-                        float distance = (float)Math.Sqrt(distX * distX + distY * distY + distZ * distZ);
+
+                        float distanceSquared = distX * distX + distY * distY + distZ * distZ;
 
                         float radiusSquared = baseSphere.CollisionSphereRadius * baseSphere.CollisionSphereRadius;
 
-                        if (radiusSquared > distance)
+                        if (radiusSquared > distanceSquared)
                         {
                             if (baseSphere.MoveableByForce)
                             {
-                                if(currentCube.MoveableByForce)
+                                if (currentCube.MoveableByForce)
                                 {
                                     //Force interaction
                                 }
                                 else
                                 {
-                                    float lengthVel = baseSphere.VelocityX * baseSphere.VelocityX + baseSphere.VelocityY * baseSphere.VelocityY + baseSphere.VelocityZ * baseSphere.VelocityZ;
 
+                                    float baseNormalX = 0;
+                                    float baseNormalY = 0;
+                                    float baseNormalZ = 0;
+
+                                    float lengthNorm = 0;
+
+                                    if (baseSphere.PosX > currentCube.MaxX)
+                                    {
+                                        baseNormalX = 1;
+                                        lengthNorm += 1;
+                                    }
+                                    else if (baseSphere.PosX < currentCube.MinX)
+                                    {
+                                        baseNormalX = -1;
+                                        lengthNorm += 1;
+                                    }
+
+                                    if (baseSphere.PosY > currentCube.MaxY)
+                                    {
+                                        baseNormalY = 1;
+                                        lengthNorm += 1;
+                                    }
+                                    else if (baseSphere.PosY < currentCube.MinY)
+                                    {
+                                        baseNormalY = -1;
+                                        lengthNorm += 1;
+                                    }
+
+                                    if (baseSphere.PosZ > currentCube.MaxZ)
+                                    {
+                                        baseNormalZ = 1;
+                                        lengthNorm += 1;
+                                    }
+                                    else if (baseSphere.PosZ < currentCube.MinZ)
+                                    {
+                                        baseNormalZ = -1;
+                                        lengthNorm += 1;
+                                    }
+
+                                    if (lengthNorm == 0)
+                                    {
+                                        lengthNorm = 1;
+                                        baseNormalX = 0;
+                                        baseNormalY = 1;
+                                        baseNormalZ = 0;
+                                    }
+
+                                    baseNormalX /= lengthNorm;
+                                    baseNormalY /= lengthNorm;
+                                    baseNormalZ /= lengthNorm;
+                                    
+                                    //Fast square root
+                                    //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
+                                    FloatIntUnion d;
+                                    d.tmp = 0;
+                                    d.f = distanceSquared;
+                                    d.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    d.tmp >>= 1; /* Divide by 2. */
+                                    d.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+
+                                    float distance = d.f;
+
+                                    float returnDist = baseSphere.CollisionSphereRadius / 2.0f - distance;
+
+                                    baseSphere.PosX += baseNormalX * (returnDist * 1f);
+                                    baseSphere.PosY += baseNormalY * (returnDist * 1f);
+                                    baseSphere.PosZ += baseNormalZ * (returnDist * 1f);
+
+
+                                    //Reflect
+
+                                    float lengthVelBase = baseSphere.VelocityX * baseSphere.VelocityX + baseSphere.VelocityY * baseSphere.VelocityY + baseSphere.VelocityZ * baseSphere.VelocityZ;
 
                                     //Fast square root
                                     //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
-                                    FloatIntUnion u;
-                                    u.tmp = 0;
-                                    u.f = lengthVel;
-                                    u.tmp -= 1 << 23; /* Subtract 2^m. */
-                                    u.tmp >>= 1; /* Divide by 2. */
-                                    u.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+                                    FloatIntUnion u2;
+                                    u2.tmp = 0;
+                                    u2.f = lengthVelBase;
+                                    u2.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u2.tmp >>= 1; /* Divide by 2. */
+                                    u2.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
 
-                                    lengthVel = u.f;
+                                    lengthVelBase = u2.f;
 
-                                    float xNorm = baseSphere.VelocityX / lengthVel;
-                                    float yNorm = baseSphere.VelocityY / lengthVel;
-                                    float zNorm = baseSphere.VelocityZ / lengthVel;
 
-                                    xNorm = -xNorm;
-                                    yNorm = -yNorm;
-                                    zNorm = -zNorm;
+                                    float baseVelocityX = baseSphere.VelocityX / lengthVelBase;
+                                    float baseVelocityY = baseSphere.VelocityY / lengthVelBase;
+                                    float baseVelocityZ = baseSphere.VelocityZ / lengthVelBase;
+                                    
 
-                                    float returnDist = baseSphere.CollisionSphereRadius - distance;
+                                    float dotProduct = baseNormalX * baseVelocityX + baseNormalY * baseVelocityY + baseNormalZ * baseVelocityZ;
 
-                                    baseSphere.PosX += xNorm * returnDist;
-                                    baseSphere.PosY += yNorm * returnDist;
-                                    baseSphere.PosZ += zNorm * returnDist;
 
-                                    baseSphere.VelocityX = 0;
-                                    baseSphere.VelocityY = 0;
-                                    baseSphere.VelocityZ = 0;
+                                    //I - 2.0 * dot(N, I) * N.
+                                    //https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/reflect.xhtml
+                                    float xBaseReflect = baseVelocityX - 2.0f * dotProduct * baseNormalX;
+                                    float yBaseReflect = baseVelocityY - 2.0f * dotProduct * baseNormalY;
+                                    float zBaseReflect = baseVelocityZ - 2.0f * dotProduct * baseNormalZ;
+
+                                    baseSphere.VelocityX = xBaseReflect;
+                                    baseSphere.VelocityY = yBaseReflect;
+                                    baseSphere.VelocityZ = zBaseReflect;
                                 }
                             }
                             else
                             {
                                 if (currentCube.MoveableByForce)
                                 {
-
+                                    //No fking idea
                                 }
                                 else
                                 {
-
+                                    //No fking idea
                                 }
                             }
                         }
@@ -264,7 +515,7 @@ namespace GraphicsWar.Model.Physics
 
                         if (xInclude && yInclude && zInclude)
                         {
-
+                            //Well I don´t need that right now
                         }
                     }
 
@@ -280,6 +531,8 @@ namespace GraphicsWar.Model.Physics
 
         private static float Sqrt(float z)
         {
+            //Fast square root
+            //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
             if (z == 0) return 0;
             FloatIntUnion u;
             u.tmp = 0;
@@ -324,7 +577,7 @@ namespace GraphicsWar.Model.Physics
 
             List<int> collisions = new List<int>();
             int collisionCount = 0;
-            
+
 
             //Thanks iq
             //http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
@@ -349,7 +602,7 @@ namespace GraphicsWar.Model.Physics
             distLeftX = distLeftX > 0 ? distLeftX : -distLeftX;
             distLeftX -= currentNode.QuaterSize;
             distLeftX = distLeftX > 0 ? distLeftX : 0;
-            
+
             float distRightX = entity.PosX - (currentNode.CenterX + currentNode.QuaterSize);
             distRightX = distRightX > 0 ? distRightX : -distRightX;
             distRightX -= currentNode.QuaterSize;
@@ -493,7 +746,7 @@ namespace GraphicsWar.Model.Physics
             }
         }
 
-        
+
 
 
         private void InsertIntoOctree(OctreeNode currentNode, CollisionCubeEntity entity)
