@@ -99,11 +99,14 @@
   <ItemGroup>
     <Compile Include="Controller\Utilities.cs" />
     <Compile Include="ExtensionMethods\TextureDebugger.cs" />
-    <Compile Include="Model\CollisionOctree.cs" />
+    <Compile Include="Model\Physics\CollisionCubeEntity.cs" />
+    <Compile Include="Model\Physics\CollisionOctree.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\MainModel.cs" />
-    <Compile Include="Model\CollisionSphereEntity.cs" />
+    <Compile Include="Model\Physics\CollisionSphereEntity.cs" />
     <Compile Include="Model\OctreeNode.cs" />
+    <Compile Include="Model\Physics\IPhysicsObject.cs" />
+    <Compile Include="Model\Physics\PhysicsEngine.cs" />
     <Compile Include="Shared\Enums.cs" />
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />

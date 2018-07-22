@@ -8,8 +8,8 @@ namespace GraphicsWar.Model
         public Enums.EntityType Type { get; }
         public Matrix4x4 Transformation => CalculateRotation(_rotation) * Matrix4x4.CreateTranslation(_position);
 
-        private Vector3 _position;
-        private Vector3 _rotation;
+        protected Vector3 _position;
+        protected Vector3 _rotation;
 
         public Entity(Enums.EntityType type, Vector3 position, Vector3 rotation)
         {

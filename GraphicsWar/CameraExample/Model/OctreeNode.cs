@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GraphicsWar.Model.Physics;
+using System.Collections.Generic;
 
 namespace GraphicsWar.Model
 {
@@ -39,6 +40,7 @@ namespace GraphicsWar.Model
         }
 
         public List<CollisionSphereEntity> collisionSphereEntities = new List<CollisionSphereEntity>();
+        public List<CollisionCubeEntity> collisionCubeEntities = new List<CollisionCubeEntity>();
         public float CenterX;
         public float CenterY;
         public float CenterZ;
@@ -59,6 +61,7 @@ namespace GraphicsWar.Model
         public void Reset()
         {
             collisionSphereEntities.Clear();
+            collisionCubeEntities.Clear();
         }
 
         public OctreeNode(float centerX, float centerY, float centerZ, float size, float halfSize, float quaterSize, int index, OctreeNode parent)

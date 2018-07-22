@@ -6,6 +6,7 @@ using Zenseless.HLGL;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Instances;
 using GraphicsWar.View.Rendering.Management;
+using System;
 
 namespace GraphicsWar.View
 {
@@ -36,6 +37,8 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
             _meshes.Add(Enums.EntityType.Type3, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
             _meshes.Add(Enums.EntityType.Type4, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
+            _meshes.Add(Enums.EntityType.Type5, Meshes.CreateSphere(0.5f, 2));
+            _meshes.Add(Enums.EntityType.Type6, Meshes.CreatePlane(1, 1, 1, 1));
 
             _normalMaps.Add(Enums.EntityType.Type3, contentLoader.Load<ITexture2D>("n3.png"));
             _normalMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("n3.png"));
@@ -77,7 +80,7 @@ namespace GraphicsWar.View
             _transforms.Clear();
             _instanceCounts.Clear();
 
-            foreach (var type in _meshes.Keys)
+            foreach (var type in (Enums.EntityType[])Enum.GetValues(typeof(Enums.EntityType)))
             {
                 _instanceCounts.Add(type, 0);
                 _transforms.Add(type, new List<Matrix4x4>());
