@@ -173,6 +173,8 @@
     <EmbeddedResource Include="Content\Shaders\shadow.frag" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Content\Models\GPUs\Nvidia\Nvidia.png" />
+    <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon.png" />
     <Content Include="Content\Models\ModelLinks.txt" />
     <EmbeddedResource Include="Content\Textures\h3.jpg" />
     <EmbeddedResource Include="Content\Textures\n3.png" />
@@ -226,6 +228,14 @@
   <ItemGroup>
     <EmbeddedResource Include="Content\Shaders\debugCubeMap.vert" />
     <EmbeddedResource Include="Content\Shaders\debugCubeMap.frag" />
+    <None Include="Content\Models\GPUs\Nvidia\GTX_690.skp" />
+    <None Include="Content\Models\GPUs\Nvidia\GTX_690.stl" />
+    <None Include="Content\Models\GPUs\Nvidia\Nvidia_scaled.mtl" />
+    <EmbeddedResource Include="Content\Models\GPUs\Nvidia\Nvidia_scaled.obj" />
+    <None Include="Content\Models\GPUs\Radeon\7970.skp" />
+    <None Include="Content\Models\GPUs\Radeon\7970.stl" />
+    <None Include="Content\Models\GPUs\Radeon\Radeon_scaled.mtl" />
+    <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon_scaled.obj" />
     <None Include="Content\Shaders\environmentMapping.glsl" />
     <EmbeddedResource Include="Content\Shaders\testCubeMap.glsl" />
   </ItemGroup>
