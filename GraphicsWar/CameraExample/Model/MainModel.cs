@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
 using GraphicsWar.Model.Physics;
 using GraphicsWar.Shared;
@@ -21,7 +22,7 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Type4, new Vector3(-3, 0, 0), new Vector3(0, 0, 0)));
 
 
-            int sphereCount = 6000;
+            int sphereCount = 3000;
             float treeSize = 100;
 
             List<Entity> collisionSpheres = new List<Entity>();
@@ -68,6 +69,16 @@ namespace GraphicsWar.Model
             _collisionOctree.InsertIntoOctree(Entities);
         }
 
+        //private float _timeReset = 0;
+        //private float _ticksReset = 0;
+        //private float _countReset = 0;
+        //private float _timeInsert = 0;
+        //private float _ticksInsert = 0;
+        //private float _countInsert = 0;
+        //private float _timeCheck = 0;
+        //private float _ticksCheck = 0;
+        //private float _countCheck = 0;
+
         public void Update(float deltaTime)
         {
             //Entities[0].Rotate(new Vector3(2f * deltaTime));
@@ -75,9 +86,33 @@ namespace GraphicsWar.Model
             //Entities[2].Rotate(new Vector3(-2f * deltaTime));
             //Entities[1].Rotate(new Vector3(1, 0, 0) * deltaTime);
 
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             _collisionOctree.ResetOctree();
+            //_timeReset += sw.ElapsedMilliseconds;
+            //_ticksReset += sw.ElapsedTicks;
+            //_countReset++;
+            //float timeReset = _timeReset / _countReset; //1.4
+            //float ticksReset = _ticksReset / _countReset;
+
+
+            //sw.Restart();
             _collisionOctree.InsertIntoOctree(Entities);
+            //_timeInsert += sw.ElapsedMilliseconds;
+            //_ticksInsert += sw.ElapsedTicks;
+            //_countInsert++;
+            //float timeInsert = _timeInsert / _countInsert; //1.0
+            //float ticksInsert = _ticksInsert / _countInsert;
+
+
+            //sw.Restart();
             _collisionOctree.CheckCollisionsInTree();
+            //_timeCheck += sw.ElapsedMilliseconds;
+            //_ticksCheck += sw.ElapsedTicks;
+            //_countCheck++;
+            //float timeCheck = _timeCheck / _countCheck; //6.5
+            //float ticksCheck = _ticksCheck / _countCheck;
+            //sw.Stop();
 
             PhysicsEngine.ApplyPhysics(Entities, deltaTime);
         }

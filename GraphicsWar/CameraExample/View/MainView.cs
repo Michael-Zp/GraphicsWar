@@ -7,6 +7,7 @@ using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Instances;
 using GraphicsWar.View.Rendering.Management;
 using System;
+using System.Diagnostics;
 
 namespace GraphicsWar.View
 {

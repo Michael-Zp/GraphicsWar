@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace GraphicsWar.Model.Physics
 {
@@ -14,6 +14,10 @@ namespace GraphicsWar.Model.Physics
 
         private int _levels;
 
+        private readonly int _threadCount = 8;
+
+
+        //INIT
         public void InitializeNewOctree(int levels, Vector3 center, float size)
         {
             _levels = levels;
@@ -24,49 +28,86 @@ namespace GraphicsWar.Model.Physics
             InitializeOctreeRoot(_octreeRoot, _levels);
         }
 
+
+        //INSERT
         public void InsertIntoOctree(List<Entity> entities)
         {
-            IEnumerable<CollisionSphereEntity> collisionSpheres =
-                from entity in entities
-                where entity is CollisionSphereEntity
-                select entity as CollisionSphereEntity;
+            int entitiesPerThread = (int)Math.Floor((double)entities.Count / _threadCount);
 
-            foreach (var entity in collisionSpheres)
+            ManualResetEvent[] doneInserts = new ManualResetEvent[_threadCount];
+
+            for (int i = 0; i < _threadCount - 1; i++)
             {
-                if (entity.CollisionSphereRadius >= _octreeRoot.Size)
-                {
-                    _octreeRoot.collisionSphereEntities.Add(entity);
-                }
-                else
-                {
-                    InsertIntoOctree(_octreeRoot, entity);
-                }
+                doneInserts[i] = new ManualResetEvent(false);
+                ThreadPool.QueueUserWorkItem(InsertCallback, new InsertParameters(i * entitiesPerThread, (i + 1) * entitiesPerThread, entities, doneInserts[i]));
             }
 
-            IEnumerable<CollisionCubeEntity> collisionCubes =
-                            from entity in entities
-                            where entity is CollisionCubeEntity
-                            select entity as CollisionCubeEntity;
+            doneInserts[doneInserts.Length - 1] = new ManualResetEvent(false);
+            ThreadPool.QueueUserWorkItem(InsertCallback, new InsertParameters((_threadCount - 1) * entitiesPerThread, entities.Count, entities, doneInserts[doneInserts.Length - 1]));
 
-            foreach (var entity in collisionCubes)
+            for (int i = 0; i < doneInserts.Length; i++)
             {
-                bool xBigger = entity.SizeX >= _octreeRoot.Size;
-                bool yBigger = entity.SizeY >= _octreeRoot.Size;
-                bool zBigger = entity.SizeZ >= _octreeRoot.Size;
-
-                if (xBigger || yBigger || zBigger)
-                {
-                    _octreeRoot.collisionCubeEntities.Add(entity);
-                }
-                else
-                {
-                    InsertIntoOctree(_octreeRoot, entity);
-                }
+                doneInserts[i].WaitOne();
             }
         }
 
+        private struct InsertParameters
+        {
+            public readonly int Start;
+            public readonly int End;
+            public readonly List<Entity> List;
+            public ManualResetEvent doneEvent;
+
+            public InsertParameters(int start, int end, List<Entity> list, ManualResetEvent doneEvent)
+            {
+                Start = start;
+                End = end;
+                List = list;
+                this.doneEvent = doneEvent;
+            }
+        }
+
+        private void InsertCallback(Object insertParam)
+        {
+            InsertParameters param = (InsertParameters)insertParam;
+
+            for (int k = param.Start; k < param.End; k++)
+            {
+                if (param.List[k] is CollisionSphereEntity sphere)
+                {
+                    if (sphere.CollisionSphereRadius >= _octreeRoot.Size)
+                    {
+                        _octreeRoot.collisionSphereEntities.Add(sphere);
+                    }
+                    else
+                    {
+                        InsertIntoOctree(_octreeRoot, sphere);
+                    }
+                }
+                else if (param.List[k] is CollisionCubeEntity cube)
+                {
+                    bool xBigger = cube.SizeX >= _octreeRoot.Size;
+                    bool yBigger = cube.SizeY >= _octreeRoot.Size;
+                    bool zBigger = cube.SizeZ >= _octreeRoot.Size;
+
+                    if (xBigger || yBigger || zBigger)
+                    {
+                        _octreeRoot.collisionCubeEntities.Add(cube);
+                    }
+                    else
+                    {
+                        InsertIntoOctree(_octreeRoot, cube);
+                    }
+                }
+            }
+
+            param.doneEvent.Set();
+        }
+
+        //CHECK
         public void CheckCollisionsInTree() => CheckCollisionsInTree(_octreeRoot);
 
+        //RESET
         public void ResetOctree() => ResetOctree(_octreeRoot);
 
 
@@ -161,9 +202,9 @@ namespace GraphicsWar.Model.Physics
 
                         if (distSquare < radiusSquare)
                         {
-                            float baseToCurrentX = currentSphere.PosX - baseSphere.PosX;
-                            float baseToCurrentY = currentSphere.PosY - baseSphere.PosY;
-                            float baseToCurrentZ = currentSphere.PosZ - baseSphere.PosZ;
+                            float baseToCurrentX = -distX;
+                            float baseToCurrentY = -distY;
+                            float baseToCurrentZ = -distZ;
 
                             //Fast square root
                             //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
@@ -197,29 +238,26 @@ namespace GraphicsWar.Model.Physics
                             currentSphere.PosX = centerX + (1 - currentMassRatio) * baseToCurrentX * combinedRadius * 1.01f;
                             currentSphere.PosY = centerY + (1 - currentMassRatio) * baseToCurrentY * combinedRadius * 1.01f;
                             currentSphere.PosZ = centerZ + (1 - currentMassRatio) * baseToCurrentZ * combinedRadius * 1.01f;
-                            
+
 
                             if (baseSphere.MoveableByForce)
                             {
                                 if (currentSphere.MoveableByForce)
                                 {
-
-                                    float baseNormalX = baseSphere.PosX - currentSphere.PosX;
-                                    float baseNormalY = baseSphere.PosY - currentSphere.PosY;
-                                    float baseNormalZ = baseSphere.PosZ - currentSphere.PosZ;
-
-                                    float lengthNorm = baseNormalX * baseNormalX + baseNormalY * baseNormalY + baseNormalZ * baseNormalZ;
+                                    float baseNormalX = distX;
+                                    float baseNormalY = distY;
+                                    float baseNormalZ = distZ;
 
                                     //Fast square root
                                     //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
                                     FloatIntUnion u;
                                     u.tmp = 0;
-                                    u.f = lengthNorm;
+                                    u.f = distSquare;
                                     u.tmp -= 1 << 23; /* Subtract 2^m. */
                                     u.tmp >>= 1; /* Divide by 2. */
                                     u.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
 
-                                    lengthNorm = u.f;
+                                    float lengthNorm = u.f;
 
                                     baseNormalX = baseNormalX / lengthNorm;
                                     baseNormalY = baseNormalY / lengthNorm;
@@ -230,14 +268,13 @@ namespace GraphicsWar.Model.Physics
 
                                     //Fast square root
                                     //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
-                                    FloatIntUnion u2;
-                                    u2.tmp = 0;
-                                    u2.f = lengthVelBase;
-                                    u2.tmp -= 1 << 23; /* Subtract 2^m. */
-                                    u2.tmp >>= 1; /* Divide by 2. */
-                                    u2.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+                                    u.tmp = 0;
+                                    u.f = lengthVelBase;
+                                    u.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u.tmp >>= 1; /* Divide by 2. */
+                                    u.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
 
-                                    lengthVelBase = u2.f;
+                                    lengthVelBase = u.f;
 
                                     float baseVelocityX = baseSphere.VelocityX / lengthVelBase;
                                     float baseVelocityY = baseSphere.VelocityY / lengthVelBase;
@@ -270,36 +307,18 @@ namespace GraphicsWar.Model.Physics
                                     float currentNormalY = -baseNormalY;
                                     float currentNormalZ = -baseNormalZ;
 
-                                    lengthNorm = currentNormalX * currentNormalX + currentNormalY * currentNormalY + currentNormalZ * currentNormalZ;
-
-                                    //Fast square root
-                                    //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
-                                    FloatIntUnion u3;
-                                    u3.tmp = 0;
-                                    u3.f = lengthNorm;
-                                    u3.tmp -= 1 << 23; /* Subtract 2^m. */
-                                    u3.tmp >>= 1; /* Divide by 2. */
-                                    u3.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
-
-                                    lengthNorm = u3.f;
-
-                                    currentNormalX = currentNormalX / lengthNorm;
-                                    currentNormalY = currentNormalY / lengthNorm;
-                                    currentNormalZ = currentNormalZ / lengthNorm;
-
 
                                     float lengthVelCurrent = currentSphere.VelocityX * currentSphere.VelocityX + currentSphere.VelocityY * currentSphere.VelocityY + currentSphere.VelocityZ * currentSphere.VelocityZ;
 
                                     //Fast square root
                                     //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
-                                    FloatIntUnion u4;
-                                    u4.tmp = 0;
-                                    u4.f = lengthVelCurrent;
-                                    u4.tmp -= 1 << 23; /* Subtract 2^m. */
-                                    u4.tmp >>= 1; /* Divide by 2. */
-                                    u4.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+                                    u.tmp = 0;
+                                    u.f = lengthVelCurrent;
+                                    u.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u.tmp >>= 1; /* Divide by 2. */
+                                    u.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
 
-                                    lengthVelCurrent = u4.f;
+                                    lengthVelCurrent = u.f;
 
                                     float currentVelocityX = currentSphere.VelocityX / lengthVelCurrent;
                                     float currentVelocityY = currentSphere.VelocityY / lengthVelCurrent;
@@ -352,18 +371,15 @@ namespace GraphicsWar.Model.Physics
                         //http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
                         //Resembels: Math.Max(Math.Abs(entity.PosZ - currentNode.CenterZ) - currentNode.Size, 0.0f);
                         float distX = baseSphere.PosX - currentCube.PosX;
-                        distX = distX > 0 ? distX : -distX;
-                        distX -= currentCube.SizeX / 2;
+                        distX = (distX > 0 ? distX : -distX) - (currentCube.SizeX / 2);
                         distX = distX > 0 ? distX : 0;
 
                         float distY = baseSphere.PosY - currentCube.PosY;
-                        distY = distY > 0 ? distY : -distY;
-                        distY -= currentCube.SizeY / 2;
+                        distY = (distY > 0 ? distY : -distY) - (currentCube.SizeY / 2);
                         distY = distY > 0 ? distY : 0;
 
                         float distZ = baseSphere.PosZ - currentCube.PosZ;
-                        distZ = distZ > 0 ? distZ : -distZ;
-                        distZ -= currentCube.SizeZ / 2;
+                        distZ = (distZ > 0 ? distZ : -distZ) - (currentCube.SizeZ / 2);
                         distZ = distZ > 0 ? distZ : 0;
 
 
@@ -381,7 +397,6 @@ namespace GraphicsWar.Model.Physics
                                 }
                                 else
                                 {
-
                                     float baseNormalX = 0;
                                     float baseNormalY = 0;
                                     float baseNormalZ = 0;
@@ -429,26 +444,35 @@ namespace GraphicsWar.Model.Physics
                                         baseNormalZ = 0;
                                     }
 
+                                    if(lengthNorm == 2)
+                                    {
+                                        lengthNorm = 1.4142135623730950488016887242097f; //Sqrt(2)
+                                    }
+                                    else if(lengthNorm == 3)
+                                    {
+                                        lengthNorm = 1.7320508075688772935274463415059f; //Sqrt(3)
+                                    }
+
                                     baseNormalX /= lengthNorm;
                                     baseNormalY /= lengthNorm;
                                     baseNormalZ /= lengthNorm;
-                                    
+
                                     //Fast square root
                                     //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
-                                    FloatIntUnion d;
-                                    d.tmp = 0;
-                                    d.f = distanceSquared;
-                                    d.tmp -= 1 << 23; /* Subtract 2^m. */
-                                    d.tmp >>= 1; /* Divide by 2. */
-                                    d.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+                                    FloatIntUnion u;
+                                    u.tmp = 0;
+                                    u.f = distanceSquared;
+                                    u.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u.tmp >>= 1; /* Divide by 2. */
+                                    u.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
 
-                                    float distance = d.f;
+                                    float distance = u.f;
 
-                                    float returnDist = baseSphere.CollisionSphereRadius / 2.0f - distance;
+                                    float returnDist = baseSphere.CollisionSphereRadius - distance;
 
-                                    baseSphere.PosX += baseNormalX * (returnDist * 1f);
-                                    baseSphere.PosY += baseNormalY * (returnDist * 1f);
-                                    baseSphere.PosZ += baseNormalZ * (returnDist * 1f);
+                                    baseSphere.PosX += baseNormalX * returnDist;
+                                    baseSphere.PosY += baseNormalY * returnDist;
+                                    baseSphere.PosZ += baseNormalZ * returnDist;
 
 
                                     //Reflect
@@ -457,20 +481,19 @@ namespace GraphicsWar.Model.Physics
 
                                     //Fast square root
                                     //http://blog.wouldbetheologian.com/2011/11/fast-approximate-sqrt-method-in-c.html
-                                    FloatIntUnion u2;
-                                    u2.tmp = 0;
-                                    u2.f = lengthVelBase;
-                                    u2.tmp -= 1 << 23; /* Subtract 2^m. */
-                                    u2.tmp >>= 1; /* Divide by 2. */
-                                    u2.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
+                                    u.tmp = 0;
+                                    u.f = lengthVelBase;
+                                    u.tmp -= 1 << 23; /* Subtract 2^m. */
+                                    u.tmp >>= 1; /* Divide by 2. */
+                                    u.tmp += 1 << 29; /* Add ((b + 1) / 2) * 2^m. */
 
-                                    lengthVelBase = u2.f;
+                                    lengthVelBase = u.f;
 
 
                                     float baseVelocityX = baseSphere.VelocityX / lengthVelBase;
                                     float baseVelocityY = baseSphere.VelocityY / lengthVelBase;
                                     float baseVelocityZ = baseSphere.VelocityZ / lengthVelBase;
-                                    
+
 
                                     float dotProduct = baseNormalX * baseVelocityX + baseNormalY * baseVelocityY + baseNormalZ * baseVelocityZ;
 
@@ -481,9 +504,9 @@ namespace GraphicsWar.Model.Physics
                                     float yBaseReflect = baseVelocityY - 2.0f * dotProduct * baseNormalY;
                                     float zBaseReflect = baseVelocityZ - 2.0f * dotProduct * baseNormalZ;
 
-                                    baseSphere.VelocityX = xBaseReflect;
-                                    baseSphere.VelocityY = yBaseReflect;
-                                    baseSphere.VelocityZ = zBaseReflect;
+                                    baseSphere.VelocityX *= xBaseReflect;
+                                    baseSphere.VelocityY *= yBaseReflect;
+                                    baseSphere.VelocityZ *= zBaseReflect;
                                 }
                             }
                             else
@@ -575,58 +598,40 @@ namespace GraphicsWar.Model.Physics
                 return;
             }
 
-            List<int> collisions = new List<int>();
-            int collisionCount = 0;
-
 
             //Thanks iq
             //http://iquilezles.org/www/articles/distfunctions/distfunctions.htm
             //Resembels: Math.Max(Math.Abs(entity.PosZ - currentNode.CenterZ) - currentNode.Size, 0.0f);
-            float distX = entity.PosX - currentNode.CenterX;
-            distX = distX > 0 ? distX : -distX;
-            distX -= currentNode.HalfSize;
+            float xPosWithCenter = entity.PosX - currentNode.CenterX;
+            float yPosWithCenter = entity.PosY - currentNode.CenterY;
+            float zPosWithCenter = entity.PosZ - currentNode.CenterZ;
+
+
+            float distX = xPosWithCenter;
+            distX = (distX > 0 ? distX : -distX) - currentNode.HalfSize;
             distX = distX > 0 ? distX : 0;
 
-            float distY = entity.PosY - currentNode.CenterY;
-            distY = distY > 0 ? distY : -distY;
-            distY -= currentNode.HalfSize;
+            float distY = yPosWithCenter;
+            distY = (distY > 0 ? distY : -distY) - currentNode.HalfSize;
             distY = distY > 0 ? distY : 0;
 
-            float distZ = entity.PosZ - currentNode.CenterZ;
-            distZ = distZ > 0 ? distZ : -distZ;
-            distZ -= currentNode.HalfSize;
+            float distZ = xPosWithCenter;
+            distZ = (distZ > 0 ? distZ : -distZ) - currentNode.HalfSize;
             distZ = distZ > 0 ? distZ : 0;
 
 
-            float distLeftX = entity.PosX - (currentNode.CenterX - currentNode.QuaterSize);
-            distLeftX = distLeftX > 0 ? distLeftX : -distLeftX;
-            distLeftX -= currentNode.QuaterSize;
+            float distLeftX = xPosWithCenter + currentNode.QuaterSize;
+            distLeftX = (distLeftX > 0 ? distLeftX : -distLeftX) - currentNode.QuaterSize;
             distLeftX = distLeftX > 0 ? distLeftX : 0;
 
-            float distRightX = entity.PosX - (currentNode.CenterX + currentNode.QuaterSize);
-            distRightX = distRightX > 0 ? distRightX : -distRightX;
-            distRightX -= currentNode.QuaterSize;
-            distRightX = distRightX > 0 ? distRightX : 0;
-
-            float distBottomY = entity.PosY - (currentNode.CenterY - currentNode.QuaterSize);
-            distBottomY = distBottomY > 0 ? distBottomY : -distBottomY;
-            distBottomY -= currentNode.QuaterSize;
+            float distBottomY = yPosWithCenter + currentNode.QuaterSize;
+            distBottomY = (distBottomY > 0 ? distBottomY : -distBottomY) - currentNode.QuaterSize;
             distBottomY = distBottomY > 0 ? distBottomY : 0;
 
-            float distTopY = entity.PosY - (currentNode.CenterY + currentNode.QuaterSize);
-            distTopY = distTopY > 0 ? distTopY : -distTopY;
-            distTopY -= currentNode.QuaterSize;
-            distTopY = distTopY > 0 ? distTopY : 0;
-
-            float distBackZ = entity.PosZ - (currentNode.CenterZ - currentNode.QuaterSize);
-            distBackZ = distBackZ > 0 ? distBackZ : -distBackZ;
-            distBackZ -= currentNode.QuaterSize;
+            float distBackZ = zPosWithCenter + currentNode.QuaterSize;
+            distBackZ = (distBackZ > 0 ? distBackZ : -distBackZ) - currentNode.QuaterSize;
             distBackZ = distBackZ > 0 ? distBackZ : 0;
 
-            float distFrontZ = entity.PosZ - (currentNode.CenterZ + currentNode.QuaterSize);
-            distFrontZ = distFrontZ > 0 ? distFrontZ : -distFrontZ;
-            distFrontZ -= currentNode.QuaterSize;
-            distFrontZ = distFrontZ > 0 ? distFrontZ : 0;
 
             float distXSquare = distX * distX;
             float distYSquare = distY * distY;
@@ -634,20 +639,56 @@ namespace GraphicsWar.Model.Physics
 
             //Generate nearest points to left/right... sections
             float lengthLeft = distLeftX * distLeftX + distYSquare + distZSquare;
-            float lengthRight = distRightX * distRightX + distYSquare + distZSquare;
             float lengthBottom = distXSquare + distBottomY * distBottomY + distZSquare;
-            float lengthTop = distXSquare + distTopY * distTopY + distZSquare;
             float lengthBack = distXSquare + distYSquare + distBackZ * distBackZ;
-            float lengthFront = distXSquare + distYSquare + distFrontZ * distFrontZ;
 
             float radiusSquared = entity.CollisionSphereRadius * entity.CollisionSphereRadius;
 
             //check collisions with sections
             bool collidesWithLeft = lengthLeft <= radiusSquared;
-            bool collidesWithRight = lengthRight <= radiusSquared;
+            bool collidesWithRight = false;
+            if (collidesWithLeft == false)
+            {
+                //Entity is allways smaller than the currentNodeCube. Thus it has to collide either with right or left. If it has not collided with left it collides with right.
+                collidesWithRight = true;
+            }
+            else
+            {
+                float distRightX = xPosWithCenter - currentNode.QuaterSize;
+                distRightX = (distRightX > 0 ? distRightX : -distRightX) - currentNode.QuaterSize;
+                distRightX = distRightX > 0 ? distRightX : 0;
+
+                float lengthRight = distRightX * distRightX + distYSquare + distZSquare;
+
+                collidesWithRight = lengthRight <= radiusSquared;
+            }
+
             bool collidesWithBottom = lengthBottom <= radiusSquared;
-            bool collidesWithTop = lengthTop <= radiusSquared;
+            bool collidesWithTop = false;
+            if (collidesWithBottom == false)
+            {
+                collidesWithTop = true;
+            }
+            else
+            {
+                float distTopY = yPosWithCenter - currentNode.QuaterSize;
+                distTopY = (distTopY > 0 ? distTopY : -distTopY) - currentNode.QuaterSize;
+                distTopY = distTopY > 0 ? distTopY : 0;
+
+                float lengthTop = distXSquare + distTopY * distTopY + distZSquare;
+
+                collidesWithTop = lengthTop <= radiusSquared;
+            }
+
             bool collidesWithBack = lengthBack <= radiusSquared;
+
+            //Somehow the acceleration does not work with the z direction. Something is fishy
+            float distFrontZ = zPosWithCenter - currentNode.QuaterSize;
+            distFrontZ = (distFrontZ > 0 ? distFrontZ : -distFrontZ) - currentNode.QuaterSize;
+            distFrontZ = distFrontZ > 0 ? distFrontZ : 0;
+
+            float lengthFront = distXSquare + distYSquare + distFrontZ * distFrontZ;
+
             bool collidesWithFront = lengthFront <= radiusSquared;
 
 
@@ -661,88 +702,67 @@ namespace GraphicsWar.Model.Physics
             //currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMin, childSize, childHalfSize, childQuaterSize, 6); //++-
             //currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMax, childSize, childHalfSize, childQuaterSize, 7); //+++
 
-            OctreeNode currentChild = currentNode.FirstChild;
-
-            //left = 0 right = 1; bottom = 0 top = 1; back = 0 front = 1
-            //Conditions are binary counted up like the child arrangement
-            //000; 001; 010; 011...
-            //==
-            //leftBotBack; leftBotFront; leftTopBack; leftTopFront...
-            if (collidesWithLeft && collidesWithBottom && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(0);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithLeft && collidesWithBottom && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(1);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithLeft && collidesWithTop && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(2);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithLeft && collidesWithTop && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(3);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithBottom && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(4);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithBottom && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(5);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithTop && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(6);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithTop && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(7);
-            }
-            currentChild = currentChild.NextSibling;
-
-
-
-            if (collisionCount == 8)
+            if (collidesWithLeft && collidesWithRight && collidesWithBottom && collidesWithTop && collidesWithBack && collidesWithFront)
             {
                 currentNode.collisionSphereEntities.Add(entity);
                 return;
             }
-
-            currentChild = currentNode.FirstChild;
-            int lastIdx = 0;
-            foreach (var idx in collisions)
+            else
             {
-                for (int i = 0; i < idx - lastIdx; i++)
-                {
-                    currentChild = currentChild.NextSibling;
-                }
+                //left = 0 right = 1; bottom = 0 top = 1; back = 0 front = 1
+                //Conditions are binary counted up like the child arrangement
+                //000; 001; 010; 011...
+                //==
+                //leftBotBack; leftBotFront; leftTopBack; leftTopFront...
 
-                InsertIntoOctree(currentChild, entity);
-                lastIdx = idx;
+                OctreeNode currentChild = currentNode.FirstChild;
+
+                if (collidesWithLeft && collidesWithBottom && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithLeft && collidesWithBottom && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithLeft && collidesWithTop && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithLeft && collidesWithTop && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithBottom && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithBottom && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithTop && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithTop && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
             }
         }
 
@@ -762,9 +782,6 @@ namespace GraphicsWar.Model.Physics
                 currentNode.collisionCubeEntities.Add(entity);
                 return;
             }
-
-            List<int> collisions = new List<int>();
-            int collisionCount = 0;
 
             bool defaultXInclude = entity.MinX >= currentNode.MinCoordsX && entity.MinX <= currentNode.MaxCoordsX ||
                 entity.MaxX <= currentNode.MaxCoordsX && entity.MaxX >= currentNode.MinCoordsX;
@@ -813,90 +830,70 @@ namespace GraphicsWar.Model.Physics
             //currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMin, childSize, childHalfSize, childQuaterSize, 6); //++-
             //currentChild = currentChild.nextSibling = new OctreeNode(xMax, yMax, zMax, childSize, childHalfSize, childQuaterSize, 7); //+++
 
-            OctreeNode currentChild = currentNode.FirstChild;
-
-            //left = 0 right = 1; bottom = 0 top = 1; back = 0 front = 1
-            //Conditions are binary counted up like the child arrangement
-            //000; 001; 010; 011...
-            //==
-            //leftBotBack; leftBotFront; leftTopBack; leftTopFront...
-            if (collidesWithLeft && collidesWithBottom && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(0);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithLeft && collidesWithBottom && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(1);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithLeft && collidesWithTop && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(2);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithLeft && collidesWithTop && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(3);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithBottom && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(4);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithBottom && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(5);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithTop && collidesWithBack)
-            {
-                collisionCount++;
-                collisions.Add(6);
-            }
-            currentChild = currentChild.NextSibling;
-
-            if (collidesWithRight && collidesWithTop && collidesWithFront)
-            {
-                collisionCount++;
-                collisions.Add(7);
-            }
-            currentChild = currentChild.NextSibling;
-
-
-
-            if (collisionCount == 8)
+            if (collidesWithLeft && collidesWithRight && collidesWithBottom && collidesWithTop && collidesWithBack && collidesWithFront)
             {
                 currentNode.collisionCubeEntities.Add(entity);
                 return;
             }
-
-            currentChild = currentNode.FirstChild;
-            int lastIdx = 0;
-            foreach (var idx in collisions)
+            else
             {
-                for (int i = 0; i < idx - lastIdx; i++)
-                {
-                    currentChild = currentChild.NextSibling;
-                }
+                //left = 0 right = 1; bottom = 0 top = 1; back = 0 front = 1
+                //Conditions are binary counted up like the child arrangement
+                //000; 001; 010; 011...
+                //==
+                //leftBotBack; leftBotFront; leftTopBack; leftTopFront...
 
-                InsertIntoOctree(currentChild, entity);
-                lastIdx = idx;
+                OctreeNode currentChild = currentNode.FirstChild;
+
+                if (collidesWithLeft && collidesWithBottom && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithLeft && collidesWithBottom && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithLeft && collidesWithTop && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithLeft && collidesWithTop && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithBottom && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithBottom && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithTop && collidesWithBack)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
+                currentChild = currentChild.NextSibling;
+
+                if (collidesWithRight && collidesWithTop && collidesWithFront)
+                {
+                    InsertIntoOctree(currentChild, entity);
+                }
             }
         }
+
 
         private void ResetOctree(OctreeNode current)
         {
