@@ -1,10 +1,12 @@
 ﻿using GraphicsWar.Shared;
 using System.Numerics;
+using System.Threading;
 
 namespace GraphicsWar.Model
 {
     public class Entity
     {
+        public Mutex Mutex = new Mutex();
         public Enums.EntityType Type { get; }
         public Matrix4x4 Transformation => CalculateRotation(_rotation) * Matrix4x4.CreateTranslation(_position);
 

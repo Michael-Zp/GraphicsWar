@@ -78,6 +78,9 @@ namespace GraphicsWar.Model
         //private float _timeCheck = 0;
         //private float _ticksCheck = 0;
         //private float _countCheck = 0;
+        //private float _timeWhole = 0;
+        //private float _ticksWhole = 0;
+        //private float _countWhole = 0;
 
         public void Update(float deltaTime)
         {
@@ -87,7 +90,10 @@ namespace GraphicsWar.Model
             //Entities[1].Rotate(new Vector3(1, 0, 0) * deltaTime);
 
             //Stopwatch sw = new Stopwatch();
+            Stopwatch swWhole = new Stopwatch();
             //sw.Start();
+            swWhole.Start();
+
             _collisionOctree.ResetOctree();
             //_timeReset += sw.ElapsedMilliseconds;
             //_ticksReset += sw.ElapsedTicks;
@@ -101,12 +107,12 @@ namespace GraphicsWar.Model
             //_timeInsert += sw.ElapsedMilliseconds;
             //_ticksInsert += sw.ElapsedTicks;
             //_countInsert++;
-            //float timeInsert = _timeInsert / _countInsert; //1.0
+            //float timeInsert = _timeInsert / _countInsert; //2.5
             //float ticksInsert = _ticksInsert / _countInsert;
 
 
             //sw.Restart();
-            _collisionOctree.CheckCollisionsInTree();
+            _collisionOctree.CheckCollisions();
             //_timeCheck += sw.ElapsedMilliseconds;
             //_ticksCheck += sw.ElapsedTicks;
             //_countCheck++;
@@ -115,6 +121,15 @@ namespace GraphicsWar.Model
             //sw.Stop();
 
             PhysicsEngine.ApplyPhysics(Entities, deltaTime);
+
+            //swWhole.Stop();
+            //_timeWhole += swWhole.ElapsedMilliseconds;
+            //_ticksWhole += swWhole.ElapsedTicks;
+            //_countWhole++;
+            //float timeWhole = _timeWhole / _countWhole; 
+            //float ticksWhole = _ticksWhole / _countWhole;
+
+            //Console.WriteLine(timeWhole);
         }
     }
 }

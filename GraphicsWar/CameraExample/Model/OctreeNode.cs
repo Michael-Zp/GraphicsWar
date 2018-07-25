@@ -1,10 +1,12 @@
 ﻿using GraphicsWar.Model.Physics;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace GraphicsWar.Model
 {
     public class OctreeNode
     {
+        public Mutex NodeMutex = new Mutex();
         public OctreeNode FirstChild = null;
         public OctreeNode NextSibling = null;
         public OctreeNode Parent = null;
@@ -39,8 +41,10 @@ namespace GraphicsWar.Model
             ChildsAreInitialized = true;
         }
 
-        public List<CollisionSphereEntity> collisionSphereEntities = new List<CollisionSphereEntity>();
-        public List<CollisionCubeEntity> collisionCubeEntities = new List<CollisionCubeEntity>();
+        public Mutex CollisionSphereEntitiesMutex = new Mutex();
+        public List<CollisionSphereEntity> CollisionSphereEntities = new List<CollisionSphereEntity>();
+        public Mutex CollisionCubeEntitiesMutex = new Mutex();
+        public List<CollisionCubeEntity> CollisionCubeEntities = new List<CollisionCubeEntity>();
         public float CenterX;
         public float CenterY;
         public float CenterZ;
@@ -60,8 +64,8 @@ namespace GraphicsWar.Model
 
         public void Reset()
         {
-            collisionSphereEntities.Clear();
-            collisionCubeEntities.Clear();
+            CollisionSphereEntities.Clear();
+            CollisionCubeEntities.Clear();
         }
 
         public OctreeNode(float centerX, float centerY, float centerZ, float size, float halfSize, float quaterSize, int index, OctreeNode parent)
