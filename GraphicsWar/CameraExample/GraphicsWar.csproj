@@ -148,10 +148,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\deferred.frag" />
-    <EmbeddedResource Include="Content\Shaders\deferred.vert" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="OpenTK">
       <Version>3.0.0-pre</Version>
     </PackageReference>
@@ -187,15 +183,6 @@
     <EmbeddedResource Include="Content\Shaders\saturationMap.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\deferredNormalMap.frag" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\deferredNormalMap.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\deferredNormalMapParalax.vert" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.Base\Zenseless.Base.csproj">
       <Project>{481f886f-da6f-445e-ba83-c276646a0b16}</Project>
       <Name>Zenseless.Base</Name>
@@ -222,9 +209,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\deferredNormalMapParalax.frag" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Content\Shaders\debugCubeMap.vert" />
     <EmbeddedResource Include="Content\Shaders\debugCubeMap.frag" />
     <None Include="Content\Models\GPUs\Nvidia\GTX_690.skp" />
@@ -237,6 +221,8 @@
     <None Include="Content\Models\GPUs\Radeon\7970.stl" />
     <None Include="Content\Models\GPUs\Radeon\Radeon.blend" />
     <None Include="Content\Models\GPUs\Radeon\Radeon.blend1" />
+    <EmbeddedResource Include="Content\Shaders\deferred.frag" />
+    <EmbeddedResource Include="Content\Shaders\deferred.vert" />
     <None Include="Content\Models\GPUs\Radeon\Radeon.mtl" />
     <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon.obj" />
     <None Include="Content\Shaders\environmentMapping.glsl" />

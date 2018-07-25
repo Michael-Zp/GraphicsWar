@@ -13,9 +13,7 @@ namespace GraphicsWar.View.Rendering.Instances
 {
     public class Deferred : IUpdateTransforms, IUpdateResolution
     {
-        private readonly IShaderProgram _shaderWithGeometryNormals;
-        private readonly IShaderProgram _shaderWithNormalMap;
-        private readonly IShaderProgram _shaderParalax;
+        private readonly IShaderProgram _deferredProgram;
         private IRenderSurface _deferredSurface;
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
@@ -28,50 +26,24 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public ITexture2D Position => _deferredSurface.Textures[3];
 
-        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, ICollection<Enums.EntityType> normalMapped, ICollection<Enums.EntityType> heightMapped)
+        public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
-            _shaderWithGeometryNormals = contentLoader.Load<IShaderProgram>("deferred.*");
-            _shaderWithNormalMap = contentLoader.Load<IShaderProgram>("deferredNormalMap.*");
-            _shaderParalax = contentLoader.Load<IShaderProgram>("deferredNormalMapParalax.*");
+            _deferredProgram = contentLoader.Load<IShaderProgram>("deferred.*");
 
             foreach (var meshContainer in meshes)
             {
-                if (normalMapped.Contains(meshContainer.Key))
+                VAO geometry = VAOLoader.FromMesh(meshContainer.Value, _deferredProgram);
+
+                if (meshContainer.Value is TBNMesh mesh)
                 {
-                    VAO geometry;
-                    if (heightMapped.Contains(meshContainer.Key))
-                    {
-                        geometry = VAOLoader.FromMesh(meshContainer.Value, _shaderParalax);
+                    var loc = _deferredProgram.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.TangentName);
+                    geometry.SetAttribute(loc, mesh.Tangent.ToArray(), VertexAttribPointerType.Float, 3);
 
-                        if (meshContainer.Value is TBNMesh mesh)
-                        {
-                            var loc = _shaderParalax.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.TangentName);
-                            geometry.SetAttribute(loc, mesh.Tangent.ToArray(), VertexAttribPointerType.Float, 3);
-
-                            loc = _shaderParalax.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.BitangentName);
-                            geometry.SetAttribute(loc, mesh.Bitangent.ToArray(), VertexAttribPointerType.Float, 3);
-                        }
-                    }
-                    else
-                    {
-                        geometry = VAOLoader.FromMesh(meshContainer.Value, _shaderWithNormalMap);
-
-                        if (meshContainer.Value is TBNMesh mesh)
-                        {
-                            var loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.TangentName);
-                            geometry.SetAttribute(loc, mesh.Tangent.ToArray(), VertexAttribPointerType.Float, 3);
-
-                            loc = _shaderWithNormalMap.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.BitangentName);
-                            geometry.SetAttribute(loc, mesh.Bitangent.ToArray(), VertexAttribPointerType.Float, 3);
-                        }
-                    }
-
-                    _geometries.Add(meshContainer.Key, geometry);
+                    loc = _deferredProgram.GetResourceLocation(ShaderResourceType.Attribute, TBNMesh.BitangentName);
+                    geometry.SetAttribute(loc, mesh.Bitangent.ToArray(), VertexAttribPointerType.Float, 3);
                 }
-                else
-                {
-                    _geometries.Add(meshContainer.Key, VAOLoader.FromMesh(meshContainer.Value, _shaderWithGeometryNormals));
-                }
+
+                _geometries.Add(meshContainer.Key, geometry);
             }
         }
 
@@ -81,15 +53,13 @@ namespace GraphicsWar.View.Rendering.Instances
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 1, true));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
-
-            _shaderWithGeometryNormals.Uniform("iResolution", new Vector2(width, height));
         }
 
         public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
         {
             foreach (var type in _geometries.Keys)
             {
-                _geometries[type].SetAttribute(_shaderWithGeometryNormals.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
+                _geometries[type].SetAttribute(_deferredProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
             }
         }
 
@@ -102,59 +72,67 @@ namespace GraphicsWar.View.Rendering.Instances
             GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
             GL.DrawBuffers(4, new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });
 
-            SetUniforms(_shaderWithGeometryNormals, camera);
-            SetUniforms(_shaderWithNormalMap, camera);
-            SetUniforms(_shaderParalax, camera);
+            _deferredProgram.Activate();
+
+            _deferredProgram.Uniform("camera", camera);
+            Matrix4x4.Invert(camera.Matrix, out var invert);
+            _deferredProgram.Uniform("camPos", invert.Translation / invert.M44);
 
             //TODO: Can be accelerated with sorting the normal map and not normal map useage beforhand
             foreach (var type in _geometries.Keys)
             {
                 if (normalMaps.ContainsKey(type))
                 {
+                    _deferredProgram.ActivateTexture("normalMap", 1, normalMaps[type]);
+
                     if (heightMaps.ContainsKey(type))
                     {
-                        _shaderParalax.Activate();
-                        _shaderParalax.ActivateTexture("normalMap", 0, normalMaps[type]);
-                        _shaderParalax.ActivateTexture("heightMap", 1, heightMaps[type]);
-
-                        _geometries[type].Draw(instanceCounts[type]);
-
-                        _shaderParalax.DeactivateTexture(1, heightMaps[type]);
-                        _shaderParalax.DeactivateTexture(0, normalMaps[type]);
-                        _shaderParalax.Deactivate();
+                        _deferredProgram.ActivateTexture("heightMap", 2, heightMaps[type]);
+                        _deferredProgram.Uniform("normalMapped", 0f);
+                        _deferredProgram.Uniform("paralexMapped", 1f);
                     }
                     else
                     {
-                        _shaderWithNormalMap.Activate();
-                        normalMaps[type].Activate();
-
-                        _geometries[type].Draw(instanceCounts[type]);
-
-                        normalMaps[type].Deactivate();
-                        _shaderWithNormalMap.Deactivate();
+                        _deferredProgram.Uniform("normalMapped", 1f);
+                        _deferredProgram.Uniform("paralexMapped", 0f);
                     }
                 }
                 else
                 {
-                    _shaderWithGeometryNormals.Activate();
+                    _deferredProgram.Uniform("normalMapped", 0f);
+                    _deferredProgram.Uniform("paralexMapped", 0f);
+                }
 
-                    _geometries[type].Draw(instanceCounts[type]);
+                if (textures.ContainsKey(type))
+                {
+                    _deferredProgram.ActivateTexture("tex", 0, textures[type]);
+                    _deferredProgram.Uniform("textured", 1f);
+                }
+                else
+                {
+                    _deferredProgram.Uniform("materialColor", System.Drawing.Color.LightGray);
+                    _deferredProgram.Uniform("textured", 0f);
+                }
 
-                    _shaderWithGeometryNormals.Deactivate();
+                _geometries[type].Draw(instanceCounts[type]);
+
+                if (textures.ContainsKey(type))
+                {
+                    _deferredProgram.DeactivateTexture(0, textures[type]);
+                }
+
+                if (normalMaps.ContainsKey(type))
+                {
+                    if (heightMaps.ContainsKey(type))
+                    {
+                        _deferredProgram.DeactivateTexture(2, heightMaps[type]);
+                    }
+                    _deferredProgram.DeactivateTexture(1, normalMaps[type]);
                 }
             }
 
             renderState.Set(new DepthTest(false));
             _deferredSurface.Deactivate();
-        }
-
-        private void SetUniforms(IShaderProgram shader, ITransformation camera)
-        {
-            shader.Activate();
-            shader.Uniform("camera", camera);
-            Matrix4x4.Invert(camera.Matrix, out var invert);
-            shader.Uniform("camPos", invert.Translation / invert.M44);
-            shader.Deactivate();
         }
     }
 }

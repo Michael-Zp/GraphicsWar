@@ -6,10 +6,11 @@ namespace GraphicsWar.Model
     public class Entity
     {
         public Enums.EntityType Type { get; }
-        public Matrix4x4 Transformation => CalculateRotation(_rotation) * Matrix4x4.CreateTranslation(_position);
+        public Matrix4x4 Transformation => Matrix4x4.CreateScale(_scale) * CalculateRotation(_rotation) * Matrix4x4.CreateTranslation(_position);
 
         private Vector3 _position;
         private Vector3 _rotation;
+        private Vector3 _scale = Vector3.One;
 
         public Entity(Enums.EntityType type, Vector3 position, Vector3 rotation)
         {
@@ -26,6 +27,12 @@ namespace GraphicsWar.Model
         public void Translate(Vector3 translation)
         {
             _position += translation;
+        }
+
+        public void Scale(float scale) => Scale(new Vector3(scale, scale, scale));
+        public void Scale(Vector3 scale)
+        {
+            _scale *= scale;
         }
 
         private Matrix4x4 CalculateRotation(Vector3 rotVec)

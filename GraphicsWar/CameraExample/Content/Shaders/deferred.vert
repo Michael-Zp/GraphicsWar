@@ -5,19 +5,31 @@ uniform mat4 camera;
 in vec3 position;
 in vec3 normal;
 in mat4 transform;
+in vec2 uv;
+in vec3 tangent;
+in vec3 bitangent;
 
-out vec3 n;
-out vec3 pos;
-out float d;
+out Data {
+	vec3 normal;
+	vec3 position;
+	float depth;
+	vec2 uv;
+	mat4 transform;
+	vec3 tangent;
+	vec3 bitangent;
+} o;
 
 void main() 
 {
-	n = (transform * vec4(normal,0)).xyz;
-	//pos = (transform * vec4(gl_VertexID >= 8 && gl_VertexID < 12 ? position * 2 * (gl_VertexID % 4 + 1) : position, 1.0)).xyz;
-	pos = (transform * vec4(position, 1.0)).xyz;
+	o.normal = normal;
+	o.position = (transform * vec4(position, 1.0)).xyz;
+	o.uv = uv;
+	o.transform = transform;
+	o.tangent = tangent;
+	o.bitangent = bitangent;
 
-	vec4 outPos = camera * vec4(pos, 1.0);
+	vec4 outPos = camera * vec4(o.position, 1.0);
 
 	gl_Position = outPos;
-	d = outPos.z;
+	o.depth = outPos.z;
 }

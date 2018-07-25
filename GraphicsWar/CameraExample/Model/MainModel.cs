@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using GraphicsWar.Shared;
 
@@ -10,19 +11,18 @@ namespace GraphicsWar.Model
 
         public MainModel()
         {
-            Entities.Add(new Entity(Enums.EntityType.Type1, new Vector3(2.5f, 0, 0), new Vector3(0)));
-            //Entities.Add(new Entity(Enums.EntityType.Type2, new Vector3(-2.5f, 0, 0), new Vector3(0)));
-            //Entities.Add(new Entity(Enums.EntityType.Type2, new Vector3(0, 0, 0), new Vector3(0)));
-            Entities.Add(new Entity(Enums.EntityType.Type3, new Vector3(0, 0, 0), new Vector3(0, 0, 0)));
-            Entities.Add(new Entity(Enums.EntityType.Type4, new Vector3(-3, 0, 0), new Vector3(0, 0, 0)));
+            Entities.Add(new Entity(Enums.EntityType.Nvidia, new Vector3(1f, 0, 0), new Vector3(0)));
+            Entities[0].Scale(0.28f);
+            Entities[0].Rotate(new Vector3(0f, 0f, (float)Math.PI / 2));
+            Entities.Add(new Entity(Enums.EntityType.Radeon, new Vector3(-1f, 0, 0), new Vector3(0)));
+            Entities[1].Scale(0.28f);
+            Entities[1].Rotate(new Vector3(0f, 0f, (float)Math.PI / 2));
         }
 
         public void Update(float deltaTime)
         {
-            //Entities[0].Rotate(new Vector3(2f * deltaTime));
-            //Entities[1].Rotate(new Vector3(2f * deltaTime));
-            //Entities[2].Rotate(new Vector3(-2f * deltaTime));
-            //Entities[1].Rotate(new Vector3(1, 0, 0) * deltaTime);
+            Entities[0].Rotate(new Vector3(-0.5f * deltaTime, 0f, 0f));
+            Entities[1].Rotate(new Vector3(-0.5f * deltaTime, 0f, 0f));
         }
     }
 }

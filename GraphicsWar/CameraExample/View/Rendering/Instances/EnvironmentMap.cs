@@ -31,7 +31,7 @@ namespace GraphicsWar.View.Rendering.Instances
         private IShaderProgram _testCubeMapProgram;
         private IShaderProgram _debugShader;
 
-        public EnvironmentMap(int size, IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes, ICollection<Enums.EntityType> normalMapped, ICollection<Enums.EntityType> heightMapped)
+        public EnvironmentMap(int size, IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
             _positions = new Position[]
             {
@@ -49,7 +49,7 @@ namespace GraphicsWar.View.Rendering.Instances
                 _mapSurfaces[i] = new FBOwithDepth(Texture2dGL.Create(size, size));
             }
 
-            _deferred = new Deferred(contentLoader, meshes, normalMapped, heightMapped);
+            _deferred = new Deferred(contentLoader, meshes);
             _deferred.UpdateResolution(size, size);
             _shadowMapping = new DirectionalShadowMapping(contentLoader, meshes);
             _shadowMapping.UpdateResolution(size, size);
@@ -75,8 +75,6 @@ namespace GraphicsWar.View.Rendering.Instances
                 _shadowMapping.Draw(renderState, _cameras[i], instanceCounts, _deferred.Depth, lightSources[0].Direction);
                 _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normals, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor, _mapSurfaces[i]);
             }
-
-            //TextureDrawer.Draw(_deferred.Color);
 
             _cubeFbo.Activate();
             for (int i = 0; i < 6; i++)

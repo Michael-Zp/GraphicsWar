@@ -32,7 +32,7 @@ namespace GraphicsWar.View
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
             _renderState = renderState;
-            _renderState.Set(new BackFaceCulling(true));
+            //_renderState.Set(new BackFaceCulling(true));
 
             _meshes.Add(Enums.EntityType.Type1, Meshes.CreateSphere(subdivision: 0));
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
@@ -48,12 +48,11 @@ namespace GraphicsWar.View
             _normalMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("n3.png"));
             _heightMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("h3.jpg"));
 
-            _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes, _normalMaps.Keys, _heightMaps.Keys));
+            _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
             _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
-            _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader,
-                _meshes, _normalMaps.Keys, _heightMaps.Keys));
+            _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
 
             _lights.Add(new LightSource(Vector3.Zero, new Vector3(0f, -1f, 0f), Vector3.One, 1));
         }
@@ -74,10 +73,10 @@ namespace GraphicsWar.View
 
             _environmentMap.CreateMap(Vector3.UnitY * 0.1f, _renderState, _instanceCounts, _textures, _normalMaps, _heightMaps, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
 
-            //TextureDrawer.Draw(_deferred.Color);
+            TextureDrawer.Draw(_deferred.Color);
             //TextureDrawer.Draw(_lighting.Output);
 
-            _environmentMap.DrawCubeMap(camera);
+            //_environmentMap.DrawCubeMap(camera);
         }
 
         public void Resize(int width, int height)
