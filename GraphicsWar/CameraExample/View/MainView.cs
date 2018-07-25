@@ -13,6 +13,7 @@ namespace GraphicsWar.View
     {
         private readonly IRenderState _renderState;
 
+        private readonly Dictionary<Enums.EntityType, ITexture2D> _textures = new Dictionary<Enums.EntityType, ITexture2D>();
         private readonly Dictionary<Enums.EntityType, ITexture2D> _normalMaps = new Dictionary<Enums.EntityType, ITexture2D>();
         private readonly Dictionary<Enums.EntityType, ITexture2D> _heightMaps = new Dictionary<Enums.EntityType, ITexture2D>();
         private readonly Dictionary<Enums.EntityType, DefaultMesh> _meshes = new Dictionary<Enums.EntityType, DefaultMesh>();
@@ -37,6 +38,11 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Type2, Meshes.CreateCornellBox());
             _meshes.Add(Enums.EntityType.Type3, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
             _meshes.Add(Enums.EntityType.Type4, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
+            _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
+            _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
+
+            _textures.Add(Enums.EntityType.Nvidia, contentLoader.Load<ITexture2D>("Nvidia.png"));
+            _textures.Add(Enums.EntityType.Radeon, contentLoader.Load<ITexture2D>("Radeon.png"));
 
             _normalMaps.Add(Enums.EntityType.Type3, contentLoader.Load<ITexture2D>("n3.png"));
             _normalMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("n3.png"));
@@ -58,7 +64,7 @@ namespace GraphicsWar.View
 
             _renderInstanceGroup.UpdateGeometry(_transforms);
 
-            _deferred.Draw(_renderState, camera, _instanceCounts, _normalMaps, _heightMaps);
+            _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps);
 
             _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction);
 
@@ -66,7 +72,7 @@ namespace GraphicsWar.View
 
             _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
 
-            _environmentMap.CreateMap(Vector3.UnitY*0.1f, _renderState,_instanceCounts, _normalMaps, _heightMaps, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
+            _environmentMap.CreateMap(Vector3.UnitY * 0.1f, _renderState, _instanceCounts, _textures, _normalMaps, _heightMaps, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
 
             //TextureDrawer.Draw(_deferred.Color);
             //TextureDrawer.Draw(_lighting.Output);

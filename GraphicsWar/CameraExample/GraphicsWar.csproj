@@ -175,7 +175,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Content\Models\GPUs\Nvidia\Nvidia.png" />
     <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon.png" />
-    <Content Include="Content\Models\ModelLinks.txt" />
     <EmbeddedResource Include="Content\Textures\h3.jpg" />
     <EmbeddedResource Include="Content\Textures\n3.png" />
     <EmbeddedResource Include="Content\Textures\h2.jpg" />
@@ -230,12 +229,16 @@
     <EmbeddedResource Include="Content\Shaders\debugCubeMap.frag" />
     <None Include="Content\Models\GPUs\Nvidia\GTX_690.skp" />
     <None Include="Content\Models\GPUs\Nvidia\GTX_690.stl" />
-    <None Include="Content\Models\GPUs\Nvidia\Nvidia_scaled.mtl" />
-    <EmbeddedResource Include="Content\Models\GPUs\Nvidia\Nvidia_scaled.obj" />
+    <None Include="Content\Models\GPUs\Nvidia\Nvidia.blend" />
+    <None Include="Content\Models\GPUs\Nvidia\Nvidia.blend1" />
+    <None Include="Content\Models\GPUs\Nvidia\Nvidia.mtl" />
+    <EmbeddedResource Include="Content\Models\GPUs\Nvidia\Nvidia.obj" />
     <None Include="Content\Models\GPUs\Radeon\7970.skp" />
     <None Include="Content\Models\GPUs\Radeon\7970.stl" />
-    <None Include="Content\Models\GPUs\Radeon\Radeon_scaled.mtl" />
-    <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon_scaled.obj" />
+    <None Include="Content\Models\GPUs\Radeon\Radeon.blend" />
+    <None Include="Content\Models\GPUs\Radeon\Radeon.blend1" />
+    <None Include="Content\Models\GPUs\Radeon\Radeon.mtl" />
+    <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon.obj" />
     <None Include="Content\Shaders\environmentMapping.glsl" />
     <EmbeddedResource Include="Content\Shaders\testCubeMap.glsl" />
   </ItemGroup>

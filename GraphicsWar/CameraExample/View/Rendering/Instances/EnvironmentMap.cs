@@ -65,13 +65,13 @@ namespace GraphicsWar.View.Rendering.Instances
             //CreateMap();
         }
 
-        public void CreateMap(Vector3 position, IRenderState renderState, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<LightSource> lightSources, Vector3 ambientColor, ITransformation camera)
+        public void CreateMap(Vector3 position, IRenderState renderState, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<LightSource> lightSources, Vector3 ambientColor, ITransformation camera)
         {
 
             for (int i = 0; i < 6; i++)
             {
                 _positions[i].Location = position;
-                _deferred.Draw(renderState, _cameras[i], instanceCounts, normalMaps, heightMaps);
+                _deferred.Draw(renderState, _cameras[i], instanceCounts, textures, normalMaps, heightMaps);
                 _shadowMapping.Draw(renderState, _cameras[i], instanceCounts, _deferred.Depth, lightSources[0].Direction);
                 _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normals, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor, _mapSurfaces[i]);
             }
