@@ -1,19 +1,15 @@
 ﻿using GraphicsWar.Model;
 using GraphicsWar.View;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphicsWar.Controller
 {
     public static class Utilities
     {
-        public static IEnumerable<ViewEntity> ToViewEntities(this IEnumerable<Entity> entities)
+        public static List<ViewEntity> ToViewEntities(this IEnumerable<Entity> entities)
         {
-            List<ViewEntity> viewEntities = new List<ViewEntity>();
-            foreach (var entity in entities)
-            {
-                viewEntities.Add(new ViewEntity(entity.Type, entity.Transformation));
-            }
-            return viewEntities;
+            return entities.Select(entity => new ViewEntity(entity.Type, entity.Transformation)).ToList();
         }
     }
 }

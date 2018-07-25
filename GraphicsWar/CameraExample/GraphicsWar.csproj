@@ -113,6 +113,7 @@
     <Compile Include="View\Rendering\Instances\Lighting.cs" />
     <Compile Include="ExtensionMethods\IShaderProgramExtensionMethods.cs" />
     <Compile Include="View\LightSource.cs" />
+    <Compile Include="View\Rendering\Instances\Add.cs" />
     <Compile Include="View\Rendering\Instances\SSAOWithBlur.cs" />
     <Compile Include="View\Rendering\Instances\TwoPassPostProcessShader.cs" />
     <Compile Include="View\Rendering\Instances\Deferred.cs" />
@@ -225,8 +226,9 @@
     <EmbeddedResource Include="Content\Shaders\deferred.vert" />
     <None Include="Content\Models\GPUs\Radeon\Radeon.mtl" />
     <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon.obj" />
-    <None Include="Content\Shaders\environmentMapping.glsl" />
-    <EmbeddedResource Include="Content\Shaders\testCubeMap.glsl" />
+    <EmbeddedResource Include="Content\Shaders\environmentMap.vert" />
+    <EmbeddedResource Include="Content\Shaders\environmentMap.frag" />
+    <EmbeddedResource Include="Content\Shaders\add.glsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

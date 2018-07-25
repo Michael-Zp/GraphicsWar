@@ -10,13 +10,19 @@ namespace GraphicsWar.Model
 
         private Vector3 _position;
         private Vector3 _rotation;
-        private Vector3 _scale = Vector3.One;
+        private Vector3 _scale;
 
-        public Entity(Enums.EntityType type, Vector3 position, Vector3 rotation)
+
+        public Entity(Enums.EntityType type, Vector3 position, Vector3 rotation, float scale) : this(type, position,
+            rotation, new Vector3(scale))
+        { }
+
+        public Entity(Enums.EntityType type, Vector3 position, Vector3 rotation, Vector3 scale)
         {
             Type = type;
             _position = position;
             _rotation = rotation;
+            _scale = scale;
         }
 
         public void Rotate(Vector3 rotation)
@@ -29,7 +35,7 @@ namespace GraphicsWar.Model
             _position += translation;
         }
 
-        public void Scale(float scale) => Scale(new Vector3(scale, scale, scale));
+        public void Scale(float scale) => Scale(new Vector3(scale));
         public void Scale(Vector3 scale)
         {
             _scale *= scale;

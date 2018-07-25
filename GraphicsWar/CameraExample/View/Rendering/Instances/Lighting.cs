@@ -22,10 +22,10 @@ namespace GraphicsWar.View.Rendering.Instances
 
     public class Lighting : IUpdateResolution
     {
-        public ITexture2D Output => _renderSurface.Texture;
+        public ITexture2D Output => _outputSurface.Texture;
 
         private readonly IShaderProgram _shader;
-        private IRenderSurface _renderSurface;
+        private IRenderSurface _outputSurface;
         private readonly int _lightArraySizeInShader = 8;
 
         public Lighting(IContentLoader contentLoader)
@@ -35,7 +35,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor)
         {
-            Draw(camera, materialColor, normals, position, shadowSurface, lightSources, ambientColor, _renderSurface);
+            Draw(camera, materialColor, normals, position, shadowSurface, lightSources, ambientColor, _outputSurface);
         }
 
         public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor, IRenderSurface renderSurface)
@@ -105,7 +105,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void UpdateResolution(int width, int height)
         {
-            _renderSurface = new FBO(Texture2dGL.Create(width, height));
+            _outputSurface = new FBO(Texture2dGL.Create(width, height));
 
             _shader.Uniform("iResolution", new Vector2(width, height));
         }

@@ -2,7 +2,7 @@
 {
     public static class Enums
     {
-        public enum EntityType { Type1, Type2, Type3,
+        public enum EntityType { Sphere, CornellBox, Type3,
             Type4, Nvidia, Radeon
         }
     }

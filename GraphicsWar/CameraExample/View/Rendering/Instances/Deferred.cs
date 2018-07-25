@@ -63,7 +63,7 @@ namespace GraphicsWar.View.Rendering.Instances
             }
         }
 
-        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps)
+        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling)
         {
             _deferredSurface.Activate();
             renderState.Set(new DepthTest(true));
@@ -114,6 +114,15 @@ namespace GraphicsWar.View.Rendering.Instances
                     _deferredProgram.Uniform("textured", 0f);
                 }
 
+                if (disableBackFaceCulling.Contains(type))
+                {
+                    renderState.Set(new BackFaceCulling(false));
+                }
+                else
+                {
+                    renderState.Set(new BackFaceCulling(true));
+                }
+
                 _geometries[type].Draw(instanceCounts[type]);
 
                 if (textures.ContainsKey(type))
@@ -132,6 +141,7 @@ namespace GraphicsWar.View.Rendering.Instances
             }
 
             renderState.Set(new DepthTest(false));
+            renderState.Set(new BackFaceCulling(true));
             _deferredSurface.Deactivate();
         }
     }
