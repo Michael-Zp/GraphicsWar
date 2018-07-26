@@ -47,11 +47,12 @@ namespace GraphicsWar.View.Rendering.Instances
             _shadowShader.Uniform("iResolution", new Vector2(width, height));
         }
 
-        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, ITexture2D sceneDepth, Vector3 lightDirection)
+        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, ITexture2D sceneDepth, Vector3 lightDirection, List<Enums.EntityType> disableBackFaceCulling)
         {
             renderState.Set(new DepthTest(true));
 
             lightDirection = Vector3.Normalize(-lightDirection);
+            lightDirection.X *= -1;
             var azimuth = Math.Atan2(lightDirection.X, lightDirection.Z) - Math.Atan2(0, 1);
             var basedVector = new Vector3(lightDirection.X, 0, lightDirection.Z);
             if (basedVector != Vector3.Zero)
@@ -61,12 +62,12 @@ namespace GraphicsWar.View.Rendering.Instances
             var elevation = Math.Acos(Vector3.Dot(lightDirection, basedVector));
             ITransformation lightCamera = new Camera<Orbit, Ortographic>(new Orbit(6, MathHelper.RadiansToDegrees((float)azimuth), MathHelper.RadiansToDegrees((float)elevation)), new Ortographic(10, 10));
 
-            DrawDepthSurface(lightCamera, instanceCounts);
+            DrawDepthSurface(renderState, lightCamera, instanceCounts, disableBackFaceCulling);
 
 
             lightDirection.X *= -1;
 
-            DrawShadowSurface(lightDirection, lightCamera, camera, instanceCounts);
+            DrawShadowSurface(renderState, lightDirection, lightCamera, camera, instanceCounts, disableBackFaceCulling);
 
             renderState.Set(new DepthTest(false));
         }
@@ -84,7 +85,7 @@ namespace GraphicsWar.View.Rendering.Instances
             }
         }
 
-        private void DrawDepthSurface(ITransformation lightCamera, Dictionary<Enums.EntityType, int> instanceCounts)
+        private void DrawDepthSurface(IRenderState renderState, ITransformation lightCamera, Dictionary<Enums.EntityType, int> instanceCounts, List<Enums.EntityType> disableBackFaceCulling)
         {
             _depthSurface.Activate();
 
@@ -96,7 +97,12 @@ namespace GraphicsWar.View.Rendering.Instances
 
             foreach (var type in _geometriesDepth.Keys)
             {
+                if (disableBackFaceCulling.Contains(type))
+                {
+                    renderState.Set(new BackFaceCulling(false));
+                }
                 _geometriesDepth[type].Draw(instanceCounts[type]);
+                renderState.Set(new BackFaceCulling(true));
             }
 
             _depthShader.Deactivate();
@@ -104,7 +110,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _depthSurface.Deactivate();
         }
 
-        private void DrawShadowSurface(Vector3 lightDirection, ITransformation lightCamera, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts)
+        private void DrawShadowSurface(IRenderState renderState, Vector3 lightDirection, ITransformation lightCamera, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, List<Enums.EntityType> disableBackFaceCulling)
         {
             _outputSurface.Activate();
 
@@ -121,7 +127,12 @@ namespace GraphicsWar.View.Rendering.Instances
 
             foreach (var type in _geometriesDepth.Keys)
             {
+                if (disableBackFaceCulling.Contains(type))
+                {
+                    renderState.Set(new BackFaceCulling(false));
+                }
                 _geometriesShadow[type].Draw(instanceCounts[type]);
+                renderState.Set(new BackFaceCulling(true));
             }
 
             _depthSurface.Texture.Deactivate();

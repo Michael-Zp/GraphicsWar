@@ -17,7 +17,7 @@ namespace GraphicsWar.View.Rendering.Instances
         public Vector3 Direction;
         public float Align2;
         public Vector3 Color;
-        public float Intensity;
+        public float Align3;
     }
 
     public class Lighting : IUpdateResolution
@@ -84,7 +84,6 @@ namespace GraphicsWar.View.Rendering.Instances
                 lightInShader[i].Position = lightSources[i].Position;
                 lightInShader[i].Direction = lightSources[i].Direction;
                 lightInShader[i].Color = lightSources[i].Color;
-                lightInShader[i].Intensity = lightSources[i].Intensity;
             }
 
             for (int i = lightSources.Count; i < _lightArraySizeInShader; i++)
@@ -92,7 +91,6 @@ namespace GraphicsWar.View.Rendering.Instances
                 lightInShader[i].Position = LightSource.DefaultLightSource.Position;
                 lightInShader[i].Direction = LightSource.DefaultLightSource.Direction;
                 lightInShader[i].Color = LightSource.DefaultLightSource.Color;
-                lightInShader[i].Intensity = LightSource.DefaultLightSource.Intensity;
             }
 
             BufferObject bufferObject = new BufferObject(BufferTarget.ShaderStorageBuffer);

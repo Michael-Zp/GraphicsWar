@@ -37,7 +37,7 @@ struct Light
 	vec3 lightDir;
 	float align2;
 	vec3 lightCol;
-	float lightIntense;
+	float align3;
 };
 
 layout(std430) buffer Lights
@@ -57,14 +57,17 @@ void main()
 	vec4 notNormNormal = texture2D(normals, uv);
 	vec3 norm = normalize(notNormNormal.xyz);
 
-	color = vec4(0);
+	float shadowIntensity = texture2D(shadowSurface, uv).x; 
 
-	for(int i = 0; i < 8; i++) 
+	color = vec4(ambientColor * matColor,1);
+
+	for(int i = 0; i < 1; i++) 
 	{
-		color += calculateLight(matColor, light[i].lightCol, ambientColor, light[i].lightDir, viewDirection, norm) * light[i].lightIntense;
+		vec3 diffuse = matColor * light[i].lightCol * lambert(norm, -light[i].lightDir);
+		vec3 specular = light[i].lightCol * specular(norm, light[i].lightDir, viewDirection, 100);
+
+		color.xyz += shadowIntensity * (diffuse + specular);
 	}
 
 	color *= step(0.5, length(notNormNormal.xyz));
-
-	//color *= texture2D(shadowSurface, uv).x;
 }
