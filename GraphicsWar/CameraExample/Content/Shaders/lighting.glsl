@@ -54,7 +54,8 @@ void main()
 {
 	vec3 matColor = texture2D(materialColor, uv).rgb;
 	vec3 viewDirection = normalize(texture2D(position, uv).xyz - camPos);
-	vec3 norm = normalize(texture2D(normals, uv).xyz);
+	vec4 notNormNormal = texture2D(normals, uv);
+	vec3 norm = normalize(notNormNormal.xyz);
 
 	color = vec4(0);
 
@@ -62,6 +63,8 @@ void main()
 	{
 		color += calculateLight(matColor, light[i].lightCol, ambientColor, light[i].lightDir, viewDirection, norm) * light[i].lightIntense;
 	}
+
+	color *= step(0.5, length(notNormNormal.xyz));
 
 	//color *= texture2D(shadowSurface, uv).x;
 }

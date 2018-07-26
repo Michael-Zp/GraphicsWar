@@ -63,7 +63,7 @@ namespace GraphicsWar.View
             _add = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
             _add2 = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
 
-            _lights.Add(new LightSource(Vector3.Zero, new Vector3(0f, -1f, 0f), Vector3.One, 1));
+            _lights.Add(new LightSource(Vector3.Zero, new Vector3(-0.2f, -1f, -0.4f), Vector3.One, 1));
         }
 
         public void Render(List<ViewEntity> entities, float time, ITransformation camera)
@@ -75,10 +75,6 @@ namespace GraphicsWar.View
             _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling);
 
             _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction);
-
-            _lighting.Draw(camera, _deferred.Color, _deferred.Normals, _deferred.Position, _directShadowMap.Output, _lights, new Vector3(0.2f, 0.2f, 0.2f));
-
-            _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
 
             Vector3 mapPos = new Vector3(entities[2].Transform.M41, entities[2].Transform.M42,
                 entities[2].Transform.M43);
@@ -96,10 +92,12 @@ namespace GraphicsWar.View
             _environmentMap.Draw(entities[3].Transform, _renderState, _meshes[entities[3].Type], camera, _deferred.Depth);
 
             _add2.Draw(_add.Output, _environmentMap.Output, 0.7f);
-            
-            //TextureDrawer.Draw(_deferred.Depth);
-            //TextureDrawer.Draw(_environmentMap.Output);
-            TextureDrawer.Draw(_add2.Output);
+
+            _lighting.Draw(camera, _add2.Output, _deferred.Normal, _deferred.Position, _directShadowMap.Output, _lights, new Vector3(0.2f, 0.2f, 0.2f));
+
+            _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
+
+            TextureDrawer.Draw(_lighting.Output);
 
             //_environmentMap.DrawCubeMap(camera);
         }

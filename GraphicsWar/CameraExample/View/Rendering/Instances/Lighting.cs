@@ -34,9 +34,7 @@ namespace GraphicsWar.View.Rendering.Instances
         }
 
         public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor)
-        {
-            Draw(camera, materialColor, normals, position, shadowSurface, lightSources, ambientColor, _outputSurface);
-        }
+            => Draw(camera, materialColor, normals, position, shadowSurface, lightSources, ambientColor, _outputSurface);
 
         public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor, IRenderSurface renderSurface)
         {

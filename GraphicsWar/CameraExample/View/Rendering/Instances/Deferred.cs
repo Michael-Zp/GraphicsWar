@@ -16,11 +16,13 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly IShaderProgram _deferredProgram;
         private IRenderSurface _deferredSurface;
 
+        private ITexture2D _defaultMap;
+
         private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
 
         public ITexture2D Color => _deferredSurface.Textures[0];
 
-        public ITexture2D Normals => _deferredSurface.Textures[1];
+        public ITexture2D Normal => _deferredSurface.Textures[1];
 
         public ITexture2D Depth => _deferredSurface.Textures[2];
 
@@ -45,6 +47,8 @@ namespace GraphicsWar.View.Rendering.Instances
 
                 _geometries.Add(meshContainer.Key, geometry);
             }
+
+            _defaultMap = contentLoader.Load<ITexture2D>("Nvidia.png");
         }
 
         public void UpdateResolution(int width, int height)
@@ -81,6 +85,11 @@ namespace GraphicsWar.View.Rendering.Instances
             //TODO: Can be accelerated with sorting the normal map and not normal map useage beforhand
             foreach (var type in _geometries.Keys)
             {
+                if (instanceCounts[type] == 0)
+                {
+                    continue;
+                }
+
                 if (normalMaps.ContainsKey(type))
                 {
                     _deferredProgram.ActivateTexture("normalMap", 1, normalMaps[type]);
@@ -88,19 +97,22 @@ namespace GraphicsWar.View.Rendering.Instances
                     if (heightMaps.ContainsKey(type))
                     {
                         _deferredProgram.ActivateTexture("heightMap", 2, heightMaps[type]);
-                        _deferredProgram.Uniform("normalMapped", 0f);
-                        _deferredProgram.Uniform("paralexMapped", 1f);
+                        _deferredProgram.Uniform("normalMapping", 0f);
+                        _deferredProgram.Uniform("paralaxMapping", 1f);
                     }
                     else
                     {
-                        _deferredProgram.Uniform("normalMapped", 1f);
-                        _deferredProgram.Uniform("paralexMapped", 0f);
+                        _deferredProgram.ActivateTexture("heightMap", 2, _defaultMap);
+                        _deferredProgram.Uniform("normalMapping", 1f);
+                        _deferredProgram.Uniform("paralaxMapping", 0f);
                     }
                 }
                 else
                 {
-                    _deferredProgram.Uniform("normalMapped", 0f);
-                    _deferredProgram.Uniform("paralexMapped", 0f);
+                    _deferredProgram.ActivateTexture("normalMap", 1, _defaultMap);
+                    _deferredProgram.ActivateTexture("heightMap", 2, _defaultMap);
+                    _deferredProgram.Uniform("normalMapping", 0f);
+                    _deferredProgram.Uniform("paralaxMapping", 0f);
                 }
 
                 if (textures.ContainsKey(type))

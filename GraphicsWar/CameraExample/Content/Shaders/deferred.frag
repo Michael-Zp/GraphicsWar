@@ -101,13 +101,13 @@ void main()
 {
 	float unmapped = max(0 , 1-normalMapping-paralaxMapping);
 
-	vec3 normalMappedNormal = calculateNormalMapped();
-	vec3 paralaxMappedNormal = calculateParalaxMapped();
+	vec3 normalMappedNormal = normalMapping > 0 ? calculateNormalMapped() : vec3(0);
+	vec3 paralaxMappedNormal = paralaxMapping > 0 ? calculateParalaxMapped() : vec3(0);
 
 	color = textured * texture(tex, i.uv) + (1-textured)*materialColor;
 	//color = vec4(inverseTbn[0].xyz, 1);
-	normal = normalize(unmapped*i.normal + normalMapping*normalMappedNormal + paralaxMapping*paralaxMappedNormal);
+	normal = normalize(unmapped * i.normal + normalMapping * normalMappedNormal + paralaxMapping * paralaxMappedNormal);
+	
 	depth = i.depth;
 	position = i.position;
-
 }

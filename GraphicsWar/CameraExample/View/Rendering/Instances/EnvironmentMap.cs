@@ -75,7 +75,7 @@ namespace GraphicsWar.View.Rendering.Instances
                 _positions[i].Location = position;
                 _deferred.Draw(renderState, _cameras[i], instanceCounts, textures, normalMaps, heightMaps, new List<Enums.EntityType>());
                 _shadowMapping.Draw(renderState, _cameras[i], instanceCounts, _deferred.Depth, lightSources[0].Direction);
-                _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normals, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor, _mapSurfaces[i]);
+                _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normal, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor, _mapSurfaces[i]);
             }
 
             _cubeFbo.Activate();
