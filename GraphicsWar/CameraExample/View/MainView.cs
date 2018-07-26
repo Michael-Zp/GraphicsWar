@@ -6,6 +6,8 @@ using Zenseless.HLGL;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Instances;
 using GraphicsWar.View.Rendering.Management;
+using OpenTK.Graphics.ES10;
+using OpenTK.Graphics.OpenGL4;
 
 namespace GraphicsWar.View
 {
@@ -64,6 +66,7 @@ namespace GraphicsWar.View
             _add2 = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
 
             _lights.Add(new LightSource(Vector3.Zero, new Vector3(-0.2f, -1f, -0.4f), Vector3.One, 1));
+
         }
 
         public void Render(List<ViewEntity> entities, float time, ITransformation camera)
@@ -76,20 +79,16 @@ namespace GraphicsWar.View
 
             _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction);
 
-            Vector3 mapPos = new Vector3(entities[2].Transform.M41, entities[2].Transform.M42,
-                entities[2].Transform.M43);
-            _environmentMap.CreateMap(mapPos, _renderState, _instanceCounts, _textures, _normalMaps, _heightMaps, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
+            _environmentMap.CreateMap(entities[2], _renderState, 0, _transforms, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
 
-            _environmentMap.Draw(entities[2].Transform, _renderState, _meshes[entities[2].Type], camera, _deferred.Depth);
+            _environmentMap.Draw(_renderState, _deferred.Depth, 0);
 
             _add.Draw(_deferred.Color, _environmentMap.Output, 0.9f);
 
 
-            Vector3 mapPos2 = new Vector3(entities[3].Transform.M41, entities[3].Transform.M42,
-                entities[3].Transform.M43);
-            _environmentMap.CreateMap(mapPos2, _renderState, _instanceCounts, _textures, _normalMaps, _heightMaps, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
+            _environmentMap.CreateMap(entities[3], _renderState, 1, _transforms, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.2f, 0.2f, 0.2f), camera);
 
-            _environmentMap.Draw(entities[3].Transform, _renderState, _meshes[entities[3].Type], camera, _deferred.Depth);
+            _environmentMap.Draw(_renderState, _deferred.Depth, 1.5f);
 
             _add2.Draw(_add.Output, _environmentMap.Output, 0.7f);
 

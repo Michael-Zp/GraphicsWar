@@ -6,6 +6,7 @@ uniform vec2 iResolution;
 uniform samplerCube cubeMap;
 uniform sampler2D depth;
 uniform vec3 camPos;
+uniform float mipmapLevel;
 
 in Data {
 	in vec3 normal;
@@ -22,5 +23,5 @@ void main()
 	float isOccluded = step(texture(depth,uv).x, i.depth - 0.01);
 
 	vec3 reflection = reflect(i.position - camPos, i.normal);
-	color = mix(textureCube(cubeMap, reflection), vec4(0), isOccluded);
+	color = mix(texture(cubeMap, reflection, mipmapLevel), vec4(0), isOccluded);
 }

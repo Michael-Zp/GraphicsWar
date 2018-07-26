@@ -72,7 +72,7 @@ namespace GraphicsWar.ExtensionMethods
             }
             
 
-            int linMin = (int)TextureMinFilter.Linear;
+            int linMin = (int)TextureMinFilter.LinearMipmapLinear;
             int linMag = (int)TextureMagFilter.Linear;
             int clampToEdge = (int)TextureWrapMode.ClampToEdge;
             Texture.Activate();
