@@ -34,16 +34,13 @@ namespace GraphicsWar.View.Rendering.Instances
         }
 
         public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor)
-            => Draw(camera, materialColor, normals, position, shadowSurface, lightSources, ambientColor, _outputSurface);
-
-        public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor, IRenderSurface renderSurface)
         {
             if (lightSources.Count > _lightArraySizeInShader)
             {
                 throw new ArgumentException("A maximum of " + _lightArraySizeInShader + " light sources is possible. See shader 'deferredLighting.glsl' for details.");
             }
 
-            renderSurface.Activate();
+            _outputSurface.Activate();
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -72,7 +69,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _shader.Deactivate();
 
-            renderSurface.Deactivate();
+            _outputSurface.Deactivate();
         }
 
         private BufferObject LightSourcesToBufferObject(List<LightSource> lightSources)

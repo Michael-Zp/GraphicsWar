@@ -71,7 +71,7 @@ namespace GraphicsWar.View.Rendering.Instances
         {
             _deferredSurface.Activate();
             renderState.Set(new DepthTest(true));
-
+            GL.ClearColor(System.Drawing.Color.FromArgb(0,0,0,0));
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
             GL.DrawBuffers(4, new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });

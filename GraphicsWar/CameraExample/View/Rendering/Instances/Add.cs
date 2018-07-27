@@ -26,7 +26,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _fboTexFloat = fboTexFloat;
         }
 
-        public void Draw(ITexture2D texOne, ITexture2D texTwo, float factor)
+        public void Draw(ITexture2D texOne, ITexture2D texTwo, float factor = 1)
         {
             _outputSurface.Activate();
 

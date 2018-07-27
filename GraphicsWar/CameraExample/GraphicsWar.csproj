@@ -109,6 +109,7 @@
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\Rendering\Instances\Blur.cs" />
+    <Compile Include="View\Rendering\Instances\Skybox.cs" />
     <Compile Include="View\Rendering\Instances\EnvironmentMap.cs" />
     <Compile Include="View\Rendering\Instances\Lighting.cs" />
     <Compile Include="ExtensionMethods\IShaderProgramExtensionMethods.cs" />
@@ -210,8 +211,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\debugCubeMap.vert" />
-    <EmbeddedResource Include="Content\Shaders\debugCubeMap.frag" />
     <None Include="Content\Models\GPUs\Nvidia\GTX_690.skp" />
     <None Include="Content\Models\GPUs\Nvidia\GTX_690.stl" />
     <None Include="Content\Models\GPUs\Nvidia\Nvidia.blend" />
@@ -229,6 +228,16 @@
     <EmbeddedResource Include="Content\Shaders\environmentMap.vert" />
     <EmbeddedResource Include="Content\Shaders\environmentMap.frag" />
     <EmbeddedResource Include="Content\Shaders\add.glsl" />
+    <EmbeddedResource Include="Content\Shaders\sky.frag" />
+    <EmbeddedResource Include="Content\Shaders\sky.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_dn.jpg" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_ft.jpg" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_lf.jpg" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_rt.jpg" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_up.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

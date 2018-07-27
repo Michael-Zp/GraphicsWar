@@ -28,10 +28,12 @@ namespace GraphicsWar.View
         private readonly DirectionalShadowMapping _directShadowMap;
         private readonly Blur _blurredShadowMap;
         private readonly SSAOWithBlur _ssaoWithBlur;
-        private readonly Lighting _lighting;
         private readonly EnvironmentMap _environmentMap;
-        private readonly Add _add;
-        private readonly Add _add2;
+        private readonly Add _addEnvMap1;
+        private readonly Add _addEnvMap2;
+        private readonly Lighting _lighting;
+        private readonly Skybox _skybox;
+        private readonly Add _addSkybox;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
 
@@ -62,10 +64,13 @@ namespace GraphicsWar.View
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
             _blurredShadowMap = _renderInstanceGroup.AddShader<Blur>(new Blur(contentLoader, 15));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
-            _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
             _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
-            _add = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
-            _add2 = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _addEnvMap1 = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _addEnvMap2 = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
+            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 45, "violentdays"));
+            _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+
 
             _lights.Add(new LightSource(Vector3.Zero, new Vector3(-0.2f, -1f, -0.4f), Vector3.One));
 
@@ -95,22 +100,28 @@ namespace GraphicsWar.View
 
             _environmentMap.Draw(_renderState, _deferred.Depth, 0);
 
-            _add.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
+            _addEnvMap1.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
+
 
 
             _environmentMap.CreateMap(entities[3], _renderState, 1, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
 
             _environmentMap.Draw(_renderState, _deferred.Depth, 1.5f);
 
-            _add2.Draw(_add.Output, _environmentMap.Output, 0.3f);
+            _addEnvMap2.Draw(_addEnvMap1.Output, _environmentMap.Output, 0.3f);
 
 
 
-            _lighting.Draw(camera, _add2.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
+            _lighting.Draw(camera, _addEnvMap2.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
 
             _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
 
-            TextureDrawer.Draw(_ssaoWithBlur.Output);
+
+            _skybox.Draw(camera);
+
+            _addSkybox.Draw(_skybox.Output, _ssaoWithBlur.Output);
+
+            TextureDrawer.Draw(_addSkybox.Output);
 
             //_environmentMap.DrawCubeMap(camera);
         }
