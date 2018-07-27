@@ -234,7 +234,7 @@ namespace GraphicsWar.Model.Physics
 
 
                     //Check sphere sphere
-                    for (; currentSphereIndex < currentSphereCount; currentSphereIndex++)
+                    for (; currentSphereIndex < currentSphereCount && baseSphere != null; currentSphereIndex++)
                     {
                         CollisionSphereEntity currentSphere = currentNode.CollisionSphereEntities[currentSphereIndex];
                         float distX = baseSphere.PosX - currentSphere.PosX;
@@ -580,6 +580,8 @@ namespace GraphicsWar.Model.Physics
                                 }
                             }
                         }
+
+                        //currentCube.Mutex.ReleaseMutex();
                     }
                     
 

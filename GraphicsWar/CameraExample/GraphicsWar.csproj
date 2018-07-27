@@ -98,6 +98,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Controller\Utilities.cs" />
+    <Compile Include="ExtensionMethods\AverageStopwatch.cs" />
     <Compile Include="ExtensionMethods\TextureDebugger.cs" />
     <Compile Include="Model\Physics\CollisionCubeEntity.cs" />
     <Compile Include="Model\Physics\CollisionOctree.cs" />

@@ -71,16 +71,19 @@ namespace GraphicsWar.View.Rendering.Instances
             renderState.Set(new DepthTest(false));
         }
 
-        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
         {
+            int depthLoc = _depthShader.GetResourceLocation(ShaderResourceType.Attribute, "transform");
+            int shadowLoc = _shadowShader.GetResourceLocation(ShaderResourceType.Attribute, "transform");
+
             foreach (var type in _geometriesDepth.Keys)
             {
-                _geometriesDepth[type].SetAttribute(_depthShader.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
+                _geometriesDepth[type].SetAttribute(depthLoc, transforms[type], true);
             }
 
             foreach (var type in _geometriesShadow.Keys)
             {
-                _geometriesShadow[type].SetAttribute(_shadowShader.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
+                _geometriesShadow[type].SetAttribute(shadowLoc, transforms[type], true);
             }
         }
 

@@ -53,11 +53,26 @@ namespace GraphicsWar.View
             _lights.Add(new LightSource(Vector3.Zero, new Vector3(0f, -1f, 0f), Vector3.One, 1));
         }
 
+        private float _time;
+        private float _ticks;
+        private float _count;
+
         public void Render(IEnumerable<ViewEntity> entities, float time, ITransformation camera)
         {
             UpdateInstancing(entities);
 
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             _renderInstanceGroup.UpdateGeometry(_transforms);
+
+            _time += sw.ElapsedMilliseconds;
+            _ticks += sw.ElapsedTicks;
+            _count++;
+
+            float swtime = _time / _count;
+            float swticks = _ticks / _count;
 
             _deferred.Draw(_renderState, camera, _instanceCounts, _normalMaps, _heightMaps);
 

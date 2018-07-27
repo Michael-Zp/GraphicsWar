@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Management;
@@ -59,7 +58,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         }
 
-        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
         {
             _deferred.UpdateTransforms(transforms);
         }

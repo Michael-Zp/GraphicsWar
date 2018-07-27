@@ -85,11 +85,13 @@ namespace GraphicsWar.View.Rendering.Instances
             _shaderWithGeometryNormals.Uniform("iResolution", new Vector2(width, height));
         }
 
-        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
         {
+            int loc = _shaderWithGeometryNormals.GetResourceLocation(ShaderResourceType.Attribute, "transform");
+            
             foreach (var type in _geometries.Keys)
             {
-                _geometries[type].SetAttribute(_shaderWithGeometryNormals.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
+                _geometries[type].SetAttribute(loc, transforms[type], true);
             }
         }
 

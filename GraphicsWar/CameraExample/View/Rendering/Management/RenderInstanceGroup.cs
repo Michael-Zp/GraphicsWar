@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
+using GraphicsWar.ExtensionMethods;
 using GraphicsWar.Shared;
 
 namespace GraphicsWar.View.Rendering.Management
@@ -10,11 +12,19 @@ namespace GraphicsWar.View.Rendering.Management
 
         public void UpdateGeometry(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
         {
+            Dictionary<Enums.EntityType, Matrix4x4[]> arrTrans = new Dictionary<Enums.EntityType, Matrix4x4[]>();
+            
+            foreach(var type in transforms.Keys)
+            {
+                arrTrans.Add(type, transforms[type].ToArray());
+            }
+
             foreach(var instance in _renderInstances)
             {
-                var geom = instance as IUpdateTransforms;
-
-                geom?.UpdateTransforms(transforms);
+                if(instance is IUpdateTransforms geom)
+                {
+                    geom.UpdateTransforms(arrTrans);
+                }
             }
         }
 
@@ -22,9 +32,10 @@ namespace GraphicsWar.View.Rendering.Management
         {
             foreach (var instance in _renderInstances)
             {
-                var reso = instance as IUpdateResolution;
-
-                reso?.UpdateResolution(width, height);
+                if(instance is IUpdateResolution reso)
+                {
+                    reso.UpdateResolution(width, height);
+                }
             }
         }
 
