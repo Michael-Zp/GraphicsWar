@@ -160,20 +160,20 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\depth.frag" />
-    <EmbeddedResource Include="Content\Shaders\depth.vert" />
-    <EmbeddedResource Include="Content\Shaders\BloomGausPass1.glsl" />
-    <EmbeddedResource Include="Content\Shaders\BloomGausPass2.glsl" />
-    <EmbeddedResource Include="Content\Shaders\BlurGausPass1.glsl" />
-    <EmbeddedResource Include="Content\Shaders\BlurGausPass2.glsl" />
-    <EmbeddedResource Include="Content\Shaders\lighting.glsl" />
-    <EmbeddedResource Include="Content\Shaders\lightCalculation.glsl" />
+    <EmbeddedResource Include="Content\Shaders\ShadowMapping\depth.frag" />
+    <EmbeddedResource Include="Content\Shaders\ShadowMapping\depth.vert" />
+    <EmbeddedResource Include="Content\Shaders\Bloom\BloomGausPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Bloom\BloomGausPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Blur\BlurGausPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Blur\BlurGausPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Lighting\lighting.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Util\lightCalculation.glsl" />
     <EmbeddedResource Include="Content\Models\suzanne.obj" />
-    <EmbeddedResource Include="Content\Shaders\vignette.glsl" />
-    <EmbeddedResource Include="Content\Shaders\normals.glsl" />
-    <EmbeddedResource Include="Content\Shaders\SSAO.glsl" />
-    <EmbeddedResource Include="Content\Shaders\shadow.vert" />
-    <EmbeddedResource Include="Content\Shaders\shadow.frag" />
+    <EmbeddedResource Include="Content\Shaders\Util\vignette.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Util\normals.glsl" />
+    <EmbeddedResource Include="Content\Shaders\SSAO\SSAO.glsl" />
+    <EmbeddedResource Include="Content\Shaders\ShadowMapping\shadow.vert" />
+    <EmbeddedResource Include="Content\Shaders\ShadowMapping\shadow.frag" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Models\GPUs\Nvidia\Nvidia.png" />
@@ -187,7 +187,7 @@
     <EmbeddedResource Include="Content\Textures\testNormalMap.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Shaders\saturationMap.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Util\saturationMap.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ZenselessSourceAppEmpty4\Zenseless.Base\Zenseless.Base.csproj">
@@ -226,21 +226,25 @@
     <None Include="Content\Models\GPUs\Radeon\7970.stl" />
     <None Include="Content\Models\GPUs\Radeon\Radeon.blend" />
     <None Include="Content\Models\GPUs\Radeon\Radeon.blend1" />
-    <EmbeddedResource Include="Content\Shaders\deferred.frag" />
-    <EmbeddedResource Include="Content\Shaders\deferred.vert" />
+    <EmbeddedResource Include="Content\Shaders\Deferred\deferred.frag" />
+    <EmbeddedResource Include="Content\Shaders\Deferred\deferred.vert" />
     <None Include="Content\Models\GPUs\Radeon\Radeon.mtl" />
     <EmbeddedResource Include="Content\Models\GPUs\Radeon\Radeon.obj" />
-    <EmbeddedResource Include="Content\Shaders\environmentMap.vert" />
-    <EmbeddedResource Include="Content\Shaders\environmentMap.frag" />
-    <EmbeddedResource Include="Content\Shaders\add.glsl" />
-    <EmbeddedResource Include="Content\Shaders\sky.frag" />
-    <EmbeddedResource Include="Content\Shaders\sky.vert" />
-    <EmbeddedResource Include="Content\Shaders\ShadowBlurGausPass1.glsl" />
-    <EmbeddedResource Include="Content\Shaders\ShadowBlurGausPass2.glsl" />
-    <EmbeddedResource Include="Content\Shaders\BlurAvgPass1.glsl" />
-    <EmbeddedResource Include="Content\Shaders\BlurAvgPass2.glsl" />
-    <EmbeddedResource Include="Content\Shaders\imageOnGeometry.frag" />
-    <EmbeddedResource Include="Content\Shaders\imageOnGeometry.vert" />
+    <EmbeddedResource Include="Content\Shaders\EnvironmentMap\environmentMap.vert" />
+    <EmbeddedResource Include="Content\Shaders\EnvironmentMap\environmentMap.frag" />
+    <EmbeddedResource Include="Content\Shaders\Util\add.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Skybox\sky.frag" />
+    <EmbeddedResource Include="Content\Shaders\Skybox\sky.vert" />
+    <EmbeddedResource Include="Content\Shaders\Blur\ShadowBlurGausPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Blur\ShadowBlurGausPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Blur\BlurAvgPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Blur\BlurAvgPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\ImageOnGeometry\imageOnGeometry.frag" />
+    <EmbeddedResource Include="Content\Shaders\ImageOnGeometry\imageOnGeometry.vert" />
+    <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.frag" />
+    <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.tesc" />
+    <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.tese" />
+    <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.vert" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />
