@@ -59,11 +59,11 @@ namespace GraphicsWar.View.Rendering.Instances
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
         }
 
-        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
         {
             foreach (var type in _geometries.Keys)
             {
-                _geometries[type].SetAttribute(_deferredProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type].ToArray(), true);
+                _geometries[type].SetAttribute(_deferredProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type], true);
             }
         }
 

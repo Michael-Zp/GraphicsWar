@@ -15,7 +15,6 @@ namespace GraphicsWar.View.Rendering.Instances
 {
     public class EnvironmentMap : IUpdateResolution, IUpdateTransforms
     {
-        private Dictionary<Enums.EntityType, DefaultMesh> _meshes;
         private ViewEntity _entity;
         private ITransformation _camera;
 
@@ -31,7 +30,7 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly DirectionalShadowMapping _shadowMapping;
         private readonly Lighting _lighting;
 
-
+        private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
         private readonly IShaderProgram _environmentMapProgram;
         private IRenderSurface _outputSurface;
 
@@ -39,8 +38,6 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public EnvironmentMap(int size, IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
-            _meshes = meshes;
-
             _positions = new Position[]
             {
                 new Position(Vector3.Zero,-90, 180), //right
@@ -68,17 +65,23 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _environmentMapProgram = contentLoader.Load<IShaderProgram>("environmentMap.*");
 
+            foreach (var meshContainer in meshes)
+            {
+                _geometries.Add(meshContainer.Key, VAOLoader.FromMesh(meshContainer.Value, _environmentMapProgram));
+            }
+
             _debugShader = contentLoader.Load<IShaderProgram>("debugCubeMap.*");
         }
 
-        public void CreateMap(ViewEntity entity, IRenderState renderState, int index, Dictionary<Enums.EntityType, List<Matrix4x4>> transforms, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, List<LightSource> lightSources, Vector3 ambientColor, ITransformation camera)
+        public void CreateMap(ViewEntity entity, IRenderState renderState, int index, Dictionary<Enums.EntityType, Matrix4x4[]> transforms, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, List<LightSource> lightSources, Vector3 ambientColor, ITransformation camera)
         {
             _entity = entity;
             _camera = camera;
 
             Vector3 position = new Vector3(entity.Transform.M41, entity.Transform.M42,
                 entity.Transform.M43);
-            transforms[entity.Type].Remove(entity.Transform);
+            
+            transforms[entity.Type][index] = transforms[entity.Type][transforms[entity.Type].Length-1];
             instanceCounts[entity.Type]--;
 
             _deferred.UpdateTransforms(transforms);
@@ -91,7 +94,7 @@ namespace GraphicsWar.View.Rendering.Instances
                 _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normal, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor, _mapSurfaces[i]);
             }
 
-            transforms[entity.Type].Insert(index, entity.Transform);
+            transforms[entity.Type][index] = entity.Transform;
             instanceCounts[entity.Type]++;
 
             _cubeFbo.Activate();
@@ -110,9 +113,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void Draw(IRenderState renderState, ITexture2D depth, float mipmapLevel)
         {
-            VAO geometry = VAOLoader.FromMesh(_meshes[_entity.Type], _environmentMapProgram);
-
-            geometry.SetAttribute(_environmentMapProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), new Matrix4x4[1] { _entity.Transform }, true);
+            _geometries[_entity.Type].SetAttribute(_environmentMapProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), new Matrix4x4[1] { _entity.Transform }, true);
 
             GL.ClearColor(Color.FromArgb(0, 0, 0, 0));
             _outputSurface.Activate();
@@ -126,7 +127,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _environmentMapProgram.Uniform("camPos", invert.Translation / invert.M44);
             _environmentMapProgram.Uniform("mipmapLevel", mipmapLevel);
 
-            geometry.Draw();
+            _geometries[_entity.Type].Draw();
 
             _environmentMapProgram.DeactivateTexture(0, _cubeFbo.Texture);
             _environmentMapProgram.DeactivateTexture(1, depth);
@@ -162,7 +163,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _environmentMapProgram.Deactivate();
         }
 
-        public void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
         {
             _shadowMapping.UpdateTransforms(transforms);
         }

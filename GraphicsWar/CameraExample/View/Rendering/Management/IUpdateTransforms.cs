@@ -6,6 +6,6 @@ namespace GraphicsWar.View.Rendering.Management
 {
     public interface IUpdateTransforms : IRenderInstance
     {
-        void UpdateTransforms(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms);
+        void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms);
     }
 }

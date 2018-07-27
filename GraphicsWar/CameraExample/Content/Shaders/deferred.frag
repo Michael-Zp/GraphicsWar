@@ -106,7 +106,7 @@ void main()
 
 	color = textured * texture(tex, i.uv) + (1-textured)*materialColor;
 	//color = vec4(inverseTbn[0].xyz, 1);
-	normal = normalize(unmapped * i.normal + normalMapping * normalMappedNormal + paralaxMapping * paralaxMappedNormal);
+	normal = normalize(unmapped * (i.transform * vec4(i.normal, 0.0)).xyz + normalMapping * normalMappedNormal + paralaxMapping * paralaxMappedNormal);
 	
 	depth = i.depth;
 	position = i.position;

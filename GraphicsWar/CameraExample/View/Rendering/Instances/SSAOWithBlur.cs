@@ -20,7 +20,7 @@ namespace GraphicsWar.View.Rendering.Instances
         public SSAOWithBlur(IContentLoader contentLoader, float blurKernelSize)
         {
             _ssao = new OnePassPostProcessShader(contentLoader.LoadPixelShader("SSAO.glsl"));
-            _blur = new Blur(contentLoader.LoadPixelShader("BlurGausPass1"), contentLoader.LoadPixelShader("BlurGausPass2"), blurKernelSize);
+            _blur = new Blur(contentLoader, blurKernelSize);
             _shader = contentLoader.LoadPixelShader("saturationMap.glsl");
         }
 

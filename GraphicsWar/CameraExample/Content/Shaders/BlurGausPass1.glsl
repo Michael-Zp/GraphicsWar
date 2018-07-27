@@ -10,11 +10,6 @@ uniform float GaussSize = 20;
 
 in vec2 uv;
 
-float grayScale(vec3 color)
-{
-	return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
-}
-
 float gaus(float x)
 {
 	return (1 / sqrt(2 * PI) * GaussSigma) * pow(Euler, -pow(x, 2) / (2 * pow(GaussSigma, 2)));
@@ -22,7 +17,7 @@ float gaus(float x)
 
 void main()
 {
-	float gx = 0;
+	vec3 gx = vec3(0);
 	float factorCount = 0;
 
 	
@@ -30,11 +25,11 @@ void main()
 	{
 		vec3 aSample  = texelFetch(image, ivec2(gl_FragCoord) + ivec2(i, 0), 0).rgb;
 		float factor = gaus(i);
-		gx += factor * grayScale(aSample);
+		gx += factor * aSample;
 		factorCount += factor;
 	}
 
 	gx /= factorCount;
 	
-	gl_FragColor = vec4(vec3(gx), 1.0);
+	gl_FragColor = vec4(gx, 1.0);
 }

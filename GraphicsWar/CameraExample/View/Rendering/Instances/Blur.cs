@@ -7,7 +7,8 @@ namespace GraphicsWar.View.Rendering.Instances
     {
         private readonly float _blurKernelSize;
 
-        public Blur(IShaderProgram blurPassOne, IShaderProgram blurPassTwo, float blurKernelSize = 20, byte fboTexComponentCount = 4, bool fboTexFloat = false) : base(blurPassOne, blurPassTwo, fboTexComponentCount, fboTexFloat)
+        public Blur(IContentLoader contentLoader, float blurKernelSize = 20, byte fboTexComponentCount = 4, bool fboTexFloat = false)
+            : base(contentLoader.LoadPixelShader("BlurGausPass1.glsl"), contentLoader.LoadPixelShader("BlurGausPass2.glsl"), fboTexComponentCount, fboTexFloat)
         {
             _blurKernelSize = blurKernelSize;
         }

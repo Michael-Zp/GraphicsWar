@@ -10,11 +10,6 @@ uniform float effectScale = 0.3;
 
 in vec2 uv;
 
-float grayScale(vec3 color)
-{
-	return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
-}
-
 float gaus(float x)
 {
 	return (1 / sqrt(2 * PI) * GaussSigma) * pow(Euler, -pow(x, 2) / (2 * pow(GaussSigma, 2)));

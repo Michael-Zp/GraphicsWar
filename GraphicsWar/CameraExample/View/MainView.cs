@@ -26,6 +26,7 @@ namespace GraphicsWar.View
         private readonly RenderInstanceGroup _renderInstanceGroup = new RenderInstanceGroup();
         private readonly Deferred _deferred;
         private readonly DirectionalShadowMapping _directShadowMap;
+        private readonly Blur _blurredShadowMap;
         private readonly SSAOWithBlur _ssaoWithBlur;
         private readonly Lighting _lighting;
         private readonly EnvironmentMap _environmentMap;
@@ -59,6 +60,7 @@ namespace GraphicsWar.View
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
+            _blurredShadowMap = _renderInstanceGroup.AddShader<Blur>(new Blur(contentLoader, 15));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
             _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
             _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
@@ -73,20 +75,30 @@ namespace GraphicsWar.View
         {
             UpdateInstancing(entities);
 
-            _renderInstanceGroup.UpdateGeometry(_transforms);
+            var arrTrans = new Dictionary<Enums.EntityType, Matrix4x4[]>();
+
+            foreach (var transform in _transforms)
+            {
+                arrTrans.Add(transform.Key, transform.Value.ToArray());
+            }
+
+            _renderInstanceGroup.UpdateGeometry(arrTrans);
 
             _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling);
 
             _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling);
 
-            _environmentMap.CreateMap(entities[2], _renderState, 0, _transforms, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
+            _blurredShadowMap.Draw(_directShadowMap.Output);
+
+
+            _environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
 
             _environmentMap.Draw(_renderState, _deferred.Depth, 0);
 
             _add.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
 
 
-            _environmentMap.CreateMap(entities[3], _renderState, 1, _transforms, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
+            _environmentMap.CreateMap(entities[3], _renderState, 1, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
 
             _environmentMap.Draw(_renderState, _deferred.Depth, 1.5f);
 
@@ -94,7 +106,7 @@ namespace GraphicsWar.View
 
 
 
-            _lighting.Draw(camera, _add2.Output, _deferred.Normal, _deferred.Position, _directShadowMap.Output, _lights, new Vector3(0.1f));
+            _lighting.Draw(camera, _add2.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
 
             _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
 

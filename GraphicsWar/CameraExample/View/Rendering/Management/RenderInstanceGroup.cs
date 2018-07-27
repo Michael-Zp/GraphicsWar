@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using GraphicsWar.Shared;
 
@@ -8,7 +9,7 @@ namespace GraphicsWar.View.Rendering.Management
     {
         private readonly List<IRenderInstance> _renderInstances = new List<IRenderInstance>();
 
-        public void UpdateGeometry(Dictionary<Enums.EntityType, List<Matrix4x4>> transforms)
+        public void UpdateGeometry(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
         {
             foreach(var instance in _renderInstances)
             {
