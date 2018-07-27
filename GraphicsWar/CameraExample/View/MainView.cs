@@ -29,6 +29,7 @@ namespace GraphicsWar.View
         private readonly EnvironmentMap _environmentMap;
         private readonly Add _addEnvMap;
         private readonly Lighting _lighting;
+        private readonly SphereCut _sphereCut;
         private readonly Skybox _skybox;
         private readonly Add _addSkybox;
 
@@ -62,7 +63,8 @@ namespace GraphicsWar.View
             _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
             _addEnvMap = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
             _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
-            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 245, "violentdays"));
+            _sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
+            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "violentdays"));
             _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
 
 
@@ -94,14 +96,14 @@ namespace GraphicsWar.View
 
             _lighting.Draw(camera, _addEnvMap.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
 
+            _sphereCut.Draw(camera, _lighting.Output, _deferred.Depth);
+
             _skybox.Draw(camera);
-            _addSkybox.Draw(_skybox.Output, _lighting.Output);
+            _addSkybox.Draw(_skybox.Output, _sphereCut.Output);
 
             _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
 
-            TextureDrawer.Draw(_ssaoWithBlur.Output);
-
-            //_environmentMap.DrawCubeMap(camera);
+            TextureDrawer.Draw(_addSkybox.Output);
         }
 
         public void Resize(int width, int height)

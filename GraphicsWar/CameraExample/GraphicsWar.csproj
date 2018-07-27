@@ -113,6 +113,7 @@
     <Compile Include="View\Rendering\Instances\GaussBlur.cs" />
     <Compile Include="View\Rendering\Instances\ShadowBlur.cs" />
     <Compile Include="View\Rendering\Instances\AvgBlur.cs" />
+    <Compile Include="View\Rendering\Instances\SphereCut.cs" />
     <Compile Include="View\Rendering\Instances\Skybox.cs" />
     <Compile Include="View\Rendering\Instances\EnvironmentMap.cs" />
     <Compile Include="View\Rendering\Instances\Lighting.cs" />
@@ -238,6 +239,8 @@
     <EmbeddedResource Include="Content\Shaders\ShadowBlurGausPass2.glsl" />
     <EmbeddedResource Include="Content\Shaders\BlurAvgPass1.glsl" />
     <EmbeddedResource Include="Content\Shaders\BlurAvgPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\imageOnGeometry.frag" />
+    <EmbeddedResource Include="Content\Shaders\imageOnGeometry.vert" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />

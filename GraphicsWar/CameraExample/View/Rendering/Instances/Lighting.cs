@@ -101,7 +101,9 @@ namespace GraphicsWar.View.Rendering.Instances
             ((FBO)_outputSurface)?.Dispose();
             _outputSurface = new FBO(Texture2dGL.Create(width, height));
 
+            _shader.Activate();
             _shader.Uniform("iResolution", new Vector2(width, height));
+            _shader.Deactivate();
         }
     }
 }

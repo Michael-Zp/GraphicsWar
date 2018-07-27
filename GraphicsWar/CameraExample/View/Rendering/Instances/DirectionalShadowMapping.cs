@@ -62,7 +62,7 @@ namespace GraphicsWar.View.Rendering.Instances
                 basedVector = (Vector3.Normalize(basedVector));
             }
             var elevation = Math.Acos(Vector3.Dot(lightDirection, basedVector));
-            ITransformation lightCamera = new Camera<Orbit, Ortographic>(new Orbit(20, MathHelper.RadiansToDegrees((float)azimuth), MathHelper.RadiansToDegrees((float)elevation)), new Ortographic(100, 100));
+            ITransformation lightCamera = new Camera<Orbit, Ortographic>(new Orbit(20, MathHelper.RadiansToDegrees((float)azimuth), MathHelper.RadiansToDegrees((float)elevation)), new Ortographic(150, 150));
 
             DrawDepthSurface(renderState, lightCamera, instanceCounts, disableBackFaceCulling);
 
@@ -119,6 +119,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _shadowShader.Activate();
 
+            _depthSurface.Texture.WrapFunction = TextureWrapFunction.ClampToEdge;
             _depthSurface.Texture.Activate();
             _shadowShader.Uniform("lightDirection", lightDirection);
             _shadowShader.Uniform("lightCamera", lightCamera);
