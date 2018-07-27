@@ -82,6 +82,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void UpdateResolution(int width, int height)
         {
+            ((FBO)_outputSurface)?.Dispose();
             _outputSurface = new FBO(Texture2dGL.Create(width, height));
         }
     }

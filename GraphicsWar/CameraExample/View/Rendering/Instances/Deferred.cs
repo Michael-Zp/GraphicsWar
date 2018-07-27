@@ -14,19 +14,19 @@ namespace GraphicsWar.View.Rendering.Instances
     public class Deferred : IUpdateTransforms, IUpdateResolution
     {
         private readonly IShaderProgram _deferredProgram;
-        private IRenderSurface _deferredSurface;
+        private IRenderSurface _outputSurface;
 
         private ITexture2D _defaultMap;
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
 
-        public ITexture2D Color => _deferredSurface.Textures[0];
+        public ITexture2D Color => _outputSurface.Textures[0];
 
-        public ITexture2D Normal => _deferredSurface.Textures[1];
+        public ITexture2D Normal => _outputSurface.Textures[1];
 
-        public ITexture2D Depth => _deferredSurface.Textures[2];
+        public ITexture2D Depth => _outputSurface.Textures[2];
 
-        public ITexture2D Position => _deferredSurface.Textures[3];
+        public ITexture2D Position => _outputSurface.Textures[3];
 
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
@@ -53,10 +53,11 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void UpdateResolution(int width, int height)
         {
-            _deferredSurface = new FBOwithDepth(Texture2dGL.Create(width, height));
-            _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
-            _deferredSurface.Attach(Texture2dGL.Create(width, height, 1, true));
-            _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
+            ((FBO)_outputSurface)?.Dispose();
+            _outputSurface = new FBOwithDepth(Texture2dGL.Create(width, height));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 1, true));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
         }
 
         public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
@@ -69,7 +70,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling)
         {
-            _deferredSurface.Activate();
+            _outputSurface.Activate();
             renderState.Set(new DepthTest(true));
             GL.ClearColor(System.Drawing.Color.FromArgb(0,0,0,0));
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -154,7 +155,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             renderState.Set(new DepthTest(false));
             renderState.Set(new BackFaceCulling(true));
-            _deferredSurface.Deactivate();
+            _outputSurface.Deactivate();
         }
     }
 }

@@ -9,12 +9,12 @@ namespace GraphicsWar.View.Rendering.Instances
 {
     public class SSAOWithBlur : IUpdateResolution
     {
-        public ITexture2D Output => _renderSurface.Texture;
+        public ITexture2D Output => _outputSurface.Texture;
 
         private readonly OnePassPostProcessShader _ssao;
         private readonly Blur _blur;
 
-        private IRenderSurface _renderSurface;
+        private IRenderSurface _outputSurface;
         private readonly IShaderProgram _shader;
 
         public SSAOWithBlur(IContentLoader contentLoader, float blurKernelSize)
@@ -29,7 +29,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _ssao.Draw(dephtTexture);
             _blur.Draw(_ssao.Output);
 
-            _renderSurface.Activate();
+            _outputSurface.Activate();
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
@@ -45,7 +45,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _shader.Deactivate();
 
-            _renderSurface.Deactivate();
+            _outputSurface.Deactivate();
         }
 
         public void UpdateResolution(int width, int height)
@@ -53,7 +53,8 @@ namespace GraphicsWar.View.Rendering.Instances
             _ssao.UpdateResolution(width, height);
             _blur.UpdateResolution(width, height);
 
-            _renderSurface = new FBO(Texture2dGL.Create(width, height));
+            ((FBO)_outputSurface)?.Dispose();
+            _outputSurface = new FBO(Texture2dGL.Create(width, height));
 
             _shader.Uniform("iResolution", new Vector2(width, height));
         }

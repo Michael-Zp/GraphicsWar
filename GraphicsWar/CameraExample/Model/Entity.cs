@@ -1,12 +1,15 @@
 ﻿using GraphicsWar.Shared;
 using System.Numerics;
+using GraphicsWar.ExtensionMethods;
 
 namespace GraphicsWar.Model
 {
     public class Entity
     {
         public Enums.EntityType Type { get; }
-        public Matrix4x4 Transformation => Matrix4x4.CreateScale(_scale) * CalculateRotation(_rotation) * Matrix4x4.CreateTranslation(_position);
+
+        public Matrix4x4 AdditionalTransformation { private get; set; } = Matrix4x4.Identity;
+        public Matrix4x4 Transformation => Matrix4x4.CreateScale(_scale) * MatrixHelper.CreateRotation(_rotation) * Matrix4x4.CreateTranslation(_position) * AdditionalTransformation;
 
         private Vector3 _position;
         private Vector3 _rotation;
@@ -40,18 +43,5 @@ namespace GraphicsWar.Model
         {
             _scale *= scale;
         }
-
-        private Matrix4x4 CalculateRotation(Vector3 rotVec)
-        {
-            Matrix4x4 rotationMatrix = Matrix4x4.Identity;
-
-            rotationMatrix *= Matrix4x4.CreateRotationX(rotVec.X);
-            rotationMatrix *= Matrix4x4.CreateRotationY(rotVec.Y);
-            rotationMatrix *= Matrix4x4.CreateRotationZ(rotVec.Z);
-
-            return rotationMatrix;
-        }
-
-
     }
 }

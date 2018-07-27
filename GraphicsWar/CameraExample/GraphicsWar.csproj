@@ -100,10 +100,12 @@
   <ItemGroup>
     <Compile Include="Controller\Utilities.cs" />
     <Compile Include="ExtensionMethods\CubeMapFBO.cs" />
+    <Compile Include="ExtensionMethods\MatrixHelper.cs" />
     <Compile Include="ExtensionMethods\Position.cs" />
     <Compile Include="ExtensionMethods\TextureDrawer.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\MainModel.cs" />
+    <Compile Include="Model\Movement\Orbit.cs" />
     <Compile Include="Shared\Enums.cs" />
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />

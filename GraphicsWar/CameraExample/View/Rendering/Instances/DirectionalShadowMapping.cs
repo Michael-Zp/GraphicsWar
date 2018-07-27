@@ -40,7 +40,9 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void UpdateResolution(int width, int height)
         {
+            ((FBO)_depthSurface)?.Dispose();
             _depthSurface = new FBOwithDepth(Texture2dGL.Create(width * 4, height * 4, 1, true));
+            ((FBO)_outputSurface)?.Dispose();
             _outputSurface = new FBOwithDepth(Texture2dGL.Create(width, height, 1));
 
             _depthShader.Uniform("iResolution", new Vector2(width, height));

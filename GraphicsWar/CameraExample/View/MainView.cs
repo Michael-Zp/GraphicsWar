@@ -29,8 +29,7 @@ namespace GraphicsWar.View
         private readonly Blur _blurredShadowMap;
         private readonly SSAOWithBlur _ssaoWithBlur;
         private readonly EnvironmentMap _environmentMap;
-        private readonly Add _addEnvMap1;
-        private readonly Add _addEnvMap2;
+        private readonly Add _addEnvMap;
         private readonly Lighting _lighting;
         private readonly Skybox _skybox;
         private readonly Add _addSkybox;
@@ -65,8 +64,7 @@ namespace GraphicsWar.View
             _blurredShadowMap = _renderInstanceGroup.AddShader<Blur>(new Blur(contentLoader, 15));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
             _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
-            _addEnvMap1 = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
-            _addEnvMap2 = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _addEnvMap = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
             _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
             _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 45, "violentdays"));
             _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
@@ -100,19 +98,9 @@ namespace GraphicsWar.View
 
             _environmentMap.Draw(_renderState, _deferred.Depth, 0);
 
-            _addEnvMap1.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
+            _addEnvMap.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
 
-
-
-            _environmentMap.CreateMap(entities[3], _renderState, 1, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
-
-            _environmentMap.Draw(_renderState, _deferred.Depth, 1.5f);
-
-            _addEnvMap2.Draw(_addEnvMap1.Output, _environmentMap.Output, 0.3f);
-
-
-
-            _lighting.Draw(camera, _addEnvMap2.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
+            _lighting.Draw(camera, _addEnvMap.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
 
             _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
 

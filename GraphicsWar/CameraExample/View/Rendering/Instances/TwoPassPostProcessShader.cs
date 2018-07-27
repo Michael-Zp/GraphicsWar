@@ -51,7 +51,9 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void UpdateResolution(int width, int height)
         {
+            ((FBO)PassOneSurface)?.Dispose();
             PassOneSurface = new FBO(Texture2dGL.Create(width, height, FboTexComponentCount, FboTexFloat));
+            ((FBO)PassTwoSurface)?.Dispose();
             PassTwoSurface = new FBO(Texture2dGL.Create(width, height, FboTexComponentCount, FboTexFloat));
         }
     }
