@@ -14,16 +14,15 @@ namespace GraphicsWar.ExtensionMethods
     public class CubeMapFBO : IDisposable
     {
 
-        private readonly int _size = 0;
-        private uint _fboHandle = 0;
-        private uint _lastFbo = 0;
-        private static uint _currentFrameBufferHandle = 0;
+        private readonly int _size;
+        private uint _fboHandle;
+        private uint _lastFbo;
+        private static uint _currentFrameBufferHandle;
         private readonly RenderBuffer _depth;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FBO"/> class.
         /// </summary>
-        /// <param name="texture">The texture to draw to. The FBO will try to dispose the texture when the FBO is disposed.</param>
         /// <param name="size"></param>
         /// <exception cref="FBOException">
         /// Given texture is null or texture dimensions do not match primary texture

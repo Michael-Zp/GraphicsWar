@@ -36,7 +36,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public EnvironmentMap(int size, IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
-            _positions = new Position[]
+            _positions = new[]
             {
                 new Position(Vector3.Zero,-90, 180), //right
                 new Position(Vector3.Zero,90, 180), //left
@@ -60,7 +60,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _shadowMapping.UpdateResolution(size, size);
             _lighting = new Lighting(contentLoader);
             _lighting.UpdateResolution(size, size);
-            _skybox = new Skybox(contentLoader, 45, "violentdays");
+            _skybox = new Skybox(contentLoader, 245, "violentdays");
             _skybox.UpdateResolution(size, size);
             _add = new Add(contentLoader);
             _add.UpdateResolution(size, size);
@@ -120,7 +120,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void Draw(IRenderState renderState, ITexture2D depth, float mipmapLevel = 0)
         {
-            _geometries[_entity.Type].SetAttribute(_environmentMapProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), new Matrix4x4[1] { _entity.Transform }, true);
+            _geometries[_entity.Type].SetAttribute(_environmentMapProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), new[] { _entity.Transform }, true);
 
             GL.ClearColor(Color.FromArgb(0, 0, 0, 0));
             _outputSurface.Activate();

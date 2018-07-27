@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using GraphicsWar.ExtensionMethods;
+﻿using GraphicsWar.ExtensionMethods;
 using GraphicsWar.View.Rendering.Management;
 using OpenTK.Graphics.OpenGL4;
 using Zenseless.HLGL;

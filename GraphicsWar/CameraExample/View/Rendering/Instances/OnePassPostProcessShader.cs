@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using GraphicsWar.ExtensionMethods;
 using GraphicsWar.View.Rendering.Management;
 using OpenTK.Graphics.OpenGL4;
 using Zenseless.HLGL;
@@ -49,7 +48,9 @@ namespace GraphicsWar.View.Rendering.Instances
             ((FBO)_outputSurface)?.Dispose();
             _outputSurface = new FBO(Texture2dGL.Create(width, height, _fboTexComponentCount, _fboTexFloat));
 
+            _postProcessShader.Activate();
             _postProcessShader.Uniform("iResolution", new Vector2(width, height));
+            _postProcessShader.Deactivate();
         }
     }
 }

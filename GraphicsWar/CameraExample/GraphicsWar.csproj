@@ -110,7 +110,9 @@
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
-    <Compile Include="View\Rendering\Instances\Blur.cs" />
+    <Compile Include="View\Rendering\Instances\GaussBlur.cs" />
+    <Compile Include="View\Rendering\Instances\ShadowBlur.cs" />
+    <Compile Include="View\Rendering\Instances\AvgBlur.cs" />
     <Compile Include="View\Rendering\Instances\Skybox.cs" />
     <Compile Include="View\Rendering\Instances\EnvironmentMap.cs" />
     <Compile Include="View\Rendering\Instances\Lighting.cs" />
@@ -232,6 +234,10 @@
     <EmbeddedResource Include="Content\Shaders\add.glsl" />
     <EmbeddedResource Include="Content\Shaders\sky.frag" />
     <EmbeddedResource Include="Content\Shaders\sky.vert" />
+    <EmbeddedResource Include="Content\Shaders\ShadowBlurGausPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\ShadowBlurGausPass2.glsl" />
+    <EmbeddedResource Include="Content\Shaders\BlurAvgPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\BlurAvgPass2.glsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />

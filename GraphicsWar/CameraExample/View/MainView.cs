@@ -6,8 +6,6 @@ using Zenseless.HLGL;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Instances;
 using GraphicsWar.View.Rendering.Management;
-using OpenTK.Graphics.ES10;
-using OpenTK.Graphics.OpenGL4;
 
 namespace GraphicsWar.View
 {
@@ -26,7 +24,7 @@ namespace GraphicsWar.View
         private readonly RenderInstanceGroup _renderInstanceGroup = new RenderInstanceGroup();
         private readonly Deferred _deferred;
         private readonly DirectionalShadowMapping _directShadowMap;
-        private readonly Blur _blurredShadowMap;
+        private readonly ShadowBlur _blurredShadowMap;
         private readonly SSAOWithBlur _ssaoWithBlur;
         private readonly EnvironmentMap _environmentMap;
         private readonly Add _addEnvMap;
@@ -43,8 +41,7 @@ namespace GraphicsWar.View
 
             _meshes.Add(Enums.EntityType.Sphere, Meshes.CreateSphere(subdivision: 5));
             _meshes.Add(Enums.EntityType.CornellBox, Meshes.CreateCornellBox());
-            _meshes.Add(Enums.EntityType.Type3, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
-            _meshes.Add(Enums.EntityType.Type4, new TBNMesh(Meshes.CreatePlane(2, 2, 10, 10)));
+            _meshes.Add(Enums.EntityType.Plane, new TBNMesh(Meshes.CreatePlane(1, 1, 1, 1)));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
 
@@ -54,23 +51,22 @@ namespace GraphicsWar.View
             _textures.Add(Enums.EntityType.Nvidia, contentLoader.Load<ITexture2D>("Nvidia.png"));
             _textures.Add(Enums.EntityType.Radeon, contentLoader.Load<ITexture2D>("Radeon.png"));
 
-            _normalMaps.Add(Enums.EntityType.Type3, contentLoader.Load<ITexture2D>("n3.png"));
-            _normalMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("n3.png"));
+            _normalMaps.Add(Enums.EntityType.Plane, contentLoader.Load<ITexture2D>("n3.png"));
 
             _heightMaps.Add(Enums.EntityType.Type4, contentLoader.Load<ITexture2D>("h3.jpg"));
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
-            _blurredShadowMap = _renderInstanceGroup.AddShader<Blur>(new Blur(contentLoader, 15));
+            _blurredShadowMap = _renderInstanceGroup.AddShader<ShadowBlur>(new ShadowBlur(contentLoader, 5));
             _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
             _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
             _addEnvMap = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
             _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
-            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 45, "violentdays"));
+            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 245, "violentdays"));
             _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
 
 
-            _lights.Add(new LightSource(Vector3.Zero, new Vector3(-0.2f, -1f, -0.4f), Vector3.One));
+            _lights.Add(new LightSource(Vector3.Zero, Vector3.Normalize(new Vector3(-1f, -1f, 0.6f)), Vector3.One));
 
         }
 
@@ -90,26 +86,20 @@ namespace GraphicsWar.View
             _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling);
 
             _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling);
-
             _blurredShadowMap.Draw(_directShadowMap.Output);
 
-
             _environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
-
-            _environmentMap.Draw(_renderState, _deferred.Depth, 0);
-
+            _environmentMap.Draw(_renderState, _deferred.Depth);
             _addEnvMap.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
 
             _lighting.Draw(camera, _addEnvMap.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
 
-            _ssaoWithBlur.Draw(_deferred.Depth, _lighting.Output);
-
-
             _skybox.Draw(camera);
+            _addSkybox.Draw(_skybox.Output, _lighting.Output);
 
-            _addSkybox.Draw(_skybox.Output, _ssaoWithBlur.Output);
+            _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
 
-            TextureDrawer.Draw(_addSkybox.Output);
+            TextureDrawer.Draw(_ssaoWithBlur.Output);
 
             //_environmentMap.DrawCubeMap(camera);
         }

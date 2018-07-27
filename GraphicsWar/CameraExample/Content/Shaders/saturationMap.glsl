@@ -5,5 +5,5 @@ in vec2 uv;
 
 void main() 
 {
-	gl_FragColor = texture2D(image, uv) * texture2D(saturation, uv).x;
+	gl_FragColor = vec4((texture2D(image, uv) * texture2D(saturation, uv).x).xyz,1);
 }

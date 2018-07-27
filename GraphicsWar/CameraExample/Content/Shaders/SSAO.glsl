@@ -25,38 +25,6 @@ vec3 getRandom(vec2 uv) {
 
 void main() 
 {
-	vec3 randomSampleOffsets[24] = {
-		vec3(1, 0, 0),
-		vec3(-1, 0, 0),
-		vec3(0, 1, 0),
-		vec3(0, -1, 0),
-
-		vec3(1, 1, 0),
-		vec3(-1, 1, 0),
-		vec3(1, -1, 0),
-		vec3(-1, -1, 0),
-
-		vec3(1, 0, 1),
-		vec3(-1, 0, 1),
-		vec3(0, 1, 1),
-		vec3(0, -1, 1),
-
-		vec3(1, 1, 1),
-		vec3(-1, 1, 1),
-		vec3(1, -1, 1),
-		vec3(-1, -1, 1),
-
-		vec3(1, 0, -1),
-		vec3(-1, 0, -1),
-		vec3(0, 1, -1),
-		vec3(0, -1, -1),
-
-		vec3(1, 1, -1),
-		vec3(-1, 1, -1),
-		vec3(1, -1, -1),
-		vec3(-1, -1, -1)
-	};
-
 	float depthAtPos = texture2D(depth, uv).x;
 
 	float ao = 0.0;
@@ -69,15 +37,12 @@ void main()
 
 		float actualSampleDepth = texture2D(depth, clamp(uv + randomSampleOffset.xy * uvScale,0.0001,0.999)).x;
 
-		float dist = (depthAtPos+0.1*randomSampleOffset.z - actualSampleDepth);
+		float dist = (depthAtPos - actualSampleDepth -0.000001);
 
-		ao += clamp(dist / 0.01, 0.0, 1.0);
+		ao += clamp(dist, 0.0, 1.0);
 	}
 
 	ao = clamp((1.0 - ao / sampleSize)*2.0, 0.0, 1.0);
-	
-	//float isBelow05 = step(ao, 0.5);
-	//ao = (isBelow05 * (ao / 0.5) * 0.9) + (1.0 - isBelow05) * (0.9 + ((ao - 0.5) * 2.0) * 0.1);
 
 	gl_FragColor = vec4(ao);
 }

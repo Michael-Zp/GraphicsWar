@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Management;
@@ -16,7 +15,7 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly IShaderProgram _deferredProgram;
         private IRenderSurface _outputSurface;
 
-        private ITexture2D _defaultMap;
+        private readonly ITexture2D _defaultMap;
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometries = new Dictionary<Enums.EntityType, VAO>();
 
@@ -127,14 +126,9 @@ namespace GraphicsWar.View.Rendering.Instances
                     _deferredProgram.Uniform("textured", 0f);
                 }
 
-                if (disableBackFaceCulling.Contains(type))
-                {
-                    renderState.Set(new BackFaceCulling(false));
-                }
-                else
-                {
-                    renderState.Set(new BackFaceCulling(true));
-                }
+                renderState.Set(disableBackFaceCulling.Contains(type)
+                    ? new BackFaceCulling(false)
+                    : new BackFaceCulling(true));
 
                 _geometries[type].Draw(instanceCounts[type]);
 

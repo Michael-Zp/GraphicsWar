@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Zenseless.Geometry;
 
 namespace GraphicsWar.ExtensionMethods
@@ -13,13 +12,13 @@ namespace GraphicsWar.ExtensionMethods
         /// <summary>
         /// Initializes a new instance of the <see cref="Orbit"/> class.
         /// </summary>
-        /// <param name="distance">The distance to the target.</param>
+        /// <param name="location"></param>
         /// <param name="azimuth">The azimuth or heading.</param>
         /// <param name="elevation">The elevation or tilt.</param>
         public Position(Vector3 location, float azimuth = 0f, float elevation = 0f)
         {
-            cachedMatrixView = new CachedCalculatedValue<Matrix4x4>(CalcViewMatrix);
-            PropertyChanged += (s, a) => cachedMatrixView.Invalidate();
+            _cachedMatrixView = new CachedCalculatedValue<Matrix4x4>(CalcViewMatrix);
+            PropertyChanged += (s, a) => _cachedMatrixView.Invalidate();
             Azimuth = azimuth;
             Elevation = elevation;
             _location = location;
@@ -64,7 +63,7 @@ namespace GraphicsWar.ExtensionMethods
         /// <value>
         /// The matrix.
         /// </value>
-        public Matrix4x4 Matrix => cachedMatrixView.Value;
+        public Matrix4x4 Matrix => _cachedMatrixView.Value;
 
         /// <summary>
         /// Gets or sets the target, the point the camera is looking at.
@@ -82,21 +81,10 @@ namespace GraphicsWar.ExtensionMethods
             }
         }
 
-        /// <summary>
-        /// Calculates the camera position.
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="ArithmeticException">Could not invert matrix</exception>
-        public Vector3 CalcPosition()
-        {
-            if (!Matrix4x4.Invert(Matrix, out Matrix4x4 inverse)) throw new ArithmeticException("Could not invert matrix");
-            return inverse.Translation;
-        }
-
-        private float _azimuth = 0f;
-        private float _elevation = 0f;
-        private Vector3 _location = Vector3.Zero;
-        private readonly CachedCalculatedValue<Matrix4x4> cachedMatrixView;
+        private float _azimuth;
+        private float _elevation;
+        private Vector3 _location;
+        private readonly CachedCalculatedValue<Matrix4x4> _cachedMatrixView;
 
         private Matrix4x4 CalcViewMatrix()
         {

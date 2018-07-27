@@ -3,12 +3,12 @@ using Zenseless.HLGL;
 
 namespace GraphicsWar.View.Rendering.Instances
 {
-    public class Blur : TwoPassPostProcessShader
+    public class ShadowBlur : TwoPassPostProcessShader
     {
         private readonly float _blurKernelSize;
 
-        public Blur(IContentLoader contentLoader, float blurKernelSize = 20, byte fboTexComponentCount = 4, bool fboTexFloat = false)
-            : base(contentLoader.LoadPixelShader("BlurGausPass1.glsl"), contentLoader.LoadPixelShader("BlurGausPass2.glsl"), fboTexComponentCount, fboTexFloat)
+        public ShadowBlur(IContentLoader contentLoader, float blurKernelSize = 20, byte fboTexComponentCount = 4, bool fboTexFloat = false)
+            : base(contentLoader.LoadPixelShader("ShadowBlurGausPass1.glsl"), contentLoader.LoadPixelShader("ShadowBlurGausPass2.glsl"), fboTexComponentCount, fboTexFloat)
         {
             _blurKernelSize = blurKernelSize;
         }

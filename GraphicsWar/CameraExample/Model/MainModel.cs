@@ -9,23 +9,24 @@ namespace GraphicsWar.Model
     public class MainModel
     {
         public List<Entity> Entities = new List<Entity>();
-        private Orbit _orbit1;
-        private Orbit _orbit2;
+        private readonly Orbit _orbit1;
+        private readonly Orbit _orbit2;
 
         public MainModel()
         {
-            Entities.Add(new Entity(Enums.EntityType.Nvidia, new Vector3(2, 0, 0), new Vector3((float)Math.PI, (float)Math.PI / 2, (float)Math.PI / 30), 0.28f));
-            _orbit1 = new Orbit(new Vector3(2, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, -1), Vector3.Zero);
-            Entities.Add(new Entity(Enums.EntityType.Radeon, new Vector3(2, 0, 0), new Vector3((float)Math.PI, (float)Math.PI / 2, (float)Math.PI / 30), 0.28f));
-            _orbit2 = new Orbit(new Vector3(2, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, -1), new Vector3(0, (float)Math.PI, 0));
-            Entities.Add(new Entity(Enums.EntityType.Sphere, new Vector3(0f, 1f, -1f), Vector3.Zero, 1f));
+            Entities.Add(new Entity(Enums.EntityType.Nvidia, new Vector3(5, 10, 0), new Vector3((float)Math.PI, (float)Math.PI / 2, (float)Math.PI / 30), 1f));
+            _orbit1 = new Orbit(new Vector3(2, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 0), Vector3.Zero);
+            Entities.Add(new Entity(Enums.EntityType.Radeon, new Vector3(5, 10, 0), new Vector3((float)Math.PI, (float)Math.PI / 2, (float)Math.PI / 30), 1f));
+            _orbit2 = new Orbit(new Vector3(2, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 0), new Vector3(0, (float)Math.PI, 0));
+            Entities.Add(new Entity(Enums.EntityType.Sphere, new Vector3(0f, 5f, 0f), Vector3.Zero, 3f));
+            Entities.Add(new Entity(Enums.EntityType.Plane, Vector3.Zero, new Vector3(0, 0.5f*(float)Math.PI, 0), new Vector3(100, 1, 100)));
         }
 
         public void Update(float deltaTime)
         {
-            _orbit1.Update(deltaTime*10);
+            _orbit1.Update(deltaTime);
             Entities[0].AdditionalTransformation = _orbit1.Transformation;
-            _orbit2.Update(deltaTime*10);
+            _orbit2.Update(deltaTime);
             Entities[1].AdditionalTransformation = _orbit2.Transformation;
         }
     }

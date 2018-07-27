@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using GraphicsWar.ExtensionMethods;
+﻿using GraphicsWar.ExtensionMethods;
 using GraphicsWar.View.Rendering.Management;
 using OpenTK.Graphics.OpenGL4;
 using Zenseless.HLGL;
@@ -12,7 +11,7 @@ namespace GraphicsWar.View.Rendering.Instances
         public ITexture2D Output => _outputSurface.Texture;
 
         private readonly OnePassPostProcessShader _ssao;
-        private readonly Blur _blur;
+        private readonly AvgBlur _blur;
 
         private IRenderSurface _outputSurface;
         private readonly IShaderProgram _shader;
@@ -20,7 +19,7 @@ namespace GraphicsWar.View.Rendering.Instances
         public SSAOWithBlur(IContentLoader contentLoader, float blurKernelSize)
         {
             _ssao = new OnePassPostProcessShader(contentLoader.LoadPixelShader("SSAO.glsl"));
-            _blur = new Blur(contentLoader, blurKernelSize);
+            _blur = new AvgBlur(contentLoader, blurKernelSize);
             _shader = contentLoader.LoadPixelShader("saturationMap.glsl");
         }
 
@@ -55,8 +54,6 @@ namespace GraphicsWar.View.Rendering.Instances
 
             ((FBO)_outputSurface)?.Dispose();
             _outputSurface = new FBO(Texture2dGL.Create(width, height));
-
-            _shader.Uniform("iResolution", new Vector2(width, height));
         }
     }
 }
