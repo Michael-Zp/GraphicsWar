@@ -1,5 +1,5 @@
 #version 420 core
-uniform int instanceSqrt = 5;
+uniform int instanceSqrt = 2;
 
 out Data
 {
@@ -9,18 +9,22 @@ out Data
 
 void main() 
 {
-	const float size = 0.5;
-	const vec2 vertices[4] = vec2[4](vec2(-size, -size),
-		vec2( size, -size),
-		vec2( size,  size),
-		vec2(-size,  size));
+	const float size = 1;
+	const vec4 vertices[4] = vec4[4] (
+		vec4(-size, -size, 0, 0),
+		vec4( size, -size, 1, 0),
+		vec4( size,  size, 1, 1),
+		vec4(-size,  size, 0, 1)
+	);
 	
 	float x = gl_InstanceID % instanceSqrt;
-	float y = gl_InstanceID / instanceSqrt;
+	float y = floor(gl_InstanceID / instanceSqrt);
 	o.instanceID = gl_InstanceID;
-	o.texCoord = (vertices[gl_VertexID] + vec2(1) + vec2(x, y)) / instanceSqrt;
 
-	vec2 pos = vertices[gl_VertexID] + vec2(x, y) - vec2(instanceSqrt / 2);
+	vec2 pos = vertices[gl_VertexID].xy + vec2(size * 2) * vec2(x - (instanceSqrt / 2), y - (instanceSqrt / 2));
+
+	o.texCoord = vec2((pos.x + size * instanceSqrt) / (size * 2 * instanceSqrt), (pos.y + size * instanceSqrt) / (size * 2 * instanceSqrt));
+
 
 	gl_Position = vec4(pos.x, 0, pos.y, 1.0);
 }

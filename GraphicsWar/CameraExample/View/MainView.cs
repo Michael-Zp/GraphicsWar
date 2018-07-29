@@ -32,6 +32,7 @@ namespace GraphicsWar.View
         private readonly SphereCut _sphereCut;
         private readonly Skybox _skybox;
         private readonly Add _addSkybox;
+        private readonly Tesselation _tesselation;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
 
@@ -66,6 +67,7 @@ namespace GraphicsWar.View
             _sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
             _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "violentdays"));
             _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _tesselation = _renderInstanceGroup.AddShader<Tesselation>(new Tesselation(contentLoader));
 
 
             _lights.Add(new LightSource(Vector3.Zero, Vector3.Normalize(new Vector3(-1f, -1f, 0.6f)), Vector3.One));
@@ -104,6 +106,11 @@ namespace GraphicsWar.View
             _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
 
             TextureDrawer.Draw(_addSkybox.Output);
+
+
+            _tesselation.Draw(_renderState, camera);
+
+            //TextureDrawer.Draw(_tesselation.Output);
         }
 
         public void Resize(int width, int height)

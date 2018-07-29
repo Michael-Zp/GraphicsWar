@@ -121,6 +121,7 @@
     <Compile Include="View\LightSource.cs" />
     <Compile Include="View\Rendering\Instances\Add.cs" />
     <Compile Include="View\Rendering\Instances\SSAOWithBlur.cs" />
+    <Compile Include="View\Rendering\Instances\Tesselation.cs" />
     <Compile Include="View\Rendering\Instances\TwoPassPostProcessShader.cs" />
     <Compile Include="View\Rendering\Instances\Deferred.cs" />
     <Compile Include="View\Rendering\Instances\DirectionalShadowMapping.cs" />
@@ -253,6 +254,12 @@
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_lf.jpg" />
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_rt.jpg" />
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_up.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\h4.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\h5.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
