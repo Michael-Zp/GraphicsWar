@@ -48,6 +48,7 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Plane, new TBNMesh(Meshes.CreatePlane(1, 1, 1, 1)));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
+            _meshes.Add(Enums.EntityType.TessellationPlane, Meshes.CreatePlane(1, 1, 1, 1));
 
             _disableBackFaceCulling.Add(Enums.EntityType.Nvidia);
             _disableBackFaceCulling.Add(Enums.EntityType.Radeon);
@@ -113,7 +114,7 @@ namespace GraphicsWar.View
             _ssaoWithBlur.Draw(_addWithDepthTest.Depth, _addSkybox.Output);
 
             TextureDrawer.Draw(_addSkybox.Output);
-            //TextureDrawer.Draw(_addWithDepthTest.BufferOne);
+            //TextureDrawer.Draw(_addWithDepthTest.Depth);
         }
 
         public void Resize(int width, int height)

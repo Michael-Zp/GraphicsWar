@@ -214,7 +214,7 @@ float displacementY(vec2 coord)
 //	d = max(d, -0.8);
 	//return d;
 
-	return texture(displacementMap, coord).x * 10;
+	return texture(displacementMap, coord).x * 7;
 	//return fbm(vec3(coord.x, 1.0, coord.y) * 100, 3);
 }
 
@@ -222,10 +222,10 @@ vec3 getNormal(vec2 hitPoint, float delta)
 {
 	vec2 deltaVec = vec2(delta, 0);
 
-	float nextDeltaX = displacementY(hitPoint + deltaVec.xy);
-	float nextDeltaZ = displacementY(hitPoint + deltaVec.yx);
-	float previousDeltaX = displacementY(hitPoint - deltaVec.xy);
-	float previousDeltaZ = displacementY(hitPoint - deltaVec.yx);
+	float nextDeltaX = displacementY(hitPoint - deltaVec.xy);
+	float nextDeltaZ = displacementY(hitPoint - deltaVec.yx);
+	float previousDeltaX = displacementY(hitPoint + deltaVec.xy);
+	float previousDeltaZ = displacementY(hitPoint + deltaVec.yx);
 
 	vec3 unnormalizedGradient = vec3(nextDeltaX - previousDeltaX, 1.0, nextDeltaZ - previousDeltaZ);
 
