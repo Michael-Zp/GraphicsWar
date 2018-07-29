@@ -8,13 +8,17 @@ namespace GraphicsWar.View.Rendering.Instances
 {
     public class Tesselation : IUpdateResolution
     {
-        public ITexture2D Output => _outputSurface.Texture;
+        public ITexture2D Color => _outputSurface.Textures[0];
+        public ITexture2D Normal => _outputSurface.Textures[1];
+        public ITexture2D Depth => _outputSurface.Textures[2];
+        public ITexture2D Position => _outputSurface.Textures[3];
 
 
         private IShaderProgram _tesselationProgram;
         private IRenderSurface _outputSurface;
         private ITexture2D _displacementMap;
 
+        private static readonly DrawBuffersEnum[] _drawBuffers = new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
 
         public Tesselation(IContentLoader contentLoader)
         {
@@ -25,7 +29,8 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void Draw(IRenderState renderState, ITransformation camera)
         {
-            //_outputSurface.Activate();
+            _outputSurface.Activate();
+
             var oldBackFaceCullingState = renderState.Get<BackFaceCulling>();
             var oldDepthTestState = renderState.Get<DepthTest>();
 
@@ -44,7 +49,11 @@ namespace GraphicsWar.View.Rendering.Instances
             _tesselationProgram.Uniform(nameof(instanceSqrt), instanceSqrt);
             _displacementMap.Activate();
 
+            GL.ClearColor(System.Drawing.Color.FromArgb(0, 0, 0, 0));
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
+            GL.DrawBuffers(_drawBuffers.Length, _drawBuffers);
+
             GL.DrawArraysInstanced(PrimitiveType.Patches, 0, 4, instanceSqrt * instanceSqrt);
 
             _displacementMap.Deactivate();
@@ -52,7 +61,8 @@ namespace GraphicsWar.View.Rendering.Instances
 
             renderState.Set(oldDepthTestState);
             renderState.Set(oldBackFaceCullingState);
-            //_outputSurface.Deactivate();
+
+            _outputSurface.Deactivate();
         }
 
 
@@ -60,6 +70,9 @@ namespace GraphicsWar.View.Rendering.Instances
         {
             ((FBOwithDepth)_outputSurface)?.Dispose();
             _outputSurface = new FBOwithDepth(Texture2dGL.Create(width, height));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 1, true));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
         }
     }
 }

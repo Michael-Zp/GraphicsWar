@@ -110,6 +110,7 @@
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
+    <Compile Include="View\Rendering\Instances\AddWithDepthTest.cs" />
     <Compile Include="View\Rendering\Instances\GaussBlur.cs" />
     <Compile Include="View\Rendering\Instances\ShadowBlur.cs" />
     <Compile Include="View\Rendering\Instances\AvgBlur.cs" />
@@ -246,6 +247,7 @@
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.tesc" />
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.tese" />
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.vert" />
+    <EmbeddedResource Include="Content\Shaders\Util\addWithDepthTest.glsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />

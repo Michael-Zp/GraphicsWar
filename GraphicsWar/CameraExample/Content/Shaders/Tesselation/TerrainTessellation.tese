@@ -10,6 +10,8 @@ out Data
 {
 	flat int instanceID;
 	vec3 normal;
+	float depth;
+	vec3 position;
 } o;
 
 in vec4 tcPos[gl_MaxPatchVertices];
@@ -242,7 +244,9 @@ void main()
 	pos.y = displacementY(texCoord);
 
 	o.normal = getNormal(texCoord, 1e-2);
+	o.position = pos.xyz;
 
 	gl_Position = camera * pos;
 	o.instanceID = instanceID;
+	o.depth = (camera * pos).z;
 }
