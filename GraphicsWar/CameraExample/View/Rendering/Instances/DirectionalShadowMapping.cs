@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using GraphicsWar.ExtensionMethods;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Management;
 using OpenTK.Graphics.OpenGL4;
@@ -18,23 +19,17 @@ namespace GraphicsWar.View.Rendering.Instances
         private IRenderSurface _outputSurface;
 
         private readonly Dictionary<Enums.EntityType, VAO> _geometriesDepth = new Dictionary<Enums.EntityType, VAO>();
-        private readonly Dictionary<Enums.EntityType, VAO> _geometriesShadow = new Dictionary<Enums.EntityType, VAO>();
 
         public ITexture2D Output => _outputSurface.Texture;
 
         public DirectionalShadowMapping(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
             _depthShader = contentLoader.Load<IShaderProgram>("depth.*");
-            _shadowShader = contentLoader.Load<IShaderProgram>("shadow.*");
+            _shadowShader = contentLoader.LoadPixelShader("shadow.glsl");
 
             foreach (var meshContainer in meshes)
             {
                 _geometriesDepth.Add(meshContainer.Key, VAOLoader.FromMesh(meshContainer.Value, _depthShader));
-            }
-
-            foreach (var meshContainer in meshes)
-            {
-                _geometriesShadow.Add(meshContainer.Key, VAOLoader.FromMesh(meshContainer.Value, _shadowShader));
             }
         }
 
@@ -49,7 +44,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _shadowShader.Uniform("iResolution", new Vector2(width, height));
         }
 
-        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, ITexture2D sceneDepth, Vector3 lightDirection, List<Enums.EntityType> disableBackFaceCulling)
+        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, ITexture2D sceneDepth, Vector3 lightDirection, List<Enums.EntityType> disableBackFaceCulling, ITexture2D positions, ITexture2D normals)
         {
             renderState.Set(new DepthTest(true));
 
@@ -68,7 +63,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             lightDirection.X *= -1;
 
-            DrawShadowSurface(renderState, lightDirection, lightCamera, camera, instanceCounts, disableBackFaceCulling);
+            DrawShadowSurface(lightDirection, lightCamera, positions, normals);
 
             renderState.Set(new DepthTest(false));
         }
@@ -78,11 +73,6 @@ namespace GraphicsWar.View.Rendering.Instances
             foreach (var type in _geometriesDepth.Keys)
             {
                 _geometriesDepth[type].SetAttribute(_depthShader.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type], true);
-            }
-
-            foreach (var type in _geometriesShadow.Keys)
-            {
-                _geometriesShadow[type].SetAttribute(_shadowShader.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type], true);
             }
         }
 
@@ -111,7 +101,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _depthSurface.Deactivate();
         }
 
-        private void DrawShadowSurface(IRenderState renderState, Vector3 lightDirection, ITransformation lightCamera, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, List<Enums.EntityType> disableBackFaceCulling)
+        private void DrawShadowSurface(Vector3 lightDirection, ITransformation lightCamera, ITexture2D positions, ITexture2D normals)
         {
             _outputSurface.Activate();
 
@@ -120,24 +110,18 @@ namespace GraphicsWar.View.Rendering.Instances
             _shadowShader.Activate();
 
             _depthSurface.Texture.WrapFunction = TextureWrapFunction.ClampToEdge;
-            _depthSurface.Texture.Activate();
+
+            _shadowShader.ActivateTexture("lightDepth", 0, _depthSurface.Texture);
+            _shadowShader.ActivateTexture("positions", 1, positions);
+            _shadowShader.ActivateTexture("normals", 2, normals);
             _shadowShader.Uniform("lightDirection", lightDirection);
             _shadowShader.Uniform("lightCamera", lightCamera);
-            _shadowShader.Uniform("camera", camera);
 
-            GL.Uniform1(_shadowShader.GetResourceLocation(ShaderResourceType.Uniform, "lightDepth"), 0);
+            GL.DrawArrays(PrimitiveType.Quads, 0, 4);
 
-            foreach (var type in _geometriesDepth.Keys)
-            {
-                if (disableBackFaceCulling.Contains(type))
-                {
-                    renderState.Set(new BackFaceCulling(false));
-                }
-                _geometriesShadow[type].Draw(instanceCounts[type]);
-                renderState.Set(new BackFaceCulling(true));
-            }
-
-            _depthSurface.Texture.Deactivate();
+            _shadowShader.DeactivateTexture(2, normals);
+            _shadowShader.DeactivateTexture(1, positions);
+            _shadowShader.DeactivateTexture(0, _depthSurface.Texture);
 
             _shadowShader.Deactivate();
 

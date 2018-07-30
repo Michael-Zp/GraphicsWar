@@ -91,7 +91,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
                 _positions[i].Location = position;
                 _deferred.Draw(renderState, _cameras[i], instanceCounts, textures, normalMaps, heightMaps, disableBackFaceCulling);
-                _shadowMapping.Draw(renderState, _cameras[i], instanceCounts, _deferred.Depth, lightSources[0].Direction, disableBackFaceCulling);
+                _shadowMapping.Draw(renderState, _cameras[i], instanceCounts, _deferred.Depth, lightSources[0].Direction, disableBackFaceCulling, _deferred.Position, _deferred.Normal);
                 _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normal, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor);
                 _skybox.Draw(_cameras[i], 2);
                 _add.Draw(_skybox.Output, _lighting.Output);

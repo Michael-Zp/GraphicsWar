@@ -174,8 +174,7 @@
     <EmbeddedResource Include="Content\Shaders\Util\vignette.glsl" />
     <EmbeddedResource Include="Content\Shaders\Util\normals.glsl" />
     <EmbeddedResource Include="Content\Shaders\SSAO\SSAO.glsl" />
-    <EmbeddedResource Include="Content\Shaders\ShadowMapping\shadow.vert" />
-    <EmbeddedResource Include="Content\Shaders\ShadowMapping\shadow.frag" />
+    <EmbeddedResource Include="Content\Shaders\ShadowMapping\shadow.glsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Models\GPUs\Nvidia\Nvidia.png" />

@@ -10,9 +10,9 @@ namespace GraphicsWar.View.Rendering.Instances
     public class AddWithDepthTest : IUpdateResolution
     {
         public ITexture2D Depth => _outputSurface.Textures[0];
-        public ITexture2D BufferOne => _outputSurface.Textures[1];
-        public ITexture2D BufferTwo => _outputSurface.Textures[2];
-        public ITexture2D BufferThree => _outputSurface.Textures[3];
+        public ITexture2D Color => _outputSurface.Textures[1];
+        public ITexture2D Normal => _outputSurface.Textures[2];
+        public ITexture2D Position => _outputSurface.Textures[3];
 
         private readonly IShaderProgram _addWithDepthTestProgram;
         private IRenderSurface _outputSurface;
