@@ -25,9 +25,9 @@ float calcEdgeTessellation(vec2 v0, vec2 v1)
 bool test(vec3 v[4], int axis)
 {
 	vec4 coords = vec4(v[0][axis], v[1][axis], v[2][axis], v[3][axis]);
-	bool right = all(greaterThan(coords, vec4(1)));
+	bool right = all(greaterThan(coords, vec4(1.2)));
 	if(right) return true;
-	bool left = all(lessThan(coords, vec4(-1)));
+	bool left = all(lessThan(coords, vec4(-1.2)));
 	if(left) return true;
 	return false;
 }
