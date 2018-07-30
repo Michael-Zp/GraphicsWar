@@ -12,9 +12,9 @@ void main()
 	const float size = 1;
 	const vec4 vertices[4] = vec4[4] (
 		vec4(-size, -size, 0, 0),
-		vec4( size, -size, 1, 0),
+		vec4( -size, size, 0, 1),
 		vec4( size,  size, 1, 1),
-		vec4(-size,  size, 0, 1)
+		vec4(size,  -size, 1, 0)
 	);
 	
 	float x = gl_InstanceID % instanceSqrt;

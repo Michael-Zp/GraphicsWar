@@ -35,7 +35,7 @@ namespace GraphicsWar.View.Rendering.Instances
             var oldDepthTestState = renderState.Get<DepthTest>();
 
             renderState.Set(new DepthTest(true));
-            renderState.Set(new BackFaceCulling(false));
+            renderState.Set(new BackFaceCulling(true));
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
