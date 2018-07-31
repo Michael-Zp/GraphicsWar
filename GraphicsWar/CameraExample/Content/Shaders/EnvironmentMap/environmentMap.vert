@@ -14,7 +14,7 @@ out Data {
 
 void main() 
 {
-	o.normal = normal;
+	o.normal = (transform * vec4(normal,0)).xyz;
 	o.position = (transform * vec4(position, 1.0)).xyz;
 
 	vec4 pos = camera * vec4(o.position, 1.0);

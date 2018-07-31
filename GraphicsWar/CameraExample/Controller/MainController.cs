@@ -18,7 +18,7 @@ namespace GraphicsWar.Controller
             
             var orbit = window.GameWindow.CreateOrbitingCameraController(15f, 90, 0.1f, 500f);
             orbit.View.Azimuth = 250;
-            orbit.View.Elevation = 45;
+            orbit.View.Elevation = 40;
             orbit.View.TargetY = 10;
             var visual = new MainView(window.RenderContext.RenderState, window.ContentLoader);
             var model = new MainModel();

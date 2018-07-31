@@ -247,6 +247,7 @@
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.tese" />
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.vert" />
     <EmbeddedResource Include="Content\Shaders\Util\addWithDepthTest.glsl" />
+    <EmbeddedResource Include="Content\Models\sphere.obj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />
@@ -258,6 +259,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\h4.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\Sphere\sphereHeights.png" />
+    <EmbeddedResource Include="Content\Textures\Sphere\sphereNormals.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

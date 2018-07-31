@@ -41,10 +41,15 @@ namespace GraphicsWar.View
             _renderState = renderState;
             _renderState.Set(new BackFaceCulling(true));
 
-            _meshes.Add(Enums.EntityType.Sphere, Meshes.CreateSphere(subdivision: 5));
+            _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphere.obj")));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.TessellationPlane, Meshes.CreatePlane(1, 1, 1, 1));
+
+            //_normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereNormals"));
+            //_heightMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereHeights"));
+
+            _textures.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereHeights"));
 
             _disableBackFaceCulling.Add(Enums.EntityType.Nvidia);
             _disableBackFaceCulling.Add(Enums.EntityType.Radeon);

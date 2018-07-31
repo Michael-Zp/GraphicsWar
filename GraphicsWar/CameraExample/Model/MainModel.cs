@@ -27,6 +27,7 @@ namespace GraphicsWar.Model
             Entities[0].AdditionalTransformation = _orbit1.Transformation;
             _orbit2.Update(deltaTime);
             Entities[1].AdditionalTransformation = _orbit2.Transformation;
+            Entities[2].Rotate(new Vector3(0, -deltaTime, 0));
         }
     }
 }

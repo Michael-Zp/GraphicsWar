@@ -30,7 +30,7 @@ void main()
 	vec3 l = normalize(vec3(1, 1, 0));
 	color =  vec4(max(dot(n, l), 0.1) * c, 1.0);
 	color =  vec4(n, 1.0);
-	color =  vec4(0.8, 0.8, 0.8, 1.0);
+	color =  vec4(0.5, 0.3, 0.1, 1.0);
 	normal = n;
 	depth = i.depth;
 	position = i.position;
