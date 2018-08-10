@@ -5,7 +5,8 @@
         public enum EntityType
         {
             Sphere, Nvidia, Radeon,
-            TessellationPlane
+            TessellationPlane,
+            Plane
         }
     }
 }

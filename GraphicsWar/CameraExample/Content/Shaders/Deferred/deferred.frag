@@ -40,8 +40,7 @@ in Data {
 	float depth;
 	vec2 uv;
 	mat4 transform;
-	vec3 tangent;
-	vec3 bitangent;
+	mat3 tbn;
 } i;
 
 out vec4 color;
@@ -49,31 +48,21 @@ out vec3 normal;
 out float depth;
 out vec3 position;
 
-vec3 calculateNormalMapped(){
-	vec3 norm = normalize(texture2D(normalMap, i.uv).xyz);
-	vec3 t = normalize(i.tangent);
-	vec3 b = normalize(i.bitangent);
-	vec3 n = normalize(i.normal);
+vec3 calculateNormalMapped()
+{
+	vec3 norm = normalize(texture2D(normalMap, i.uv) * 2.0 - 1.0).xyz;
 
-
-	mat3 tbn = mat3(t.x, t.y, t.z, b.x, b.y, b.z, n.x, n.y, n.z);
-
-	norm = norm * tbn;
+	norm = i.tbn * norm;	
 
 	norm = (i.transform * vec4(norm, 0.0)).xyz;
-
+	
 	return norm;
 }
 
-vec3 calculateParalaxMapped(){
-	vec3 t = normalize(i.tangent);
-	vec3 b = normalize(i.bitangent);
-	vec3 n = normalize(i.normal);
+vec3 calculateParalaxMapped()
+{
 
-	mat3 tbn = mat3(t.x, t.y, t.z, b.x, b.y, b.z, n.x, n.y, n.z);
-
-
-	mat3 tempInverse = inverse(tbn);
+	mat3 tempInverse = inverse(i.tbn);
 	mat4 inverseTbn = mat4(tempInverse[0].x, tempInverse[1].y, tempInverse[2].z, 0, tempInverse[0].x, tempInverse[1].y, tempInverse[2].z, 0, tempInverse[0].x, tempInverse[1].y, tempInverse[2].z, 0, 0, 0, 0, 0);
 	mat4 inverseTransform = inverse(i.transform);
 
@@ -87,9 +76,9 @@ vec3 calculateParalaxMapped(){
 
 	vec2 tn = i.uv + vec2(hn * viewDirectionInTangent);
 	
-	vec3 norm = normalize(texture2D(normalMap, tn).xyz);
+	vec3 norm = normalize(texture2D(normalMap, tn).xyz * 2.0 - 1.0);
 	
-	norm = norm * tbn;
+	norm = i.tbn * norm;
 
 	norm = (i.transform * vec4(norm, 0.0)).xyz;
 
@@ -105,7 +94,7 @@ void main()
 	vec3 paralaxMappedNormal = paralaxMapping > 0 ? calculateParalaxMapped() : vec3(0);
 
 	color = textured * texture(tex, i.uv) + (1-textured)*materialColor;
-	//color = vec4(inverseTbn[0].xyz, 1);
+
 	normal = normalize(unmapped * (i.transform * vec4(i.normal, 0.0)).xyz + normalMapping * normalMappedNormal + paralaxMapping * paralaxMappedNormal);
 	
 	depth = i.depth;

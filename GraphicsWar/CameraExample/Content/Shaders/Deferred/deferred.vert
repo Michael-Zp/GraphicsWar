@@ -15,8 +15,7 @@ out Data {
 	float depth;
 	vec2 uv;
 	mat4 transform;
-	vec3 tangent;
-	vec3 bitangent;
+	mat3 tbn;
 } o;
 
 void main() 
@@ -25,8 +24,11 @@ void main()
 	o.position = (transform * vec4(position, 1.0)).xyz;
 	o.uv = uv;
 	o.transform = transform;
-	o.tangent = tangent;
-	o.bitangent = bitangent;
+	
+	vec3 t = vec4(normalize(tangent), 0).xyz;
+	vec3 b = vec4(normalize(bitangent), 0).xyz;
+	vec3 n = vec4(normalize(normal), 0).xyz;
+	o.tbn = mat3(t, b, n);
 
 	vec4 outPos = camera * vec4(o.position, 1.0);
 

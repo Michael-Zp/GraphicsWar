@@ -6,7 +6,6 @@ using Zenseless.HLGL;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Instances;
 using GraphicsWar.View.Rendering.Management;
-using System;
 
 namespace GraphicsWar.View
 {
@@ -42,14 +41,18 @@ namespace GraphicsWar.View
             _renderState.Set(new BackFaceCulling(true));
 
             _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphere.obj")));
+            //_meshes.Add(Enums.EntityType.Sphere, Meshes.CreateSphere(1, 3));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.TessellationPlane, Meshes.CreatePlane(1, 1, 1, 1));
+            _meshes.Add(Enums.EntityType.Plane, new TBNMesh(Meshes.CreatePlane(1, 1, 1, 1)));
 
-            //_normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereNormals"));
-            //_heightMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereHeights"));
+            _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("SphereNormalMap.png"));
+            _heightMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("SphereHeightMap.png"));
 
-            _textures.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereHeights"));
+            _normalMaps.Add(Enums.EntityType.Plane, contentLoader.Load<ITexture2D>("n4.jpg"));
+
+            //_textures.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereHeights"));
 
             _disableBackFaceCulling.Add(Enums.EntityType.Nvidia);
             _disableBackFaceCulling.Add(Enums.EntityType.Radeon);
@@ -105,6 +108,7 @@ namespace GraphicsWar.View
             _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
 
             TextureDrawer.Draw(_ssaoWithBlur.Output);
+            //TextureDrawer.Draw(_deferred.Normal);
             //TextureDrawer.Draw(_addWithDepthTest.Depth);
         }
 
