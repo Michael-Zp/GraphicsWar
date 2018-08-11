@@ -40,15 +40,15 @@ namespace GraphicsWar.View
             _renderState = renderState;
             _renderState.Set(new BackFaceCulling(true));
 
-            _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphere.obj")));
+            _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphereBlocky.obj")));
             //_meshes.Add(Enums.EntityType.Sphere, Meshes.CreateSphere(1, 3));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.TessellationPlane, Meshes.CreatePlane(1, 1, 1, 1));
             _meshes.Add(Enums.EntityType.Plane, new TBNMesh(Meshes.CreatePlane(1, 1, 1, 1)));
 
-            _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("SphereNormalMap.png"));
-            _heightMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("SphereHeightMap.png"));
+            _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
+            //_heightMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyHeights.png"));
 
             _normalMaps.Add(Enums.EntityType.Plane, contentLoader.Load<ITexture2D>("n4.jpg"));
 

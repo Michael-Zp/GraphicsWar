@@ -247,8 +247,9 @@
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.tese" />
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.vert" />
     <EmbeddedResource Include="Content\Shaders\Util\addWithDepthTest.glsl" />
-    <EmbeddedResource Include="Content\Models\sphere.obj" />
+    <EmbeddedResource Include="Content\Models\sphereSmooth.obj" />
     <EmbeddedResource Include="Content\Models\plane.obj" />
+    <EmbeddedResource Include="Content\Models\sphereBlocky.obj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />
@@ -265,10 +266,14 @@
     <EmbeddedResource Include="Content\Textures\n4.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Textures\Sphere\SphereNormalMap.png" />
+    <EmbeddedResource Include="Content\Textures\SphereSmooth\sphereSmoothNormals.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Textures\Sphere\SphereHeightMap.png" />
+    <EmbeddedResource Include="Content\Textures\SphereSmooth\sphereSmoothHeights.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyHeights.png" />
+    <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyNormals.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
