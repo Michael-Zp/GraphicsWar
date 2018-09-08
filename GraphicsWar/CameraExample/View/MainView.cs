@@ -41,18 +41,11 @@ namespace GraphicsWar.View
             _renderState.Set(new BackFaceCulling(true));
 
             _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphereBlocky.obj")));
-            //_meshes.Add(Enums.EntityType.Sphere, Meshes.CreateSphere(1, 3));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
-            _meshes.Add(Enums.EntityType.TessellationPlane, Meshes.CreatePlane(1, 1, 1, 1));
-            _meshes.Add(Enums.EntityType.Plane, new TBNMesh(Meshes.CreatePlane(1, 1, 1, 1)));
+            _meshes.Add(Enums.EntityType.Triangle, CustomMeshes.CreateTriangle());
 
             _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
-            //_heightMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyHeights.png"));
-
-            _normalMaps.Add(Enums.EntityType.Plane, contentLoader.Load<ITexture2D>("n4.jpg"));
-
-            //_textures.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereHeights"));
 
             _disableBackFaceCulling.Add(Enums.EntityType.Nvidia);
             _disableBackFaceCulling.Add(Enums.EntityType.Radeon);
@@ -89,12 +82,12 @@ namespace GraphicsWar.View
 
             _renderInstanceGroup.UpdateGeometry(arrTrans);
 
-            _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling);
+            _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, time);
 
             _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling, _deferred.Position, _deferred.Normal);
             _blurredShadowMap.Draw(_directShadowMap.Output);
 
-            _environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera);
+            _environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera, time);
             _environmentMap.Draw(_renderState, _deferred.Depth);
             _addEnvMap.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
 

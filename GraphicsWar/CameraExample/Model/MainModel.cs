@@ -19,6 +19,7 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Radeon, new Vector3(5, 15, 0), new Vector3((float)Math.PI, (float)Math.PI / 2, (float)Math.PI / 30), 1f));
             _orbit2 = new Orbit(new Vector3(2, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0), new Vector3(0, (float)Math.PI, 0));
             Entities.Add(new Entity(Enums.EntityType.Sphere, new Vector3(0f, 10f, 0f), Vector3.Zero, 3f));
+            Entities.Add(new Entity(Enums.EntityType.Triangle, 5 * Vector3.UnitY, Vector3.Zero, 0.6f));
         }
 
         public void Update(float deltaTime)
@@ -28,6 +29,7 @@ namespace GraphicsWar.Model
             _orbit2.Update(deltaTime);
             Entities[1].AdditionalTransformation = _orbit2.Transformation;
             Entities[2].Rotate(new Vector3(0, -deltaTime, 0));
+            Entities[3].Rotate(deltaTime * 3 * new Vector3(0.2f,0.7f,0.4f));
         }
     }
 }

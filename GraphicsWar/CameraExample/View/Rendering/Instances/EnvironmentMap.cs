@@ -73,7 +73,7 @@ namespace GraphicsWar.View.Rendering.Instances
             }
         }
 
-        public void CreateMap(ViewEntity entity, IRenderState renderState, int index, Dictionary<Enums.EntityType, Matrix4x4[]> transforms, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, List<LightSource> lightSources, Vector3 ambientColor, ITransformation camera)
+        public void CreateMap(ViewEntity entity, IRenderState renderState, int index, Dictionary<Enums.EntityType, Matrix4x4[]> transforms, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, List<LightSource> lightSources, Vector3 ambientColor, ITransformation camera, float time)
         {
             _entity = entity;
             _camera = camera;
@@ -90,7 +90,7 @@ namespace GraphicsWar.View.Rendering.Instances
             {
 
                 _positions[i].Location = position;
-                _deferred.Draw(renderState, _cameras[i], instanceCounts, textures, normalMaps, heightMaps, disableBackFaceCulling);
+                _deferred.Draw(renderState, _cameras[i], instanceCounts, textures, normalMaps, heightMaps, disableBackFaceCulling, time);
                 _shadowMapping.Draw(renderState, _cameras[i], instanceCounts, _deferred.Depth, lightSources[0].Direction, disableBackFaceCulling, _deferred.Position, _deferred.Normal);
                 _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normal, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor);
                 _skybox.Draw(_cameras[i], 2);

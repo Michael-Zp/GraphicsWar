@@ -107,11 +107,13 @@
     <Compile Include="Model\MainModel.cs" />
     <Compile Include="Model\Movement\Orbit.cs" />
     <Compile Include="Shared\Enums.cs" />
+    <Compile Include="View\CustomMeshes.cs" />
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\Rendering\Instances\AddWithDepthTest.cs" />
     <Compile Include="View\Rendering\Instances\GaussBlur.cs" />
+    <Compile Include="View\Rendering\Instances\ProjectileGeneration.cs" />
     <Compile Include="View\Rendering\Instances\ShadowBlur.cs" />
     <Compile Include="View\Rendering\Instances\AvgBlur.cs" />
     <Compile Include="View\Rendering\Instances\SphereCut.cs" />
@@ -250,6 +252,7 @@
     <EmbeddedResource Include="Content\Models\sphereSmooth.obj" />
     <EmbeddedResource Include="Content\Models\plane.obj" />
     <EmbeddedResource Include="Content\Models\sphereBlocky.obj" />
+    <EmbeddedResource Include="Content\Shaders\ProjectileGeneration\ProjectileGeneration.vert" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />

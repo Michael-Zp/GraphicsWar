@@ -44,7 +44,7 @@ namespace GraphicsWar.View.Rendering.Instances
             GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
 
-            int instanceSqrt = 100;
+            const int instanceSqrt = 100;
             _tesselationProgram.Uniform("camera", camera);
             _tesselationProgram.Uniform(nameof(instanceSqrt), instanceSqrt);
             _displacementMap.Activate();
