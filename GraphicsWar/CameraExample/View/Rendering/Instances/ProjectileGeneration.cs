@@ -51,7 +51,7 @@ namespace GraphicsWar.View.Rendering.Instances
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
             GL.DrawBuffers(DrawBuffers.Length, DrawBuffers);
-            
+
             _trianglesGeometry.Draw(trianglesCount);
 
             _projectileGenerationProgram.Deactivate();

@@ -32,6 +32,10 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public ITexture2D Position => _addTesselation.Position;
 
+        public ITexture2D ProjectileColor => _projectilesGeneration.Color;
+
+        public ITexture2D ProjectileDepth => _projectilesGeneration.Depth;
+
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
             _deferredProgram = contentLoader.Load<IShaderProgram>("deferred.*");
