@@ -42,6 +42,7 @@ namespace GraphicsWar.View
             _renderState.Set(new BackFaceCulling(true));
 
             _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphereBlocky.obj")));
+            _meshes.Add(Enums.EntityType.FluidSphere, Meshes.CreateSphere(1, 1));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.Triangle, CustomMeshes.CreateTriangle());

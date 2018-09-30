@@ -63,7 +63,7 @@ namespace GraphicsWar.Model
                 BulletSharp.Math.Vector3 randVec = new BulletSharp.Math.Vector3(getRandom(rand, 2), getRandom(rand, 20), getRandom(rand, 2));
                 randVec += baseSpherePos;
 
-                Entities.Add(new Entity(Enums.EntityType.Sphere, randVec.ToNumericsVector(), Vector3.Zero, size));
+                Entities.Add(new Entity(Enums.EntityType.FluidSphere, randVec.ToNumericsVector(), Vector3.Zero, size));
                 _sphereIndices.Add(Entities.Count - 1);
 
                 var rbInfoSphere = new RigidBodyConstructionInfo(1.0f, new DefaultMotionState(BulletSharp.Math.Matrix.Translation(randVec)), sphereShape);
@@ -108,7 +108,7 @@ namespace GraphicsWar.Model
         {
             Random rand = new Random(DateTime.Now.Millisecond + DateTime.UtcNow.Second);
             Func<Random, float, float> getRandom = (locRand, range) => { return ((float)locRand.NextDouble() * 2 - 1) * range; };
-
+            
             _world.StepSimulation(deltaTime);
             for (var i = 0; i < _sphereIndices.Count; i++)
             {
