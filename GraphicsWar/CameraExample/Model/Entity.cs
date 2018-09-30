@@ -9,11 +9,11 @@ namespace GraphicsWar.Model
         public Enums.EntityType Type { get; }
 
         public Matrix4x4 AdditionalTransformation { private get; set; } = Matrix4x4.Identity;
-        public Matrix4x4 Transformation => Matrix4x4.CreateScale(_scale) * MatrixHelper.CreateRotation(_rotation) * Matrix4x4.CreateTranslation(_position) * AdditionalTransformation;
+        public Matrix4x4 Transformation => Matrix4x4.CreateScale(ScalingFactor) * MatrixHelper.CreateRotation(Rotation) * Matrix4x4.CreateTranslation(Position) * AdditionalTransformation;
 
-        private Vector3 _position;
-        private Vector3 _rotation;
-        private Vector3 _scale;
+        public Vector3 Position;
+        public Vector3 Rotation;
+        public Vector3 ScalingFactor;
 
 
         public Entity(Enums.EntityType type, Vector3 position, Vector3 rotation, float scale) : this(type, position,
@@ -23,25 +23,25 @@ namespace GraphicsWar.Model
         public Entity(Enums.EntityType type, Vector3 position, Vector3 rotation, Vector3 scale)
         {
             Type = type;
-            _position = position;
-            _rotation = rotation;
-            _scale = scale;
+            Position = position;
+            Rotation = rotation;
+            ScalingFactor = scale;
         }
 
         public void Rotate(Vector3 rotation)
         {
-            _rotation += rotation;
+            Rotation += rotation;
         }
 
         public void Translate(Vector3 translation)
         {
-            _position += translation;
+            Position += translation;
         }
-
+        
         public void Scale(float scale) => Scale(new Vector3(scale));
         public void Scale(Vector3 scale)
         {
-            _scale *= scale;
+            ScalingFactor *= scale;
         }
     }
 }

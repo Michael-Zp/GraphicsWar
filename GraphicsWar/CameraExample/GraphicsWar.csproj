@@ -30,7 +30,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -99,6 +99,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Controller\Utilities.cs" />
+    <Compile Include="ExtensionMethods\BulletSharpMathExtensions.cs" />
     <Compile Include="ExtensionMethods\CubeMapFBO.cs" />
     <Compile Include="ExtensionMethods\MatrixHelper.cs" />
     <Compile Include="ExtensionMethods\Position.cs" />
@@ -160,6 +161,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="BulletSharp">
+      <Version>0.11.1</Version>
+    </PackageReference>
     <PackageReference Include="OpenTK">
       <Version>3.0.0-pre</Version>
     </PackageReference>
@@ -278,6 +282,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyHeights.png" />
     <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyNormals.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ExternalLibs\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
