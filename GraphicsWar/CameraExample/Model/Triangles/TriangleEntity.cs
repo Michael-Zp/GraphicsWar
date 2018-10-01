@@ -23,6 +23,7 @@ namespace GraphicsWar.Model.Triangles
         public void Update(float deltaTime, Matrix4x4 parentTransformation)
         {
             Rotate(deltaTime * 3 * _movement.Rotation);
+            ScaleFactor = _movement.Scale;
             AdditionalTransformation = _movement.CalculateMovement(deltaTime) * parentTransformation;
         }
 

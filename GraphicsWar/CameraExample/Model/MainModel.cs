@@ -62,7 +62,7 @@ namespace GraphicsWar.Model
                                 break;
 
                             default:
-                                Console.WriteLine("No origin for triangle found");
+                                Console.WriteLine("No origin for triangle found.");
                                 break;
                         }
                     }
@@ -82,9 +82,12 @@ namespace GraphicsWar.Model
 
         private void TriangleDied(Vector3 position, Enums.EntityType triangleType)
         {
-            TriangleEntity triangle = new TriangleEntity(triangleType, position, Vector3.Zero, 0.1f, new BoomMovement());
-            triangle.TriangleDied += (p) => EntitiesToDelete.Add(triangle);
-            Entities.Add(triangle);
+            for(int i = 0; i < 10; i++)
+            {
+                TriangleEntity triangle = new TriangleEntity(triangleType, position, Vector3.Zero, 0.3f, new BoomMovement());
+                triangle.TriangleDied += (p) => EntitiesToDelete.Add(triangle);
+                Entities.Add(triangle);
+            }
         }
     }
 }

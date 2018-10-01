@@ -8,6 +8,7 @@ namespace GraphicsWar.Model.Triangles
         Matrix4x4 CalculateMovement(float deltaTime);
 
         Vector3 Rotation { get; }
+        float Scale { get; }
 
         event Action MovementFinished;
     }

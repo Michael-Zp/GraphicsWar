@@ -12,6 +12,7 @@ namespace GraphicsWar.Model.Triangles
 
         private float _translation;
         public Vector3 Rotation { get; private set; }
+        public float Scale => 1;
         private float _aimOffset;
         private float _archHeight;
 
