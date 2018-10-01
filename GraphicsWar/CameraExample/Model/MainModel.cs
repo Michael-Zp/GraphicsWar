@@ -21,7 +21,11 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Sphere, new Vector3(0f, 10f, 0f), Vector3.Zero, 3f));
             for (int i = 0; i < 6; i++)
             {
-                Entities.Add(new TriangleEntity(new Vector3(5, 15, 0), Vector3.Zero, 0.4f, i*2));
+                Entities.Add(new TriangleEntity(Enums.EntityType.NvidiaTriangle, new Vector3(5, 15, 0), Vector3.Zero, 0.4f, i * 2));
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                Entities.Add(new TriangleEntity(Enums.EntityType.RadeonTriangle, new Vector3(5, 15, 0), Vector3.Zero, 0.4f, i * 2));
             }
         }
 
@@ -36,7 +40,20 @@ namespace GraphicsWar.Model
             {
                 if (entity is TriangleEntity triangleEntity)
                 {
-                    triangleEntity.Update(deltaTime, _orbit1.Transformation);
+                    switch (triangleEntity.Type)
+                    {
+                        case Enums.EntityType.NvidiaTriangle:
+                            triangleEntity.Update(deltaTime, _orbit1.Transformation);
+                            break;
+
+                        case Enums.EntityType.RadeonTriangle:
+                            triangleEntity.Update(deltaTime, _orbit2.Transformation);
+                            break;
+
+                        default:
+                            Console.WriteLine("No origin for triangle found");
+                            break;
+                    }
                 }
             }
         }

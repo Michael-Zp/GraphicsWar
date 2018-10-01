@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Management;
@@ -21,12 +22,15 @@ namespace GraphicsWar.View.Rendering.Instances
 
         private VAO _trianglesGeometry;
 
+        private Enums.EntityType _triangleType;
+
         private static readonly DrawBuffersEnum[] DrawBuffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
 
-        public ProjectileGeneration(IContentLoader contentLoader, DefaultMesh triangleMesh)
+        public ProjectileGeneration(IContentLoader contentLoader, DefaultMesh triangleMesh, Enums.EntityType triangleType)
         {
             _projectileGenerationProgram = contentLoader.Load<IShaderProgram>(new [] { "ProjectileGeneration.vert", "deferred.frag" } );
             _trianglesGeometry = VAOLoader.FromMesh(triangleMesh, _projectileGenerationProgram);
+            _triangleType = triangleType;
         }
         
 
@@ -44,7 +48,23 @@ namespace GraphicsWar.View.Rendering.Instances
             _projectileGenerationProgram.Uniform("time", time);
             _projectileGenerationProgram.Uniform("normalMapping", 0f);
             _projectileGenerationProgram.Uniform("paralaxMapping", 0f);
-            _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.ForestGreen);
+
+            switch (_triangleType)
+            {
+                case Enums.EntityType.NvidiaTriangle:
+                    _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.ForestGreen);
+                    break;
+
+                case Enums.EntityType.RadeonTriangle:
+                    _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.Red);
+                    break;
+
+                default:
+                    Console.WriteLine("No origin for triangle found");
+                    _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.Blue);
+                    break;
+            }
+
             _projectileGenerationProgram.Uniform("textured", 0f);
 
             GL.ClearColor(System.Drawing.Color.FromArgb(0, 0, 0, 0));
@@ -71,7 +91,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
         {
-            _trianglesGeometry.SetAttribute(_projectileGenerationProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[Enums.EntityType.Triangle], true);
+            _trianglesGeometry.SetAttribute(_projectileGenerationProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[_triangleType], true);
         }
     }
 }

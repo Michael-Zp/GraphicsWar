@@ -44,7 +44,8 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphereBlocky.obj")));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
-            _meshes.Add(Enums.EntityType.Triangle, CustomMeshes.CreateTriangle());
+            _meshes.Add(Enums.EntityType.NvidiaTriangle, CustomMeshes.CreateTriangle());
+            _meshes.Add(Enums.EntityType.RadeonTriangle, CustomMeshes.CreateTriangle());
 
             _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
 

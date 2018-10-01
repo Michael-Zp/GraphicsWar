@@ -4,7 +4,7 @@
     {
         public enum EntityType
         {
-            Sphere, Nvidia, Radeon, Triangle
+            Sphere, Nvidia, Radeon, NvidiaTriangle, RadeonTriangle
         }
     }
 }

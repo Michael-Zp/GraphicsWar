@@ -22,9 +22,9 @@ namespace GraphicsWar.Model
             Rand = new Random();
         }
 
-        public TriangleEntity(Vector3 position, Vector3 rotation, float scale, float offset) : this(position, rotation, new Vector3(scale), offset) { }
+        public TriangleEntity(Enums.EntityType triangleType, Vector3 position, Vector3 rotation, float scale, float offset) : this(triangleType, position, rotation, new Vector3(scale), offset) { }
 
-        public TriangleEntity(Vector3 position, Vector3 rotation, Vector3 scale, float offset) : base(Enums.EntityType.Triangle,
+        public TriangleEntity(Enums.EntityType triangleType, Vector3 position, Vector3 rotation, Vector3 scale, float offset) : base(triangleType,
             position, rotation, scale)
         {
             _translation = -StartOffset - offset;
@@ -41,7 +41,7 @@ namespace GraphicsWar.Model
                 InitShot();
             }
 
-            float arch = 1 - (float)Math.Pow((double)((_translation + StartOffset) / (Distance/2+0.5f)) + 1, 2);
+            float arch = 1 - (float)Math.Pow((double)((_translation + StartOffset) / (Distance / 2 + 0.5f)) + 1, 2);
 
             AdditionalTransformation = Matrix4x4.CreateTranslation(new Vector3(_translation, arch * _archHeight, 0)) * Matrix4x4.CreateRotationY(_aimOffset) * shipTransformation;
 
