@@ -103,7 +103,10 @@
     <Compile Include="ExtensionMethods\MatrixHelper.cs" />
     <Compile Include="ExtensionMethods\Position.cs" />
     <Compile Include="ExtensionMethods\TextureDrawer.cs" />
-    <Compile Include="Model\TriangleEntity.cs" />
+    <Compile Include="Model\Triangles\BoomMovement.cs" />
+    <Compile Include="Model\Triangles\ArchMovement.cs" />
+    <Compile Include="Model\Triangles\ITriangleMovement.cs" />
+    <Compile Include="Model\Triangles\TriangleEntity.cs" />
     <Compile Include="Model\Entity.cs" />
     <Compile Include="Model\MainModel.cs" />
     <Compile Include="Model\Movement\Orbit.cs" />
