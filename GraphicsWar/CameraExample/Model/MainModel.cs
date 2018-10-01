@@ -15,7 +15,8 @@ namespace GraphicsWar.Model
         private readonly List<RigidBody> _sphereBodies = new List<RigidBody>();
         private readonly Orbit _orbit1;
         private readonly Orbit _orbit2;
-        private readonly DiscreteDynamicsWorldMultiThreaded _world;
+        //private readonly DiscreteDynamicsWorldMultiThreaded _world;
+        private readonly DiscreteDynamicsWorld _world;
 
         public MainModel()
         {
@@ -44,11 +45,13 @@ namespace GraphicsWar.Model
                 CollisionConf = new DefaultCollisionConfiguration(collisionConfigurationInfo);
             };
 
-            var Dispatcher = new CollisionDispatcherMultiThreaded(CollisionConf);
-            var broad = new DbvtBroadphase();
-            var constraintSolver = new ConstraintSolverPoolMultiThreaded(maxNumThreads);
-            _world = new DiscreteDynamicsWorldMultiThreaded(Dispatcher, broad, constraintSolver, null, CollisionConf);
-            _world.SolverInfo.SolverMode = SolverModes.Simd | SolverModes.UseWarmStarting;
+            //var Dispatcher = new CollisionDispatcherMultiThreaded(CollisionConf);
+            //var broad = new DbvtBroadphase();
+            //var constraintSolver = new ConstraintSolverPoolMultiThreaded(maxNumThreads);
+            //_world = new DiscreteDynamicsWorldMultiThreaded(Dispatcher, broad, constraintSolver, null, CollisionConf);
+            //_world.SolverInfo.SolverMode = SolverModes.Simd | SolverModes.UseWarmStarting;
+            var config = new DefaultCollisionConfiguration();
+            _world = new DiscreteDynamicsWorld(new CollisionDispatcher(config), new AxisSweep3(new BulletSharp.Math.Vector3(-1000), new BulletSharp.Math.Vector3(1000)), null, config);
 
             _world.Gravity = new BulletSharp.Math.Vector3(0, -9.81f, 0);
 
