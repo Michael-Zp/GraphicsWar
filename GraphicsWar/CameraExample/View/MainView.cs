@@ -87,25 +87,25 @@ namespace GraphicsWar.View
 
             _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, time);
 
-            _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling, _deferred.Position, _deferred.Normal);
-            _blurredShadowMap.Draw(_directShadowMap.Output);
+            ////_directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling, _deferred.Position, _deferred.Normal);
+            ////_blurredShadowMap.Draw(_directShadowMap.Output);
 
-            _environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera, time);
-            _environmentMap.Draw(_renderState, _deferred.Depth);
-            _addEnvMap.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
+            ////_environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, _lights, new Vector3(0.1f), camera, time);
+            ////_environmentMap.Draw(_renderState, _deferred.Depth);
+            ////_addEnvMap.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
 
-            _lighting.Draw(camera, _addEnvMap.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
+            ////_lighting.Draw(camera, _addEnvMap.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _lights, new Vector3(0.1f));
 
-            _addProjectileColor.Draw(_deferred.ProjectileDepth, _deferred.Depth, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output);
+            ////_addProjectileColor.Draw(_deferred.ProjectileDepth, _deferred.Depth, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output);
 
-            _sphereCut.Draw(camera, _addProjectileColor.Color, _deferred.Depth);
+            ////_sphereCut.Draw(camera, _addProjectileColor.Color, _deferred.Depth);
 
-            _skybox.Draw(camera);
-            _addSkybox.Draw(_skybox.Output, _sphereCut.Output);
+            ////_skybox.Draw(camera);
+            ////_addSkybox.Draw(_skybox.Output, _sphereCut.Output);
 
-            _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
+            ////_ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
 
-            TextureDrawer.Draw(_ssaoWithBlur.Output);
+            //TextureDrawer.Draw(_ssaoWithBlur.Output);
             //TextureDrawer.Draw(_deferred.Normal);
             //TextureDrawer.Draw(_addWithDepthTest.Depth);
         }

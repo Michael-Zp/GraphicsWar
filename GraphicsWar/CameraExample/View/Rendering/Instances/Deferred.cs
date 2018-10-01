@@ -12,6 +12,12 @@ namespace GraphicsWar.View.Rendering.Instances
 {
     public class Deferred : IUpdateTransforms, IUpdateResolution
     {
+        private static readonly List<Enums.EntityType> IgnoreEntityTypes = new List<Enums.EntityType>
+        {
+            Enums.EntityType.FluidSphere,
+            Enums.EntityType.Triangle
+        };
+
         private readonly IShaderProgram _deferredProgram;
         private IRenderSurface _deferredSurface;
 
@@ -23,14 +29,16 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly AddWithDepthTest _addProjectiles;
         private readonly Tesselation _tesselation;
         private readonly AddWithDepthTest _addTesselation;
+        private readonly FluidSimulation _fluidSimulation;
+        private readonly AddWithDepthTest _addFluidSimulation;
 
-        public ITexture2D Color => _addTesselation.Color;
+        public ITexture2D Color => _addFluidSimulation.Color;
 
-        public ITexture2D Normal => _addTesselation.Normal;
+        public ITexture2D Normal => _addFluidSimulation.Normal;
 
-        public ITexture2D Depth => _addTesselation.Depth;
+        public ITexture2D Depth => _addFluidSimulation.Depth;
 
-        public ITexture2D Position => _addTesselation.Position;
+        public ITexture2D Position => _addFluidSimulation.Position;
 
         public ITexture2D ProjectileColor => _projectilesGeneration.Color;
 
@@ -63,6 +71,9 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _tesselation = new Tesselation(contentLoader);
             _addTesselation = new AddWithDepthTest(contentLoader);
+
+            _fluidSimulation = new FluidSimulation(contentLoader, meshes);
+            _addFluidSimulation = new AddWithDepthTest(contentLoader);
         }
 
         public void UpdateResolution(int width, int height)
@@ -78,6 +89,9 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _tesselation.UpdateResolution(width, height);
             _addTesselation.UpdateResolution(width, height);
+
+            _fluidSimulation.UpdateResolution(width, height);
+            _addFluidSimulation.UpdateResolution(width, height);
         }
 
         public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)
@@ -87,6 +101,7 @@ namespace GraphicsWar.View.Rendering.Instances
                 _geometries[type].SetAttribute(_deferredProgram.GetResourceLocation(ShaderResourceType.Attribute, "transform"), transforms[type], true);
             }
             _projectilesGeneration.UpdateTransforms(transforms);
+            _fluidSimulation.UpdateTransforms(transforms);
         }
 
         public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, float time)
@@ -108,7 +123,7 @@ namespace GraphicsWar.View.Rendering.Instances
             //TODO: Can be accelerated with sorting the normal map and not normal map useage beforhand
             foreach (var type in _geometries.Keys)
             {
-                if (instanceCounts[type] == 0 || type == Enums.EntityType.Triangle)
+                if (instanceCounts[type] == 0 || IgnoreEntityTypes.Contains(type))
                 {
                     continue;
                 }
@@ -185,6 +200,11 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _tesselation.Draw(renderState, camera);
             _addTesselation.Draw(_addProjectiles.Depth, _tesselation.Depth, _addProjectiles.Color, _tesselation.Color, _addProjectiles.Normal, _tesselation.Normal, _addProjectiles.Position, _tesselation.Position);
+
+            _fluidSimulation.Draw(renderState, camera, instanceCounts);
+            _addFluidSimulation.Draw(_addTesselation.Depth, _fluidSimulation.Depth, _addTesselation.Color, _fluidSimulation.Color, _addTesselation.Normal, _fluidSimulation.Normal, _addTesselation.Position, _fluidSimulation.Position);
+
+            TextureDrawer.Draw(_fluidSimulation.BlurredDepth);
         }
     }
 }

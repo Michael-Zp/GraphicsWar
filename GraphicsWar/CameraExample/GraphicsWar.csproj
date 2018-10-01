@@ -114,6 +114,7 @@
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\Rendering\Instances\AddWithDepthTest.cs" />
+    <Compile Include="View\Rendering\Instances\FluidSimulation.cs" />
     <Compile Include="View\Rendering\Instances\GaussBlur.cs" />
     <Compile Include="View\Rendering\Instances\ProjectileGeneration.cs" />
     <Compile Include="View\Rendering\Instances\ShadowBlur.cs" />
@@ -258,6 +259,14 @@
     <EmbeddedResource Include="Content\Models\plane.obj" />
     <EmbeddedResource Include="Content\Models\sphereBlocky.obj" />
     <EmbeddedResource Include="Content\Shaders\ProjectileGeneration\ProjectileGeneration.vert" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\convergeFluid.frag" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\convergeFluid.vert" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\initialDepthOfFluid.frag" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\initialDepthOfFluid.vert" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\thicknessOfFluid.frag" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\thicknessOfFluid.vert" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\fluidBlurPass1.glsl" />
+    <EmbeddedResource Include="Content\Shaders\FluidSimulation\fluidBlurPass2.glsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />

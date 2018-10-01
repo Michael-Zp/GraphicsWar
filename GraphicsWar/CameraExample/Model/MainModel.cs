@@ -30,7 +30,7 @@ namespace GraphicsWar.Model
             }
 
 
-            int maxNumThreads = 8;
+            int maxNumThreads = 4;
             Threads.TaskScheduler = Threads.GetPplTaskScheduler();
             Threads.TaskScheduler.NumThreads = maxNumThreads;
 
