@@ -104,7 +104,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _fluidSimulation.UpdateTransforms(transforms);
         }
 
-        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, float time)
+        public void Draw(IRenderState renderState, ITransformation camera, ITransformation projection, ITransformation view, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, float time)
         {
 
             _deferredSurface.Activate();
@@ -201,7 +201,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _tesselation.Draw(renderState, camera);
             _addTesselation.Draw(_addProjectiles.Depth, _tesselation.Depth, _addProjectiles.Color, _tesselation.Color, _addProjectiles.Normal, _tesselation.Normal, _addProjectiles.Position, _tesselation.Position);
 
-            _fluidSimulation.Draw(renderState, camera, instanceCounts);
+            _fluidSimulation.Draw(renderState, camera, projection, view, instanceCounts);
             _addFluidSimulation.Draw(_addTesselation.Depth, _fluidSimulation.Depth, _addTesselation.Color, _fluidSimulation.Color, _addTesselation.Normal, _fluidSimulation.Normal, _addTesselation.Position, _fluidSimulation.Position);
 
             TextureDrawer.Draw(_fluidSimulation.BlurredDepth);

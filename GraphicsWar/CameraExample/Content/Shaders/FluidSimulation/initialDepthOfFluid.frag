@@ -7,9 +7,11 @@ in Data {
 } i;
 
 out float depth;
+out vec3 normal;
 
 
 void main() 
 {
+	normal = i.normal;
 	depth = i.depth;
 }

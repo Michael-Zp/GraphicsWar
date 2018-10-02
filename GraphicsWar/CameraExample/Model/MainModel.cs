@@ -80,7 +80,7 @@ namespace GraphicsWar.Model
             var bigSphereBody = new RigidBody(rbInfoBigSphere);
 
             var groundShape = new Box2DShape(20, 5f, 20);
-            var rbInfoGround = new RigidBodyConstructionInfo(0.0f, new DefaultMotionState(BulletSharp.Math.Matrix.Translation(0, 30, 0)), groundShape);
+            var rbInfoGround = new RigidBodyConstructionInfo(0.0f, new DefaultMotionState(BulletSharp.Math.Matrix.Translation(0, 0, 0)), groundShape);
             var groundBody = new RigidBody(rbInfoGround);
 
             var groundShape2 = new Box2DShape(5, 1000, 1000);

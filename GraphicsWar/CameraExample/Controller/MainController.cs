@@ -23,7 +23,7 @@ namespace GraphicsWar.Controller
             var visual = new MainView(window.RenderContext.RenderState, window.ContentLoader);
             var model = new MainModel();
             window.Update += (period) => model.Update(gameTime.DeltaTime);
-            window.Render += () => visual.Render(model.Entities.ToViewEntities(), gameTime.AbsoluteTime, orbit);
+            window.Render += () => visual.Render(model.Entities.ToViewEntities(), gameTime.AbsoluteTime, orbit, orbit.Projection, orbit.View);
             window.Resize += visual.Resize;
             window.Run();
         }

@@ -18,7 +18,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         public ITexture2D Output => _outputSurface.Texture;
 
-        private readonly ITransformation[] _cameras = new ITransformation[6];
+        private readonly Camera<Position, Perspective>[] _cameras = new Camera<Position, Perspective>[6];
         private readonly Position[] _positions;
         private readonly IRenderSurface[] _mapSurfaces = new IRenderSurface[6];
 
@@ -90,7 +90,7 @@ namespace GraphicsWar.View.Rendering.Instances
             {
 
                 _positions[i].Location = position;
-                _deferred.Draw(renderState, _cameras[i], instanceCounts, textures, normalMaps, heightMaps, disableBackFaceCulling, time);
+                _deferred.Draw(renderState, _cameras[i], _cameras[i].Projection, _cameras[i].View, instanceCounts, textures, normalMaps, heightMaps, disableBackFaceCulling, time);
                 _shadowMapping.Draw(renderState, _cameras[i], instanceCounts, _deferred.Depth, lightSources[0].Direction, disableBackFaceCulling, _deferred.Position, _deferred.Normal);
                 _lighting.Draw(_cameras[i], _deferred.Color, _deferred.Normal, _deferred.Position, _shadowMapping.Output, lightSources, ambientColor);
                 _skybox.Draw(_cameras[i], 2);

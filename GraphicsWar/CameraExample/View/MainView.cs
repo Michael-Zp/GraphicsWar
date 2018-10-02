@@ -72,7 +72,7 @@ namespace GraphicsWar.View
 
         }
 
-        public void Render(List<ViewEntity> entities, float time, ITransformation camera)
+        public void Render(List<ViewEntity> entities, float time, ITransformation camera, ITransformation projection, ITransformation view)
         {
             UpdateInstancing(entities);
 
@@ -85,7 +85,7 @@ namespace GraphicsWar.View
 
             _renderInstanceGroup.UpdateGeometry(arrTrans);
 
-            _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, time);
+            _deferred.Draw(_renderState, camera, projection, view, _instanceCounts, _textures, _normalMaps, _heightMaps, _disableBackFaceCulling, time);
 
             ////_directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling, _deferred.Position, _deferred.Normal);
             ////_blurredShadowMap.Draw(_directShadowMap.Output);
