@@ -64,7 +64,7 @@ namespace GraphicsWar.View
             _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
             _addProjectileColor = _renderInstanceGroup.AddShader<AddWithDepthTest>(new AddWithDepthTest(contentLoader));
             _sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
-            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "violentdays"));
+            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "blue"));
             _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
 
 

@@ -259,14 +259,6 @@
     <EmbeddedResource Include="Content\Shaders\ProjectileGeneration\ProjectileGeneration.vert" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_bk.jpg" />
-    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_dn.jpg" />
-    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_ft.jpg" />
-    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_lf.jpg" />
-    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_rt.jpg" />
-    <EmbeddedResource Include="Content\Textures\Skybox\violentdays_up.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Content\Textures\h4.jpg" />
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +276,64 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="doub\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_lf.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\Skybox\blue\bkg1_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\blue\bkg1_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\blue\bkg1_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\blue\bkg1_lf.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\blue\bkg1_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\blue\bkg1_up.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\corona\corona_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\corona\corona_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\corona\corona_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\corona\corona_lf.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\corona\corona_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\corona\corona_up.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\lightblue\lightblue_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\lightblue\lightblue_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\lightblue\lightblue_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\lightblue\lightblue_lf.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\lightblue\lightblue_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\lightblue\lightblue_up.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\redeclipse\redeclipse_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\redeclipse\redeclipse_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\redeclipse\redeclipse_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\redeclipse\redeclipse_lf.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\redeclipse\redeclipse_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\redeclipse\redeclipse_up.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg1_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg1_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg1_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg1_lt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg1_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg1_up.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg2_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg2_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg2_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg2_lt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg2_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg2_up.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg3_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg3_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg3_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg3_lt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg3_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\red\bkg3_up.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_bk.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_dn.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_ft.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_lf.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_rt.png" />
+    <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

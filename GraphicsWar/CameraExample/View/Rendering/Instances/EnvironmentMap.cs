@@ -60,7 +60,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _shadowMapping.UpdateResolution(size, size);
             _lighting = new Lighting(contentLoader);
             _lighting.UpdateResolution(size, size);
-            _skybox = new Skybox(contentLoader, 245, "violentdays");
+            _skybox = new Skybox(contentLoader, 245, "blue");
             _skybox.UpdateResolution(size, size);
             _add = new Add(contentLoader);
             _add.UpdateResolution(size, size);
