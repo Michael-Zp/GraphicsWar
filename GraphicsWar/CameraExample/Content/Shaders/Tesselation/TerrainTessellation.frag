@@ -22,6 +22,7 @@ out vec4 color;
 out vec3 normal;
 out float depth;
 out vec3 position;
+out vec4 intensity;
 
 void main() 
 {
@@ -30,8 +31,9 @@ void main()
 	vec3 l = normalize(vec3(1, 1, 0));
 	color =  vec4(max(dot(n, l), 0.1) * c, 1.0);
 	color =  vec4(n, 1.0);
-	color =  vec4(0.8, 0.8, 0.9, 1.0);
+	color =  vec4(41.0/255.0, 49.0/255.0, 51.0/255.0, 1.0);
 	normal = n;
 	depth = i.depth;
 	position = i.position;
+	intensity = vec4(0.1, 1, 0.2, 0);
 }

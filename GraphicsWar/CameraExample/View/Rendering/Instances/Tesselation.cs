@@ -12,13 +12,14 @@ namespace GraphicsWar.View.Rendering.Instances
         public ITexture2D Normal => _outputSurface.Textures[1];
         public ITexture2D Depth => _outputSurface.Textures[2];
         public ITexture2D Position => _outputSurface.Textures[3];
+        public ITexture2D IntensityMap => _outputSurface.Textures[4];
 
 
         private IShaderProgram _tesselationProgram;
         private IRenderSurface _outputSurface;
         private ITexture2D _displacementMap;
 
-        private static readonly DrawBuffersEnum[] _drawBuffers = new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
+        private static readonly DrawBuffersEnum[] _drawBuffers = new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3, DrawBuffersEnum.ColorAttachment4 };
 
         public Tesselation(IContentLoader contentLoader)
         {
@@ -73,6 +74,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
             _outputSurface.Attach(Texture2dGL.Create(width, height, 1, true));
             _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 4, true));
         }
     }
 }

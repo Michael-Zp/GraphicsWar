@@ -16,6 +16,7 @@ namespace GraphicsWar.View.Rendering.Instances
         public ITexture2D Normal => _outputSurface.Textures[1];
         public ITexture2D Depth => _outputSurface.Textures[2];
         public ITexture2D Position => _outputSurface.Textures[3];
+        public ITexture2D IntensityMap => _outputSurface.Textures[4];
 
         private IShaderProgram _projectileGenerationProgram;
         private IRenderSurface _outputSurface;
@@ -24,7 +25,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
         private Enums.EntityType _triangleType;
 
-        private static readonly DrawBuffersEnum[] DrawBuffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 };
+        private static readonly DrawBuffersEnum[] DrawBuffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3, DrawBuffersEnum.ColorAttachment4 };
 
         public ProjectileGeneration(IContentLoader contentLoader, DefaultMesh triangleMesh, Enums.EntityType triangleType)
         {
@@ -34,7 +35,7 @@ namespace GraphicsWar.View.Rendering.Instances
         }
         
 
-        public void Draw(IRenderState renderState, ITransformation camera, int trianglesCount, float time)
+        public void Draw(IRenderState renderState, ITransformation camera, int trianglesCount, Vector4 intensity, float time)
         {
             _outputSurface.Activate();
             
@@ -48,6 +49,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _projectileGenerationProgram.Uniform("time", time);
             _projectileGenerationProgram.Uniform("normalMapping", 0f);
             _projectileGenerationProgram.Uniform("paralaxMapping", 0f);
+            _projectileGenerationProgram.Uniform("intensity", intensity);
 
             switch (_triangleType)
             {
@@ -87,6 +89,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
             _outputSurface.Attach(Texture2dGL.Create(width, height, 1, true));
             _outputSurface.Attach(Texture2dGL.Create(width, height, 3, true));
+            _outputSurface.Attach(Texture2dGL.Create(width, height, 4, true));
         }
 
         public void UpdateTransforms(Dictionary<Enums.EntityType, Matrix4x4[]> transforms)

@@ -33,7 +33,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _shader = contentLoader.LoadPixelShader("lighting.glsl");
         }
 
-        public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, List<LightSource> lightSources, Vector3 ambientColor)
+        public void Draw(ITransformation camera, ITexture2D materialColor, ITexture2D normals, ITexture2D position, ITexture2D shadowSurface, ITexture2D intensity, List<LightSource> lightSources)
         {
             if (lightSources.Count > _lightArraySizeInShader)
             {
@@ -46,14 +46,16 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _shader.Activate();
 
-            _shader.Uniform("ambientColor", ambientColor);
             Matrix4x4.Invert(camera.Matrix, out var invert);
             _shader.Uniform("camPos", invert.Translation / invert.M44);
+            _shader.Uniform("hemColorTop", new Vector3(0.9f, 0.9f, 1.0f));
+            _shader.Uniform("hemColorBottom", new Vector3(41.0f / 255.0f, 49.0f / 255.0f, 51.0f / 255.0f));
 
             _shader.ActivateTexture("materialColor", 0, materialColor);
             _shader.ActivateTexture("normals", 1, normals);
             _shader.ActivateTexture("position", 2, position);
             _shader.ActivateTexture("shadowSurface", 3, shadowSurface);
+            _shader.ActivateTexture("intensity", 4, intensity);
 
             var bufferObject = LightSourcesToBufferObject(lightSources);
             var loc = _shader.GetResourceLocation(ShaderResourceType.RWBuffer, "Lights");
@@ -62,6 +64,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             GL.DrawArrays(PrimitiveType.Quads, 0, 4);
 
+            _shader.DeactivateTexture(4, intensity);
             _shader.DeactivateTexture(3, shadowSurface);
             _shader.DeactivateTexture(2, position);
             _shader.DeactivateTexture(1, normals);

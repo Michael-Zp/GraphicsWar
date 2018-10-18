@@ -29,6 +29,7 @@ uniform vec4 materialColor;
 uniform sampler2D tex;
 uniform sampler2D normalMap;
 uniform sampler2D heightMap;
+uniform vec4 intensity;
 
 uniform float textured;
 uniform float paralaxMapping;
@@ -47,6 +48,7 @@ out vec4 color;
 out vec3 normal;
 out float depth;
 out vec3 position;
+out vec4 intensityMap;
 
 vec3 calculateNormalMapped()
 {
@@ -99,4 +101,5 @@ void main()
 	
 	depth = i.depth;
 	position = i.position;
+	intensityMap = intensity;
 }

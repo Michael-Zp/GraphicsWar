@@ -23,7 +23,6 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly ProjectileGeneration _projectilesGenerationRadeon;
         private readonly AddWithDepthTest _addProjectilesNvidia;
         private readonly AddWithDepthTest _addProjectilesRadeon;
-        private readonly AddWithDepthTest _addProjectilesCombined;
         private readonly Tesselation _tesselation;
         private readonly AddWithDepthTest _addTesselation;
 
@@ -34,10 +33,8 @@ namespace GraphicsWar.View.Rendering.Instances
         public ITexture2D Depth => _addTesselation.Depth;
 
         public ITexture2D Position => _addTesselation.Position;
+        public ITexture2D IntensityMap => _addTesselation.IntensityMap;
 
-        public ITexture2D ProjectileColor => _addProjectilesCombined.Color;
-
-        public ITexture2D ProjectileDepth => _addProjectilesCombined.Depth;
 
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
@@ -65,7 +62,6 @@ namespace GraphicsWar.View.Rendering.Instances
             _projectilesGenerationRadeon = new ProjectileGeneration(contentLoader, meshes[Enums.EntityType.RadeonTriangle], Enums.EntityType.RadeonTriangle);
             _addProjectilesNvidia = new AddWithDepthTest(contentLoader);
             _addProjectilesRadeon = new AddWithDepthTest(contentLoader);
-            _addProjectilesCombined = new AddWithDepthTest(contentLoader);
 
             _tesselation = new Tesselation(contentLoader);
             _addTesselation = new AddWithDepthTest(contentLoader);
@@ -78,12 +74,12 @@ namespace GraphicsWar.View.Rendering.Instances
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 1, true));
             _deferredSurface.Attach(Texture2dGL.Create(width, height, 3, true));
+            _deferredSurface.Attach(Texture2dGL.Create(width, height, 4, true));
 
             _projectilesGenerationNvidia.UpdateResolution(width, height);
             _projectilesGenerationRadeon.UpdateResolution(width, height);
             _addProjectilesNvidia.UpdateResolution(width, height);
             _addProjectilesRadeon.UpdateResolution(width, height);
-            _addProjectilesCombined.UpdateResolution(width, height);
 
             _tesselation.UpdateResolution(width, height);
             _addTesselation.UpdateResolution(width, height);
@@ -99,15 +95,16 @@ namespace GraphicsWar.View.Rendering.Instances
             _projectilesGenerationRadeon.UpdateTransforms(transforms);
         }
 
-        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, List<Enums.EntityType> disableBackFaceCulling, float time)
+        public void Draw(IRenderState renderState, ITransformation camera, Dictionary<Enums.EntityType, int> instanceCounts, Dictionary<Enums.EntityType, ITexture2D> textures, Dictionary<Enums.EntityType, ITexture2D> normalMaps, Dictionary<Enums.EntityType, ITexture2D> heightMaps, Dictionary<Enums.EntityType, Vector4> intensityMap, List<Enums.EntityType> disableBackFaceCulling, float time)
         {
 
             _deferredSurface.Activate();
             renderState.Set(new DepthTest(true));
-            GL.ClearColor(System.Drawing.Color.FromArgb(0,0,0,0));
+            GL.ClearColor(System.Drawing.Color.FromArgb(0, 0, 0, 0));
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
-            GL.DrawBuffers(4, new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3 });
+            GL.ClearBuffer(ClearBuffer.Color, 4, new float[] { 0, 0, 0, 0 });
+            GL.DrawBuffers(5, new[] { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1, DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3, DrawBuffersEnum.ColorAttachment4 });
 
             _deferredProgram.Activate();
 
@@ -163,8 +160,10 @@ namespace GraphicsWar.View.Rendering.Instances
                     ? new BackFaceCulling(false)
                     : new BackFaceCulling(true));
 
+                _deferredProgram.Uniform("intensity", intensityMap[type]);
+
                 _geometries[type].Draw(instanceCounts[type]);
-                
+
                 if (textures.ContainsKey(type))
                 {
                     _deferredProgram.DeactivateTexture(0, textures[type]);
@@ -189,18 +188,14 @@ namespace GraphicsWar.View.Rendering.Instances
             renderState.Set(new BackFaceCulling(true));
             _deferredSurface.Deactivate();
 
+            _projectilesGenerationNvidia.Draw(renderState, camera, instanceCounts[Enums.EntityType.NvidiaTriangle], intensityMap[Enums.EntityType.NvidiaTriangle], time);
+            _addProjectilesNvidia.Draw(_deferredSurface.Textures[2], _projectilesGenerationNvidia.Depth, _deferredSurface.Textures[0], _projectilesGenerationNvidia.Color, _deferredSurface.Textures[1], _projectilesGenerationNvidia.Normal, _deferredSurface.Textures[3], _projectilesGenerationNvidia.Position, _deferredSurface.Textures[4], _projectilesGenerationNvidia.IntensityMap);
 
-            _projectilesGenerationNvidia.Draw(renderState, camera, instanceCounts[Enums.EntityType.NvidiaTriangle], time);
-            _addProjectilesNvidia.Draw(_deferredSurface.Textures[2], _projectilesGenerationNvidia.Depth, _deferredSurface.Textures[0], _projectilesGenerationNvidia.Color, _deferredSurface.Textures[1], _projectilesGenerationNvidia.Normal, _deferredSurface.Textures[3], _projectilesGenerationNvidia.Position);
-
-            _projectilesGenerationRadeon.Draw(renderState, camera, instanceCounts[Enums.EntityType.RadeonTriangle], time);
-            _addProjectilesRadeon.Draw(_addProjectilesNvidia.Depth, _projectilesGenerationRadeon.Depth, _addProjectilesNvidia.Color, _projectilesGenerationRadeon.Color, _addProjectilesNvidia.Normal, _projectilesGenerationRadeon.Normal, _addProjectilesNvidia.Position, _projectilesGenerationRadeon.Position);
-
-            _addProjectilesCombined.Draw(_projectilesGenerationNvidia.Depth, _projectilesGenerationRadeon.Depth, _projectilesGenerationNvidia.Color, _projectilesGenerationRadeon.Color, _projectilesGenerationNvidia.Normal, _projectilesGenerationRadeon.Normal, _projectilesGenerationNvidia.Position, _projectilesGenerationRadeon.Position);
-
+            _projectilesGenerationRadeon.Draw(renderState, camera, instanceCounts[Enums.EntityType.RadeonTriangle], intensityMap[Enums.EntityType.RadeonTriangle], time);
+            _addProjectilesRadeon.Draw(_addProjectilesNvidia.Depth, _projectilesGenerationRadeon.Depth, _addProjectilesNvidia.Color, _projectilesGenerationRadeon.Color, _addProjectilesNvidia.Normal, _projectilesGenerationRadeon.Normal, _addProjectilesNvidia.Position, _projectilesGenerationRadeon.Position, _addProjectilesNvidia.IntensityMap, _projectilesGenerationRadeon.IntensityMap);
 
             _tesselation.Draw(renderState, camera);
-            _addTesselation.Draw(_addProjectilesRadeon.Depth, _tesselation.Depth, _addProjectilesRadeon.Color, _tesselation.Color, _addProjectilesRadeon.Normal, _tesselation.Normal, _addProjectilesRadeon.Position, _tesselation.Position);
+            _addTesselation.Draw(_addProjectilesRadeon.Depth, _tesselation.Depth, _addProjectilesRadeon.Color, _tesselation.Color, _addProjectilesRadeon.Normal, _tesselation.Normal, _addProjectilesRadeon.Position, _tesselation.Position, _addProjectilesRadeon.IntensityMap, _tesselation.IntensityMap);
         }
     }
 }
