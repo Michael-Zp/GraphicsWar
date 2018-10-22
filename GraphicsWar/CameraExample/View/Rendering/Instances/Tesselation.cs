@@ -28,7 +28,7 @@ namespace GraphicsWar.View.Rendering.Instances
         }
 
 
-        public void Draw(IRenderState renderState, ITransformation camera)
+        public void Draw(IRenderState renderState, ITransformation camera, float time)
         {
             _outputSurface.Activate();
 
@@ -48,6 +48,7 @@ namespace GraphicsWar.View.Rendering.Instances
             const int instanceSqrt = 100;
             _tesselationProgram.Uniform("camera", camera);
             _tesselationProgram.Uniform(nameof(instanceSqrt), instanceSqrt);
+            _tesselationProgram.Uniform("iGlobalTime", time);
             _displacementMap.Activate();
 
             GL.ClearColor(System.Drawing.Color.FromArgb(0, 0, 0, 0));

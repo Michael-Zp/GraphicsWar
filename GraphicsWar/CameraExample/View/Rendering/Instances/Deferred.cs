@@ -194,7 +194,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _projectilesGenerationRadeon.Draw(renderState, camera, instanceCounts[Enums.EntityType.RadeonTriangle], intensityMap[Enums.EntityType.RadeonTriangle], time);
             _addProjectilesRadeon.Draw(_addProjectilesNvidia.Depth, _projectilesGenerationRadeon.Depth, _addProjectilesNvidia.Color, _projectilesGenerationRadeon.Color, _addProjectilesNvidia.Normal, _projectilesGenerationRadeon.Normal, _addProjectilesNvidia.Position, _projectilesGenerationRadeon.Position, _addProjectilesNvidia.IntensityMap, _projectilesGenerationRadeon.IntensityMap);
 
-            _tesselation.Draw(renderState, camera);
+            _tesselation.Draw(renderState, camera, time);
             _addTesselation.Draw(_addProjectilesRadeon.Depth, _tesselation.Depth, _addProjectilesRadeon.Color, _tesselation.Color, _addProjectilesRadeon.Normal, _tesselation.Normal, _addProjectilesRadeon.Position, _tesselation.Position, _addProjectilesRadeon.IntensityMap, _tesselation.IntensityMap);
         }
     }
