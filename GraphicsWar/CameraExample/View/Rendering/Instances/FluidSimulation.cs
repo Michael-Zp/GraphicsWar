@@ -22,7 +22,7 @@ namespace GraphicsWar.View.Rendering.Instances
         public ITexture2D InitialNormals => _initialDepthSurface.Textures[2];
         public ITexture2D Thickness => _thicknessSurface.Texture;
         public ITexture2D BlurredDepth => _blurDepth1Surface.Textures[0];
-        public ITexture2D BlurredPosition => _blurDepth1Surface.Textures[2];
+        public ITexture2D BlurredPosition => _blurDepth1Surface.Textures[1];
 
         private readonly VAO _initialDepthVAO;
         private readonly IShaderProgram _initialDepthFluidSimulationProgram;
@@ -223,6 +223,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             ((FBOwithDepth)_blurDepth1Surface)?.Dispose();
             _blurDepth1Surface = new FBOwithDepth(Texture2dGL.Create(width, height, 1, true));
+            _blurDepth1Surface.Attach(Texture2dGL.Create(width, height, 3, true));
 
             ((FBOwithDepth)_outputSurface)?.Dispose();
             _outputSurface = new FBOwithDepth(Texture2dGL.Create(width, height));
