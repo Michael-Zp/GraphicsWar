@@ -116,6 +116,7 @@
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
     <Compile Include="View\Rendering\Instances\AddWithDepthTest.cs" />
+    <Compile Include="View\Rendering\Instances\Bloom.cs" />
     <Compile Include="View\Rendering\Instances\GaussBlur.cs" />
     <Compile Include="View\Rendering\Instances\ProjectileGeneration.cs" />
     <Compile Include="View\Rendering\Instances\ShadowBlur.cs" />

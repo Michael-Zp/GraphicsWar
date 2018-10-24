@@ -59,11 +59,11 @@ namespace GraphicsWar.View.Rendering.Instances
             switch (_triangleType)
             {
                 case Enums.EntityType.NvidiaTriangle:
-                    _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.ForestGreen);
+                    _projectileGenerationProgram.Uniform("materialColor", new Vector4(0, 100, 0, 5));
                     break;
 
                 case Enums.EntityType.RadeonTriangle:
-                    _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.Red);
+                    _projectileGenerationProgram.Uniform("materialColor", new Vector4(100, 0, 0, 5));
                     break;
 
                 default:
@@ -78,7 +78,7 @@ namespace GraphicsWar.View.Rendering.Instances
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearBuffer(ClearBuffer.Color, 2, new float[] { 1000 });
             GL.DrawBuffers(DrawBuffers.Length, DrawBuffers);
-            
+
             _trianglesGeometry.Draw(trianglesCount);
 
 
@@ -136,7 +136,7 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _wireSurface.Deactivate();
 
-            _add.Draw(_outputSurface.Textures[2], _wireSurface.Textures[2],_outputSurface.Textures[0], _wireSurface.Textures[0], _outputSurface.Textures[0], _wireSurface.Textures[0], _outputSurface.Textures[0], _wireSurface.Textures[0], _outputSurface.Textures[0], _wireSurface.Textures[0], -0.01f);
+            _add.Draw(_outputSurface.Textures[2], _wireSurface.Textures[2], _outputSurface.Textures[0], _wireSurface.Textures[0], _outputSurface.Textures[0], _wireSurface.Textures[0], _outputSurface.Textures[0], _wireSurface.Textures[0], _outputSurface.Textures[0], _wireSurface.Textures[0], -0.01f);
         }
 
 

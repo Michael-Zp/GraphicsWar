@@ -34,8 +34,11 @@ namespace GraphicsWar.View
         private readonly SphereCut _sphereCut;
         private readonly Skybox _skybox;
         private readonly Add _addSkybox;
+        private readonly Bloom _bloom;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
+
+        public bool Bloom { get; set; }
 
         public MainView(IRenderState renderState, IContentLoader contentLoader)
         {
@@ -73,10 +76,13 @@ namespace GraphicsWar.View
             _sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
             _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "blue"));
             _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _bloom = _renderInstanceGroup.AddShader<Bloom>(new Bloom(contentLoader));
 
 
-            _lights.Add(new LightSource(Vector3.Zero, Vector3.Normalize(new Vector3(-1f, -1f, 0.6f)), new Vector3(0.9f,0.9f,1.0f)));
+            _lights.Add(new LightSource(Vector3.Zero, Vector3.Normalize(new Vector3(-1f, -1f, 0.6f)), new Vector3(0.8f, 0.8f, 0.9f)));
 
+
+            Bloom = false;
         }
 
         public void Render(List<ViewEntity> entities, float time, ITransformation camera)
@@ -110,11 +116,18 @@ namespace GraphicsWar.View
             _skybox.Draw(camera);
             _addSkybox.Draw(_skybox.Output, _sphereCut.Output);
 
-            _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
+            if (Bloom)
+            {
+                _bloom.Draw(_addSkybox.Output);
+                _ssaoWithBlur.Draw(_deferred.Depth, _bloom.Output);
+            }
+            else
+            {
+                _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
+            }
+
 
             TextureDrawer.Draw(_ssaoWithBlur.Output);
-            //TextureDrawer.Draw(_deferred.Normal);
-            //TextureDrawer.Draw(_addWithDepthTest.Depth);
         }
 
         public void Resize(int width, int height)
