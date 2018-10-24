@@ -68,51 +68,41 @@ float noise(float u)
 	return mix(v0, v1, weight);
 }
 
-vec2 getRotatingCenterPosition(vec2 gridPosition) 
-{
-	vec2 center = vec2(0);
-	center.x += (cos(rand(gridPosition.yx) * 5 * rand(gridPosition) + iGlobalTime)) / 2;
-	center.y += (sin(rand(gridPosition.yx) * 5 * rand(gridPosition) + iGlobalTime)) / 2;
-	return center;
-}
-
 float displacementY(vec2 coord)
 {
-	const float rowCount = 10;
-	const float columnCount = 10;
-	vec2 halfSize = vec2(1 / rowCount / 2, 1 / columnCount / 2);
-	float row = floor(coord.x * rowCount);
-	float column = floor(coord.y * columnCount);
-		
-	vec2 currentPoint = vec2(row + 0, column + 0);
-	vec2 gridPoint = vec2(currentPoint.x / rowCount + halfSize.x, currentPoint.y / columnCount + halfSize.y);
-	vec2 displacementXY = getRotatingCenterPosition(vec2(row, column)) / 10;
+	float rowCount = 10;
+	float columnCount = 10;
+	float row = floor(coord.x / (1 / rowCount));
+	float column = floor(coord.y / (1 / columnCount));	
 
-	float minDist = distance(coord, gridPoint + displacementXY);
-	vec2 minDistPoint = currentPoint;
-
+	float dist = 100000;
+	vec2 closestGridPoint = vec2(row, column);
 
 	for(int x = -1; x <= 1; x++)
 	{
 		for(int y = -1; y <= 1; y++)
 		{
-			currentPoint = vec2(row + x, column + y);
-			gridPoint = vec2(currentPoint.x / rowCount + halfSize.x, currentPoint.y / columnCount + halfSize.y);
-			displacementXY = getRotatingCenterPosition(vec2(row, column)) / 10;
+			vec2 currentGridPoint = vec2(row, column) + vec2(x, y);
 
-			float dist = distance(coord, gridPoint + displacementXY);
+			vec2 currentCenter = rand2(vec2(currentGridPoint.x, currentGridPoint.y));
+			currentCenter.x *= 1 / rowCount / 2;
+			currentCenter.y *= 1 / columnCount / 2;
 
-			if(dist < minDist)
+			currentCenter += vec2(1 / rowCount / 2, 1 / columnCount / 2);
+			currentCenter.x += currentGridPoint.x * (1 / rowCount);
+			currentCenter.y += currentGridPoint.y * (1 / columnCount);
+			
+			float curDist = distance(currentCenter, coord);
+
+			if(curDist < dist)
 			{
-				minDist = dist;
-				minDistPoint = currentPoint;
+				dist = curDist;
+				closestGridPoint = currentGridPoint;
 			}
 		}
 	}
 
-	return minDist * 40;
-
-	return (rand(minDistPoint) + 1) * 3;
+	return rand(closestGridPoint * 123) * 10;
 }
 
 vec3 getNormal(vec2 hitPoint, float delta)
