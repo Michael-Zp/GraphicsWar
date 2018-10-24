@@ -115,6 +115,7 @@
     <Compile Include="View\MainView.cs" />
     <Compile Include="Controller\MainController.cs" />
     <Compile Include="View\Orthographic.cs" />
+    <Compile Include="View\Rendering\Instances\Addition.cs" />
     <Compile Include="View\Rendering\Instances\AddWithDepthTest.cs" />
     <Compile Include="View\Rendering\Instances\Bloom.cs" />
     <Compile Include="View\Rendering\Instances\GaussBlur.cs" />
@@ -171,8 +172,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Content\Shaders\ShadowMapping\depth.frag" />
     <EmbeddedResource Include="Content\Shaders\ShadowMapping\depth.vert" />
-    <EmbeddedResource Include="Content\Shaders\Bloom\BloomGausPass1.glsl" />
-    <EmbeddedResource Include="Content\Shaders\Bloom\BloomGausPass2.glsl" />
     <EmbeddedResource Include="Content\Shaders\Blur\BlurGausPass1.glsl" />
     <EmbeddedResource Include="Content\Shaders\Blur\BlurGausPass2.glsl" />
     <EmbeddedResource Include="Content\Shaders\Lighting\lighting.glsl" />
@@ -258,6 +257,8 @@
     <EmbeddedResource Include="Content\Models\plane.obj" />
     <EmbeddedResource Include="Content\Models\sphereBlocky.obj" />
     <EmbeddedResource Include="Content\Shaders\ProjectileGeneration\ProjectileGeneration.vert" />
+    <EmbeddedResource Include="Content\Shaders\Extract\Extract.glsl" />
+    <EmbeddedResource Include="Content\Shaders\Util\addition.glsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\h4.jpg" />

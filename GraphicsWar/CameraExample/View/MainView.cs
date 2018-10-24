@@ -48,8 +48,8 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphereBlocky.obj")));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
-            _meshes.Add(Enums.EntityType.NvidiaTriangle, CustomMeshes.CreateIcosaeder());
-            _meshes.Add(Enums.EntityType.RadeonTriangle, CustomMeshes.CreateIcosaeder());
+            _meshes.Add(Enums.EntityType.NvidiaParticle, CustomMeshes.CreateIcosaeder());
+            _meshes.Add(Enums.EntityType.RadeonParticle, CustomMeshes.CreateIcosaeder());
 
             _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
 
@@ -59,8 +59,8 @@ namespace GraphicsWar.View
             _textures.Add(Enums.EntityType.Nvidia, contentLoader.Load<ITexture2D>("Nvidia.png"));
             _textures.Add(Enums.EntityType.Radeon, contentLoader.Load<ITexture2D>("Radeon.png"));
 
-            _intensities.Add(Enums.EntityType.NvidiaTriangle, new Vector4(1, 0, 0, 0));
-            _intensities.Add(Enums.EntityType.RadeonTriangle, new Vector4(1, 0, 0, 0));
+            _intensities.Add(Enums.EntityType.NvidiaParticle, new Vector4(1, 0, 0, 0));
+            _intensities.Add(Enums.EntityType.RadeonParticle, new Vector4(1, 0, 0, 0));
             _intensities.Add(Enums.EntityType.Nvidia, new Vector4(.1f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Radeon, new Vector4(.0f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
@@ -82,7 +82,7 @@ namespace GraphicsWar.View
             _lights.Add(new LightSource(Vector3.Zero, Vector3.Normalize(new Vector3(-1f, -1f, 0.6f)), new Vector3(0.8f, 0.8f, 0.9f)));
 
 
-            Bloom = false;
+            Bloom = true;
         }
 
         public void Render(List<ViewEntity> entities, float time, ITransformation camera)

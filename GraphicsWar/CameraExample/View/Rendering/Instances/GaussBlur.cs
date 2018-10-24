@@ -23,6 +23,7 @@ namespace GraphicsWar.View.Rendering.Instances
         {
             surface.Activate();
 
+            GL.ClearColor(0, 0, 0, 0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             shader.Activate();

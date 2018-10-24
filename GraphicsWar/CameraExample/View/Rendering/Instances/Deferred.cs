@@ -58,8 +58,8 @@ namespace GraphicsWar.View.Rendering.Instances
 
             _defaultMap = contentLoader.Load<ITexture2D>("Nvidia.png");
 
-            _projectilesGenerationNvidia = new ProjectileGeneration(contentLoader, meshes[Enums.EntityType.NvidiaTriangle], Enums.EntityType.NvidiaTriangle);
-            _projectilesGenerationRadeon = new ProjectileGeneration(contentLoader, meshes[Enums.EntityType.RadeonTriangle], Enums.EntityType.RadeonTriangle);
+            _projectilesGenerationNvidia = new ProjectileGeneration(contentLoader, meshes[Enums.EntityType.NvidiaParticle], Enums.EntityType.NvidiaParticle);
+            _projectilesGenerationRadeon = new ProjectileGeneration(contentLoader, meshes[Enums.EntityType.RadeonParticle], Enums.EntityType.RadeonParticle);
             _addProjectilesNvidia = new AddWithDepthTest(contentLoader);
             _addProjectilesRadeon = new AddWithDepthTest(contentLoader);
 
@@ -115,7 +115,7 @@ namespace GraphicsWar.View.Rendering.Instances
             //TODO: Can be accelerated with sorting the normal map and not normal map useage beforhand
             foreach (var type in _geometries.Keys)
             {
-                if (instanceCounts[type] == 0 || type == Enums.EntityType.NvidiaTriangle || type == Enums.EntityType.RadeonTriangle)
+                if (instanceCounts[type] == 0 || type == Enums.EntityType.NvidiaParticle || type == Enums.EntityType.RadeonParticle)
                 {
                     continue;
                 }
@@ -188,10 +188,10 @@ namespace GraphicsWar.View.Rendering.Instances
             renderState.Set(new BackFaceCulling(true));
             _deferredSurface.Deactivate();
 
-            _projectilesGenerationNvidia.Draw(renderState, camera, instanceCounts[Enums.EntityType.NvidiaTriangle], intensityMap[Enums.EntityType.NvidiaTriangle], time);
+            _projectilesGenerationNvidia.Draw(renderState, camera, instanceCounts[Enums.EntityType.NvidiaParticle], intensityMap[Enums.EntityType.NvidiaParticle], time);
             _addProjectilesNvidia.Draw(_deferredSurface.Textures[2], _projectilesGenerationNvidia.Depth, _deferredSurface.Textures[0], _projectilesGenerationNvidia.Color, _deferredSurface.Textures[1], _projectilesGenerationNvidia.Normal, _deferredSurface.Textures[3], _projectilesGenerationNvidia.Position, _deferredSurface.Textures[4], _projectilesGenerationNvidia.IntensityMap);
 
-            _projectilesGenerationRadeon.Draw(renderState, camera, instanceCounts[Enums.EntityType.RadeonTriangle], intensityMap[Enums.EntityType.RadeonTriangle], time);
+            _projectilesGenerationRadeon.Draw(renderState, camera, instanceCounts[Enums.EntityType.RadeonParticle], intensityMap[Enums.EntityType.RadeonParticle], time);
             _addProjectilesRadeon.Draw(_addProjectilesNvidia.Depth, _projectilesGenerationRadeon.Depth, _addProjectilesNvidia.Color, _projectilesGenerationRadeon.Color, _addProjectilesNvidia.Normal, _projectilesGenerationRadeon.Normal, _addProjectilesNvidia.Position, _projectilesGenerationRadeon.Position, _addProjectilesNvidia.IntensityMap, _projectilesGenerationRadeon.IntensityMap);
 
             _tesselation.Draw(renderState, camera, time);

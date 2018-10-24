@@ -58,11 +58,11 @@ namespace GraphicsWar.View.Rendering.Instances
 
             switch (_triangleType)
             {
-                case Enums.EntityType.NvidiaTriangle:
+                case Enums.EntityType.NvidiaParticle:
                     _projectileGenerationProgram.Uniform("materialColor", new Vector4(0, 100, 0, 5));
                     break;
 
-                case Enums.EntityType.RadeonTriangle:
+                case Enums.EntityType.RadeonParticle:
                     _projectileGenerationProgram.Uniform("materialColor", new Vector4(100, 0, 0, 5));
                     break;
 
@@ -103,11 +103,11 @@ namespace GraphicsWar.View.Rendering.Instances
 
             switch (_triangleType)
             {
-                case Enums.EntityType.NvidiaTriangle:
+                case Enums.EntityType.NvidiaParticle:
                     _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.DarkGreen);
                     break;
 
-                case Enums.EntityType.RadeonTriangle:
+                case Enums.EntityType.RadeonParticle:
                     _projectileGenerationProgram.Uniform("materialColor", System.Drawing.Color.DarkRed);
                     break;
 

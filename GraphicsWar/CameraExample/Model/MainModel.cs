@@ -24,14 +24,14 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Sphere, new Vector3(0f, 10f, 0f), Vector3.Zero, 3f));
             for (int i = 0; i < 6; i++)
             {
-                TriangleEntity triangle = new TriangleEntity(Enums.EntityType.NvidiaTriangle, new Vector3(5, 15, 0), Vector3.Zero, 0.4f, new ArchMovement(i * 2));
+                TriangleEntity triangle = new TriangleEntity(Enums.EntityType.NvidiaParticle, new Vector3(5, 15, 0), Vector3.Zero, 0.4f, new ArchMovement(i * 2));
                 triangle.TriangleDied += (position) => TriangleDied(position, triangle.Type);
                 Entities.Add(triangle);
                 _baseTriangleIndices.Add(Entities.Count - 1);
             }
             for (int i = 0; i < 6; i++)
             {
-                TriangleEntity triangle = new TriangleEntity(Enums.EntityType.RadeonTriangle, new Vector3(5, 15, 0), Vector3.Zero, 0.4f, new ArchMovement(i * 2));
+                TriangleEntity triangle = new TriangleEntity(Enums.EntityType.RadeonParticle, new Vector3(5, 15, 0), Vector3.Zero, 0.4f, new ArchMovement(i * 2));
                 triangle.TriangleDied += (position) => TriangleDied(position, triangle.Type);
                 Entities.Add(triangle);
                 _baseTriangleIndices.Add(Entities.Count - 1);
@@ -53,11 +53,11 @@ namespace GraphicsWar.Model
                     {
                         switch (triangleEntity.Type)
                         {
-                            case Enums.EntityType.NvidiaTriangle:
+                            case Enums.EntityType.NvidiaParticle:
                                 triangleEntity.Update(deltaTime, _orbit1.Transformation);
                                 break;
 
-                            case Enums.EntityType.RadeonTriangle:
+                            case Enums.EntityType.RadeonParticle:
                                 triangleEntity.Update(deltaTime, _orbit2.Transformation);
                                 break;
 

@@ -17,13 +17,13 @@ float gaus(float x)
 
 void main()
 {
-	vec3 gx = vec3(0);
+	vec4 gx = vec4(0);
 	float factorCount = 0;
 
 	
 	for (int i = 0 - int(floor(GaussSize / 2.0)); i <= floor(GaussSize / 2.0); i++) 
 	{
-		vec3 aSample  = texelFetch(image, ivec2(gl_FragCoord) + ivec2(0, i), 0).rgb;
+		vec4 aSample  = texelFetch(image, ivec2(gl_FragCoord) + ivec2(0, i), 0);
 		float factor = gaus(i);
 		gx += factor * aSample;
 		factorCount += factor;
@@ -31,5 +31,5 @@ void main()
 
 	gx /= factorCount;
 	
-	gl_FragColor = vec4(vec3(gx), 1.0);
+	gl_FragColor = gx;
 }

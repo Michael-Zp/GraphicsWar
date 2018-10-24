@@ -1,41 +1,35 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using GraphicsWar.View.Rendering.Management;
 using Zenseless.HLGL;
 
 namespace GraphicsWar.View.Rendering.Instances
 {
-    public class Bloom : TwoPassPostProcessShader
+    public class Bloom : IUpdateResolution
     {
-        private readonly float _blurKernelSize;
+        public ITexture2D Output => _add.Output;
 
-        public Bloom(IContentLoader contentLoader, float blurKernelSize = 20, byte fboTexComponentCount = 4, bool fboTexFloat = false)
-            : base(contentLoader.LoadPixelShader("BloomGausPass1.glsl"), contentLoader.LoadPixelShader("BloomGausPass2.glsl"), fboTexComponentCount, fboTexFloat)
+        OnePassPostProcessShader _extract;
+        AvgBlur _blur;
+        Addition _add;
+
+        public Bloom(IContentLoader contentLoader)
         {
-            _blurKernelSize = blurKernelSize;
+            _extract = new OnePassPostProcessShader(contentLoader.LoadPixelShader("Extract.glsl"));
+            _blur = new AvgBlur(contentLoader);
+            _add = new Addition(contentLoader);
         }
 
-        public new void Draw(ITexture2D inputTexture)
+        public void Draw(ITexture2D inputTexture)
         {
-            DrawPass(inputTexture, PassOneSurface, PassOne);
-            DrawPass(PassOneSurface.Texture, PassTwoSurface, PassTwo);
+            _extract.Draw(inputTexture);
+            _blur.Draw(_extract.Output);
+            _add.Draw(inputTexture, _blur.Output);
         }
 
-        private new void DrawPass(ITexture2D inputTexture, IRenderSurface surface, IShaderProgram shader)
+        public void UpdateResolution(int width, int height)
         {
-            surface.Activate();
-
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            shader.Activate();
-
-            inputTexture.Activate();
-
-            GL.DrawArrays(PrimitiveType.Quads, 0, 4);
-
-            inputTexture.Deactivate();
-
-            shader.Deactivate();
-
-            surface.Deactivate();
+            _extract.UpdateResolution(width, height);
+            _blur.UpdateResolution(width, height);
+            _add.UpdateResolution(width, height);
         }
     }
 }

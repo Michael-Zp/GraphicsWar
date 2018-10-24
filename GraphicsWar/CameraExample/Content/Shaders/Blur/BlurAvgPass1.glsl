@@ -11,17 +11,17 @@ in vec2 uv;
 
 void main()
 {
-	vec3 gx = vec3(0);
+	vec4 gx = vec4(0);
 	float factorCount = 0;
 
 	
 	for (int i = 0 - int(floor(Size / 2.0)); i <= floor(Size / 2.0); i++) 
 	{
-		vec3 aSample  = texelFetch(image, ivec2(gl_FragCoord) + ivec2(i, 0), 0).rgb;
+		vec4 aSample  = texelFetch(image, ivec2(gl_FragCoord) + ivec2(i, 0), 0);
 		gx += aSample;
 	}
 
 	gx /= Size;
 	
-	gl_FragColor = vec4(gx, 1.0);
+	gl_FragColor = gx;
 }
