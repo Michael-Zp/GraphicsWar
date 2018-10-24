@@ -2,7 +2,7 @@
 layout (vertices = 4) out;
 
 uniform mat4 camera;
-uniform float lodScale = 100; // distance scaling variable
+uniform float lodScale = 10; // distance scaling variable
 
 in Data
 {

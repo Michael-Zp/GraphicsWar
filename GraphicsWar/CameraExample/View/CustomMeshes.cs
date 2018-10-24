@@ -30,5 +30,119 @@ namespace GraphicsWar.View
 
             return mesh;
         }
+        public static DefaultMesh CreateIcosaeder()
+        {
+            var mesh = new DefaultMesh();
+            mesh.Position.Add(new Vector3(-0.382f, 0.618f, 0.0f));
+            mesh.Position.Add(new Vector3(0.382f, 0.618f, 0.0f));
+            mesh.Position.Add(new Vector3(-0.382f, -0.618f, 0.0f));
+            mesh.Position.Add(new Vector3(0.382f, -0.618f, 0.0f));
+
+            mesh.Position.Add(new Vector3(-0.618f, 0.0f, 0.382f));
+            mesh.Position.Add(new Vector3(0.618f, 0.0f, 0.382f));
+            mesh.Position.Add(new Vector3(-0.618f, 0.0f, -0.382f));
+            mesh.Position.Add(new Vector3(0.618f, 0.0f, -0.382f));
+
+            mesh.Position.Add(new Vector3(0.0f, -0.382f, 0.618f));
+            mesh.Position.Add(new Vector3(0.0f, 0.382f, 0.618f));
+            mesh.Position.Add(new Vector3(0.0f, -0.382f, -0.618f));
+            mesh.Position.Add(new Vector3(0.0f, 0.382f, -0.618f));
+
+            mesh.IDs.Add(0);
+            mesh.IDs.Add(9);
+            mesh.IDs.Add(1);
+
+            mesh.IDs.Add(0);
+            mesh.IDs.Add(1);
+            mesh.IDs.Add(11);
+
+            mesh.IDs.Add(8);
+            mesh.IDs.Add(2);
+            mesh.IDs.Add(3);
+
+            mesh.IDs.Add(3);
+            mesh.IDs.Add(2);
+            mesh.IDs.Add(10);
+
+            mesh.IDs.Add(1);
+            mesh.IDs.Add(5);
+            mesh.IDs.Add(7);
+
+            mesh.IDs.Add(0);
+            mesh.IDs.Add(6);
+            mesh.IDs.Add(4);
+
+            mesh.IDs.Add(6);
+            mesh.IDs.Add(2);
+            mesh.IDs.Add(4);
+
+            mesh.IDs.Add(7);
+            mesh.IDs.Add(5);
+            mesh.IDs.Add(3);
+
+            mesh.IDs.Add(1);
+            mesh.IDs.Add(9);
+            mesh.IDs.Add(5);
+
+            mesh.IDs.Add(9);
+            mesh.IDs.Add(0);
+            mesh.IDs.Add(4);
+
+            mesh.IDs.Add(0);
+            mesh.IDs.Add(11);
+            mesh.IDs.Add(6);
+
+            mesh.IDs.Add(1);
+            mesh.IDs.Add(7);
+            mesh.IDs.Add(11);
+
+            mesh.IDs.Add(8);
+            mesh.IDs.Add(3);
+            mesh.IDs.Add(5);
+
+            mesh.IDs.Add(4);
+            mesh.IDs.Add(2);
+            mesh.IDs.Add(8);
+
+            mesh.IDs.Add(7);
+            mesh.IDs.Add(3);
+            mesh.IDs.Add(10);
+
+            mesh.IDs.Add(10);
+            mesh.IDs.Add(2);
+            mesh.IDs.Add(6);
+
+            mesh.IDs.Add(5);
+            mesh.IDs.Add(9);
+            mesh.IDs.Add(8);
+
+            mesh.IDs.Add(4);
+            mesh.IDs.Add(8);
+            mesh.IDs.Add(9);
+
+            mesh.IDs.Add(7);
+            mesh.IDs.Add(10);
+            mesh.IDs.Add(11);
+
+            mesh.IDs.Add(6);
+            mesh.IDs.Add(11);
+            mesh.IDs.Add(10);
+
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+            mesh.Normal.Add(Vector3.UnitZ);
+
+
+            return mesh;
+        }
     }
 }

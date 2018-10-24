@@ -2,6 +2,7 @@
 
 uniform sampler2D depth1;
 uniform sampler2D depth2;
+uniform float offset = 0;
 uniform sampler2D bufferOne1;
 uniform sampler2D bufferOne2;
 uniform sampler2D bufferTwo1;
@@ -22,7 +23,7 @@ out vec4 bufferFour;
 void main() 
 {
 	float depth1Value = texture(depth1, uv).x;
-	float depth2Value = texture(depth2, uv).x;
+	float depth2Value = texture(depth2, uv).x + offset;
 
 	float depth2Greater = step(depth1Value, depth2Value);
 	

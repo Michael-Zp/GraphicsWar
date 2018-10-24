@@ -25,7 +25,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _addWithDepthTestProgram = contentLoader.LoadPixelShader("addWithDepthTest.glsl");
         }
 
-        public void Draw(ITexture2D depth1, ITexture2D depth2, ITexture2D one1, ITexture2D one2, ITexture2D two1, ITexture2D two2, ITexture2D three1, ITexture2D three2, ITexture2D four1, ITexture2D four2)
+        public void Draw(ITexture2D depth1, ITexture2D depth2, ITexture2D one1, ITexture2D one2, ITexture2D two1, ITexture2D two2, ITexture2D three1, ITexture2D three2, ITexture2D four1, ITexture2D four2, float offset = 0)
         {
             _outputSurface.Activate();
 
@@ -34,6 +34,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _addWithDepthTestProgram.Activate();
             _addWithDepthTestProgram.ActivateTexture("depth1", 0, depth1);
             _addWithDepthTestProgram.ActivateTexture("depth2", 1, depth2);
+            _addWithDepthTestProgram.Uniform("offset", offset);
             _addWithDepthTestProgram.ActivateTexture("bufferOne1", 2, one1);
             _addWithDepthTestProgram.ActivateTexture("bufferOne2", 3, one2);
             _addWithDepthTestProgram.ActivateTexture("bufferTwo1", 4, two1);
