@@ -26,14 +26,14 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly Tesselation _tesselation;
         private readonly AddWithDepthTest _addTesselation;
 
-        public ITexture2D Color => _addTesselation.Color;
+        public ITexture2D Color => _tesselation.Color;
 
-        public ITexture2D Normal => _addTesselation.Normal;
+        public ITexture2D Normal => _tesselation.Normal;
 
-        public ITexture2D Depth => _addTesselation.Depth;
+        public ITexture2D Depth => _tesselation.Depth;
 
-        public ITexture2D Position => _addTesselation.Position;
-        public ITexture2D IntensityMap => _addTesselation.IntensityMap;
+        public ITexture2D Position => _tesselation.Position;
+        public ITexture2D IntensityMap => _tesselation.IntensityMap;
 
 
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)

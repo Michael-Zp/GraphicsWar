@@ -5,7 +5,7 @@ uniform sampler2D displacementMap;
 uniform int instanceSqrt = 5;
 uniform float iGlobalTime;
 
-layout (quads, fractional_odd_spacing, ccw) in;
+layout (quads, equal_spacing, ccw) in;
 
 out Data
 {
@@ -32,6 +32,13 @@ vec4 interpolate(vec4 v1, vec4 v2, vec4 v3, vec4 v4)
 	vec4 aX = mix(v1, v2, gl_TessCoord.x);
 	vec4 bX = mix(v4, v3, gl_TessCoord.x);
 	return mix(aX, bX, gl_TessCoord.y);
+}
+
+vec4 getCenter(vec4 v1, vec4 v2, vec4 v3, vec4 v4)
+{
+	vec4 aX = mix(v1, v2, 0.5f);
+	vec4 bX = mix(v4, v3, 0.5f);
+	return mix(aX, bX, 0.5f);
 }
 
 float rand(float seed)
@@ -68,69 +75,70 @@ float noise(float u)
 	return mix(v0, v1, weight);
 }
 
-float displacementY(vec2 coord)
+vec2 currentGridPos;
+vec4 center;
+
+vec2 getCurrentGridPos(vec2 coord)
 {
-	float rowCount = 10;
-	float columnCount = 10;
+	float rowCount = 3;
+	float columnCount = 3;
 	float row = floor(coord.x / (1 / rowCount));
-	float column = floor(coord.y / (1 / columnCount));	
+	float column = floor(coord.y / (1 / columnCount));
 
-	float dist = 100000;
-	vec2 closestGridPoint = vec2(row, column);
-
-	for(int x = -1; x <= 1; x++)
-	{
-		for(int y = -1; y <= 1; y++)
-		{
-			vec2 currentGridPoint = vec2(row, column) + vec2(x, y);
-
-			vec2 currentCenter = rand2(vec2(currentGridPoint.x, currentGridPoint.y));
-			currentCenter.x *= 1 / rowCount / 2;
-			currentCenter.y *= 1 / columnCount / 2;
-
-			currentCenter += vec2(1 / rowCount / 2, 1 / columnCount / 2);
-			currentCenter.x += currentGridPoint.x * (1 / rowCount);
-			currentCenter.y += currentGridPoint.y * (1 / columnCount);
-			
-			float curDist = distance(currentCenter, coord);
-
-			if(curDist < dist)
-			{
-				dist = curDist;
-				closestGridPoint = currentGridPoint;
-			}
-		}
-	}
-
-	return rand(closestGridPoint * 123) * 10;
+	return vec2(row, column);
 }
 
-vec3 getNormal(vec2 hitPoint, float delta)
+vec2 getGridPointCenterDisplacement(vec2 gridPos)
 {
-	vec2 deltaVec = vec2(delta, 0);
-
-	float nextDeltaX = displacementY(hitPoint - deltaVec.xy);
-	float nextDeltaZ = displacementY(hitPoint - deltaVec.yx);
-	float previousDeltaX = displacementY(hitPoint + deltaVec.xy);
-	float previousDeltaZ = displacementY(hitPoint + deltaVec.yx);
-
-	vec3 unnormalizedGradient = vec3(nextDeltaX - previousDeltaX, 1.0, nextDeltaZ - previousDeltaZ);
-
-
-	return normalize(unnormalizedGradient);
+	return normalize(rand2(gridPos)) * 0.45;
 }
 
+vec2 getTargetGridCenter(vec2 pos)
+{
+	//Is either 0|0.5|1 -> * 2 = 0|1|2 -1 -> -1|0|1 -> Works with 3 by 3 square pretty well.
+	vec2 dir = vec2(gl_TessCoord.y, gl_TessCoord.x) * 2 - vec2(1);
+	
+	float leftRight = gl_TessCoord.y * 2 - 1;
+	float upDown = gl_TessCoord.x * 2 - 1;
+			
+	return pos + dir + getGridPointCenterDisplacement(currentGridPos + dir);
+}
+
+vec4 getPosition()
+{
+	vec4 pos = interpolate(tcPos[0], tcPos[1], tcPos[2], tcPos[3]);
+
+	if(instanceID == 3)
+	{
+		vec2 targetGridCenter = getTargetGridCenter(pos.xz);
+
+		vec2 posDif = ((vec4(targetGridCenter.x, 0, targetGridCenter.y, 0) - pos) / 2).xz; 
+
+		return pos + vec4(posDif.x, 0, posDif.y, 0);
+	}
+	else
+	{
+		return pos;
+	}
+}
 
 
 void main() 
 {
-	vec4 pos = interpolate(tcPos[0], tcPos[1], tcPos[2], tcPos[3]);
 	vec2 texCoord = interpolate(tcTexCoord[0], tcTexCoord[1], tcTexCoord[2], tcTexCoord[3]);
-	//vec3 terrain = displacement(texCoord) * 4;
-	//pos.y = terrain.x;
-	pos.y = displacementY(texCoord);
 
-	o.normal = getNormal(texCoord, 1e-2);
+	currentGridPos = getCurrentGridPos(texCoord);
+	center = getCenter(tcPos[0], tcPos[1], tcPos[2], tcPos[3]);
+
+	float isCenter = step(0.45, gl_TessCoord.x) * step(gl_TessCoord.x, 0.55) * step(0.45, gl_TessCoord.y) * step(gl_TessCoord.y, 0.55);
+
+	vec2 centerDisplacement = vec2(0);//getGridPointCenterDisplacement(currentGridPos);
+	vec4 pos = getPosition();
+	pos = (1 - isCenter) * pos + isCenter * (pos + vec4(centerDisplacement.x, 0, centerDisplacement.y, 0));
+	
+	pos.y = instanceID;
+
+	o.normal = vec3(0, 1, 0);
 	o.position = pos.xyz;
 
 	gl_Position = camera * pos;

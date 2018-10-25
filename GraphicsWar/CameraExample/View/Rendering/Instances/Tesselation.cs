@@ -41,11 +41,10 @@ namespace GraphicsWar.View.Rendering.Instances
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             _tesselationProgram.Activate();
-            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line); //Does not work with our FBOs. I don´t know why. Turn off for now or only test without FBO.
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line); //Does not work with our FBOs. I don´t know why. Turn off for now or only test without FBO.
             GL.PatchParameter(PatchParameterInt.PatchVertices, 4);
 
-
-            const int instanceSqrt = 100;
+            const int instanceSqrt = 3;
             _tesselationProgram.Uniform("camera", camera);
             _tesselationProgram.Uniform(nameof(instanceSqrt), instanceSqrt);
             _tesselationProgram.Uniform("iGlobalTime", time);
@@ -57,6 +56,8 @@ namespace GraphicsWar.View.Rendering.Instances
             GL.DrawBuffers(_drawBuffers.Length, _drawBuffers);
 
             GL.DrawArraysInstanced(PrimitiveType.Patches, 0, 4, instanceSqrt * instanceSqrt);
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             _displacementMap.Deactivate();
             _tesselationProgram.Deactivate();

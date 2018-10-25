@@ -70,13 +70,24 @@ void main()
 	}
 	else
 	{
+		/*
 		gl_TessLevelOuter[0] = calcEdgeTessellation(v[3].xy, v[0].xy);
 		gl_TessLevelOuter[1] = calcEdgeTessellation(v[0].xy, v[1].xy);
 		gl_TessLevelOuter[2] = calcEdgeTessellation(v[1].xy, v[2].xy);
 		gl_TessLevelOuter[3] = calcEdgeTessellation(v[2].xy, v[3].xy);
+		*/
+		
+		gl_TessLevelOuter[0] = 2;
+		gl_TessLevelOuter[1] = 2;
+		gl_TessLevelOuter[2] = 2;
+		gl_TessLevelOuter[3] = 2;
 
 		// calculate interior tessellation level - use average of outer levels
+		/*
 		gl_TessLevelInner[0] = 0.5 * (gl_TessLevelOuter[1] + gl_TessLevelOuter[3]);
 		gl_TessLevelInner[1] = 0.5 * (gl_TessLevelOuter[0] + gl_TessLevelOuter[2]);
+		*/
+		gl_TessLevelInner[0] = 1;
+		gl_TessLevelInner[1] = 1;
 	}
 }
