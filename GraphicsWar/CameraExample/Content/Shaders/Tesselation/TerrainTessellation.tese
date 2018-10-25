@@ -4,6 +4,7 @@ uniform mat4 camera;
 uniform sampler2D displacementMap;
 uniform int instanceSqrt = 5;
 uniform float iGlobalTime;
+uniform float size = 1;
 
 layout (quads, equal_spacing, ccw) in;
 
@@ -75,51 +76,127 @@ float noise(float u)
 	return mix(v0, v1, weight);
 }
 
+
+
+
 vec2 currentGridPos;
 vec4 center;
+float isCenter;
 
-vec2 getCurrentGridPos(vec2 coord)
+vec2 getCurrentGridPos()
 {
 	float rowCount = 3;
 	float columnCount = 3;
-	float row = floor(coord.x / (1 / rowCount));
-	float column = floor(coord.y / (1 / columnCount));
+	float row = floor(float(instanceID) / rowCount);
+	float column = mod(float(instanceID), columnCount);
 
 	return vec2(row, column);
 }
 
-vec2 getGridPointCenterDisplacement(vec2 gridPos)
+vec2 getGridPointCenterDisplacement(ivec2 gridPos)
 {
 	return normalize(rand2(gridPos)) * 0.45;
 }
 
-vec2 getTargetGridCenter(vec2 pos)
-{
-	//Is either 0|0.5|1 -> * 2 = 0|1|2 -1 -> -1|0|1 -> Works with 3 by 3 square pretty well.
-	vec2 dir = vec2(gl_TessCoord.y, gl_TessCoord.x) * 2 - vec2(1);
-	
-	float leftRight = gl_TessCoord.y * 2 - 1;
-	float upDown = gl_TessCoord.x * 2 - 1;
-			
-	return pos + dir + getGridPointCenterDisplacement(currentGridPos + dir);
+vec2 getTargetGridCenter(ivec2 dir)
+{			
+	vec2 otherCenter = center.xz + (dir * size * 2);
+	return otherCenter;// + getGridPointCenterDisplacement(currentGridPos + dir);
 }
+
+//y = m*x + b;
+struct EqualDistanceLineBetweenCenters
+{
+	float m;
+	float b;
+};
 
 vec4 getPosition()
 {
 	vec4 pos = interpolate(tcPos[0], tcPos[1], tcPos[2], tcPos[3]);
+	int x = int(gl_TessCoord.x * 2);
+	int y = int(gl_TessCoord.y * 2);
+	
+	vec2 targetCenters[8] = {
+		getTargetGridCenter(ivec2(-1, -1)),
+		getTargetGridCenter(ivec2(-1,  0)),
+		getTargetGridCenter(ivec2(-1,  1)),
+		getTargetGridCenter(ivec2( 0, -1)),
+		//Leave out 0,0 because it is already the center of the current gridPos
+		getTargetGridCenter(ivec2( 0,  1)),
+		getTargetGridCenter(ivec2( 1, -1)),
+		getTargetGridCenter(ivec2( 1,  0)),
+		getTargetGridCenter(ivec2( 1,  1)),
+	};
 
-	if(instanceID == 3)
+	struct EqualDistanceLineBetweenCenters lines[8];
+	vec2 centerBetweenCenters[8];
+
+	//Get the lines that have the same distance from the center and every target center.
+	//Get line between centers VecCC. Get exact point between centers. Rotate VecCC by 90 degree and move it onto the exact point betweeen centers.
+	for(int i = 0; i < 8; i++)
 	{
-		vec2 targetGridCenter = getTargetGridCenter(pos.xz);
+		vec2 vector = targetCenters[i] - center.xz;
 
-		vec2 posDif = ((vec4(targetGridCenter.x, 0, targetGridCenter.y, 0) - pos) / 2).xz; 
+		//The center of the current gridPos is the origin of the coord system
+		centerBetweenCenters[i] = vector / 2;
 
-		return pos + vec4(posDif.x, 0, posDif.y, 0);
+		//Turn 90 deg
+		vec2 rotatedVector = vec2(vector.y, -vector.x);
+
+		centerBetweenCenters[i] += rotatedVector * sin(iGlobalTime);
+
+		lines[i].m = rotatedVector.y / rotatedVector.x;
+
+		//y at point x is given and m is known. b unknown.
+		//y = m * x + b
+		//y - m * x = b
+		lines[i].b = centerBetweenCenters[i].y - lines[i].m * centerBetweenCenters[i].x;
 	}
-	else
+	
+	
+	int arrayPos = x + y * 3;
+	arrayPos -= int(step(4.5, float(arrayPos))); //Fourth pos at gl_TessCoord = (0.5, 0.5) should be ignored;
+	
+	float nearestIntersectionDistance = 1e38;
+	vec2 nearestIntersection = vec2(float(x), float(y));
+
+	vec2 intersections[8];
+	
+	//Look at every other line, but not the chosen line itself
+	for(int i = (arrayPos + 1) % 8; i != arrayPos; i = (i + 1) % 8)
 	{
-		return pos;
+		if(lines[i].m == lines[arrayPos].m)
+		{
+			intersections[i] = vec2(1e38);
+			continue;
+		}
+
+		//(b1 - b2) / (m2 - m1) = x
+		float xIntersect = (lines[i].b - lines[arrayPos].b) / (lines[i].m - lines[arrayPos].m);
+		float yIntersect = lines[i].m * xIntersect + lines[i].b;
+
+		intersections[i] = vec2(xIntersect, yIntersect);
+
+		//Squared length of intersection, because center of coord is center of gridPoint only the length matters
+		float dist = dot(intersections[i], intersections[i]);
+
+		if(dist < nearestIntersectionDistance)
+		{
+			nearestIntersectionDistance = dist;
+			nearestIntersection = intersections[i];
+		}
 	}
+	
+	
+	vec4 newPos = pos;
+
+	if(x == 1 && y == 0)
+	{
+		newPos = vec4(intersections[int(floor(iGlobalTime)) % 8].x, 0, intersections[int(floor(iGlobalTime)) % 8].y, 0) + center;
+	}
+
+	return isCenter * pos + (1 - isCenter) * newPos;
 }
 
 
@@ -127,16 +204,21 @@ void main()
 {
 	vec2 texCoord = interpolate(tcTexCoord[0], tcTexCoord[1], tcTexCoord[2], tcTexCoord[3]);
 
-	currentGridPos = getCurrentGridPos(texCoord);
+	currentGridPos = getCurrentGridPos();
 	center = getCenter(tcPos[0], tcPos[1], tcPos[2], tcPos[3]);
 
-	float isCenter = step(0.45, gl_TessCoord.x) * step(gl_TessCoord.x, 0.55) * step(0.45, gl_TessCoord.y) * step(gl_TessCoord.y, 0.55);
+	isCenter = step(0.45, gl_TessCoord.x) * step(gl_TessCoord.x, 0.55) * step(0.45, gl_TessCoord.y) * step(gl_TessCoord.y, 0.55);
 
 	vec2 centerDisplacement = vec2(0);//getGridPointCenterDisplacement(currentGridPos);
 	vec4 pos = getPosition();
 	pos = (1 - isCenter) * pos + isCenter * (pos + vec4(centerDisplacement.x, 0, centerDisplacement.y, 0));
 	
-	pos.y = instanceID;
+	int x = int(gl_TessCoord.x * 2);
+	int y = int(gl_TessCoord.y * 2);
+	int arrayPos = x + y * 3;
+	//arrayPos -= int(step(4.5, float(arrayPos)));
+
+	pos.y = (currentGridPos.x + currentGridPos.y * 3) / 2;
 
 	o.normal = vec3(0, 1, 0);
 	o.position = pos.xyz;

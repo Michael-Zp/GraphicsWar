@@ -66,17 +66,17 @@ namespace GraphicsWar.View
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
-            _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
-            _blurredShadowMap = _renderInstanceGroup.AddShader<ShadowBlur>(new ShadowBlur(contentLoader, 5));
-            _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
-            _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
-            _addEnvMap = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
-            _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
-            _addProjectileColor = _renderInstanceGroup.AddShader<AddWithDepthTest>(new AddWithDepthTest(contentLoader));
-            _sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
-            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "blue"));
-            _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
-            _bloom = _renderInstanceGroup.AddShader<Bloom>(new Bloom(contentLoader));
+            //_directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
+            //_blurredShadowMap = _renderInstanceGroup.AddShader<ShadowBlur>(new ShadowBlur(contentLoader, 5));
+            //_ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
+            //_environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
+            //_addEnvMap = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            //_lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
+            //_addProjectileColor = _renderInstanceGroup.AddShader<AddWithDepthTest>(new AddWithDepthTest(contentLoader));
+            //_sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
+            //_skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "blue"));
+            //_addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            //_bloom = _renderInstanceGroup.AddShader<Bloom>(new Bloom(contentLoader));
 
 
             _lights.Add(new LightSource(Vector3.Zero, Vector3.Normalize(new Vector3(-1f, -1f, 0.6f)), new Vector3(0.8f, 0.8f, 0.9f)));

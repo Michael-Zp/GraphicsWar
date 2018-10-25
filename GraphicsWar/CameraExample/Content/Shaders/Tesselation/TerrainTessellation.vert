@@ -1,5 +1,6 @@
 #version 420 core
 uniform int instanceSqrt = 2;
+uniform float size = 1;
 
 out Data
 {
@@ -9,7 +10,6 @@ out Data
 
 void main() 
 {
-	const float size = 1;
 	const vec4 vertices[4] = vec4[4] (
 		vec4(-size, -size, 0, 0),
 		vec4( -size, size, 0, 1),
