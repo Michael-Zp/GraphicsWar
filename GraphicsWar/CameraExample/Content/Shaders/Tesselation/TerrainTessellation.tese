@@ -4,7 +4,7 @@ uniform mat4 camera;
 uniform sampler2D displacementMap;
 uniform int instanceSqrt = 5;
 uniform float iGlobalTime;
-uniform float size = 1;
+uniform float size = 2;
 
 layout (quads, equal_spacing, ccw) in;
 
@@ -144,7 +144,8 @@ vec4 getPosition()
 		//Turn 90 deg
 		vec2 rotatedVector = vec2(vector.y, -vector.x);
 
-		centerBetweenCenters[i] += rotatedVector * sin(iGlobalTime);
+		//float isZero = step(abs(rotatedVector.x), 1e-3);
+		//rotatedVector.x = isZero * 1e-3 * (rotatedVector.x / abs(rotatedVector.x)) + (1 - isZero) * rotatedVector.x;
 
 		lines[i].m = rotatedVector.y / rotatedVector.x;
 
@@ -153,33 +154,46 @@ vec4 getPosition()
 		//y - m * x = b
 		lines[i].b = centerBetweenCenters[i].y - lines[i].m * centerBetweenCenters[i].x;
 	}
-	
-	
+		
 	int arrayPos = x + y * 3;
-	arrayPos -= int(step(4.5, float(arrayPos))); //Fourth pos at gl_TessCoord = (0.5, 0.5) should be ignored;
+	arrayPos -= int(step(4.5, float(arrayPos))); //Fourth pos at gl_TessCoord = (0.5, 0.5) should be ignored, as it is the center;
 	
 	float nearestIntersectionDistance = 1e38;
 	vec2 nearestIntersection = vec2(float(x), float(y));
+
 
 	vec2 intersections[8];
 	
 	//Look at every other line, but not the chosen line itself
 	for(int i = (arrayPos + 1) % 8; i != arrayPos; i = (i + 1) % 8)
 	{
-		if(lines[i].m == lines[arrayPos].m)
-		{
-			intersections[i] = vec2(1e38);
-			continue;
-		}
+		//(-b1 - b2) / (m2 - m1) = x
+		
+		//float areParallel = step(abs(lines[i].m - lines[arrayPos].m), 1e-3);
+		//float gradientTwo = areParallel * (lines[arrayPos].m + 10) + (1 - areParallel) * lines[arrayPos].m; //Surpress division by zero
 
-		//(b1 - b2) / (m2 - m1) = x
-		float xIntersect = (lines[i].b - lines[arrayPos].b) / (lines[i].m - lines[arrayPos].m);
-		float yIntersect = lines[i].m * xIntersect + lines[i].b;
+		//float xIntersect = (-lines[i].b - lines[arrayPos].b) / (lines[i].m - gradientTwo);
+		//float yIntersect = lines[i].m * xIntersect + lines[i].b;
+
+		
+        float m1 = lines[arrayPos].m;
+        float b1 = lines[arrayPos].b;
+//		float m1 = 0;
+//        float b1 = 0;
+
+        float m2 = 1;
+        float b2 = 4;
+
+        float xIntersect = (b1 + b2) / (m1 - m2);
+        float yIntersect = m1 * xIntersect + b1;
+
+		//intersections[i] = areParallel * (center.xz + vec2(1e30)) + (1 - areParallel) * vec2(xIntersect, yIntersect); //If parallel the intersection is pretty far away ^^
 
 		intersections[i] = vec2(xIntersect, yIntersect);
 
 		//Squared length of intersection, because center of coord is center of gridPoint only the length matters
 		float dist = dot(intersections[i], intersections[i]);
+
 
 		if(dist < nearestIntersectionDistance)
 		{
@@ -193,7 +207,10 @@ vec4 getPosition()
 
 	if(x == 1 && y == 0)
 	{
-		newPos = vec4(intersections[int(floor(iGlobalTime)) % 8].x, 0, intersections[int(floor(iGlobalTime)) % 8].y, 0) + center;
+		newPos = vec4(nearestIntersection.x, 0, nearestIntersection.y, 0) + center;
+		newPos = vec4(centerBetweenCenters[arrayPos].x, 0, centerBetweenCenters[arrayPos].y, 0) + center;
+		newPos = vec4(intersections[arrayPos + 1].x, 0, intersections[arrayPos + 1].y, 0) + center;
+		//newPos = vec4(-4, 0, 0, 0) + center;
 	}
 
 	return isCenter * pos + (1 - isCenter) * newPos;

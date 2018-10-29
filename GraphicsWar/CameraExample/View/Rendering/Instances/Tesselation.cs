@@ -48,7 +48,7 @@ namespace GraphicsWar.View.Rendering.Instances
             _tesselationProgram.Uniform("camera", camera);
             _tesselationProgram.Uniform(nameof(instanceSqrt), instanceSqrt);
             _tesselationProgram.Uniform("iGlobalTime", time);
-            _tesselationProgram.Uniform("size", 1);
+            _tesselationProgram.Uniform("size", 20); //Does not work
             _displacementMap.Activate();
 
             GL.ClearColor(System.Drawing.Color.FromArgb(0, 0, 0, 0));

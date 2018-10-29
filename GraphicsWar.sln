@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenseless.OpenGL", "Zensele
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenseless.Sound", "ZenselessSourceAppEmpty4\Zenseless.Sound\Zenseless.Sound.csproj", "{10E2D3ED-A669-4ADB-892E-7B13C7B52CA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{2B6790A9-5191-4E9E-86A7-859626F1EB31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{10E2D3ED-A669-4ADB-892E-7B13C7B52CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10E2D3ED-A669-4ADB-892E-7B13C7B52CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10E2D3ED-A669-4ADB-892E-7B13C7B52CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B6790A9-5191-4E9E-86A7-859626F1EB31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B6790A9-5191-4E9E-86A7-859626F1EB31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B6790A9-5191-4E9E-86A7-859626F1EB31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B6790A9-5191-4E9E-86A7-859626F1EB31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

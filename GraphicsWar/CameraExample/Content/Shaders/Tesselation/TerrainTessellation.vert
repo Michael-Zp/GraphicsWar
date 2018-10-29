@@ -1,6 +1,6 @@
 #version 420 core
 uniform int instanceSqrt = 2;
-uniform float size = 1;
+uniform float size = 2;
 
 out Data
 {
