@@ -10,25 +10,18 @@ out Data
 
 void main() 
 {
-//	const vec4 vertices[4] = vec4[4] (
-//		vec4(-size, -size, 0, 0),
-//		vec4( -size, size, 0, 1),
-//		vec4( size,  size, 1, 1),
-//		vec4(size,  -size, 1, 0)
-//	);
 	const vec4 vertices[4] = vec4[4] (
-		vec4(2 * -size, -size, 0, 0),
-		vec4(2 *  -size, size, 0, 1),
-		vec4(2 *  size,  size, 1, 1),
-		vec4(2 * size,  -size, 1, 0)
+		vec4(-size, -size, 0, 0),
+		vec4( -size, size, 0, 1),
+		vec4( size,  size, 1, 1),
+		vec4(size,  -size, 1, 0)
 	);
 	
 	float x = gl_InstanceID % instanceSqrt;
 	float y = floor(gl_InstanceID / instanceSqrt);
 	o.instanceID = gl_InstanceID;
 
-//	vec2 pos = vertices[gl_VertexID].xy + vec2(size * 2) * vec2(x - (instanceSqrt / 2), y - (instanceSqrt / 2));
-	vec2 pos = vertices[gl_VertexID].xy + vec2(2 * size * 2) * vec2(x - (instanceSqrt / 2), y - (instanceSqrt / 2));
+	vec2 pos = vertices[gl_VertexID].xy + vec2(size * 2) * vec2(x - (instanceSqrt / 2), y - (instanceSqrt / 2));
 
 	o.texCoord = vec2((pos.x + size * instanceSqrt) / (size * 2 * instanceSqrt), (pos.y + size * instanceSqrt) / (size * 2 * instanceSqrt));
 

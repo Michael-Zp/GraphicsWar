@@ -117,10 +117,6 @@ vec4 getPosition()
 	int x = int(gl_TessCoord.x * 2);
 	int y = int(gl_TessCoord.y * 2);
 	
-		
-	int arrayPos = x + y * 3;
-	arrayPos -= int(step(4.5, float(arrayPos))); //Fourth pos at gl_TessCoord = (0.5, 0.5) should be ignored, as it is the center;
-	
 	vec2 targetCenters[8] = {
 		getTargetGridCenter(ivec2(-1, -1)),
 		getTargetGridCenter(ivec2(-1,  0)),
@@ -135,24 +131,21 @@ vec4 getPosition()
 
 	struct EqualDistanceLineBetweenCenters lines[8];
 	vec2 centerBetweenCenters[8];
-	vec2 myRotatedVector = vec2(0);
 
 	//Get the lines that have the same distance from the center and every target center.
 	//Get line between centers VecCC. Get exact point between centers. Rotate VecCC by 90 degree and move it onto the exact point betweeen centers.
 	for(int i = 0; i < 8; i++)
 	{
 		vec2 vector = targetCenters[i] - center.xz;
+
 		//The center of the current gridPos is the origin of the coord system
 		centerBetweenCenters[i] = vector / 2;
+
 		//Turn 90 deg
 		vec2 rotatedVector = vec2(vector.y, -vector.x);
-//		float isZero = step(abs(rotatedVector.x), 1e-3);
-//		rotatedVector.x = isZero * 1e-3 * (rotatedVector.x / abs(rotatedVector.x)) + (1 - isZero) * rotatedVector.x;
 
-		if(i == arrayPos)
-		{
-			myRotatedVector = rotatedVector;
-		}
+		//float isZero = step(abs(rotatedVector.x), 1e-3);
+		//rotatedVector.x = isZero * 1e-3 * (rotatedVector.x / abs(rotatedVector.x)) + (1 - isZero) * rotatedVector.x;
 
 		lines[i].m = rotatedVector.y / rotatedVector.x;
 
@@ -161,52 +154,42 @@ vec4 getPosition()
 		//y - m * x = b
 		lines[i].b = centerBetweenCenters[i].y - lines[i].m * centerBetweenCenters[i].x;
 	}
+		
+	int arrayPos = x + y * 3;
+	arrayPos -= int(step(4.5, float(arrayPos))); //Fourth pos at gl_TessCoord = (0.5, 0.5) should be ignored, as it is the center;
 	
 	float nearestIntersectionDistance = 1e38;
-	vec2 nearestIntersection = vec2(10);
+	vec2 nearestIntersection = vec2(float(x), float(y));
 
 
-	vec2 intersections[8] = {
-		vec2(1),
-		vec2(2),
-		vec2(3),
-		vec2(4),
-		vec2(5),
-		vec2(6),
-		vec2(7),
-		vec2(8),
-	};
-	int nearestIntersectionIndex = 0;
-
+	vec2 intersections[8];
+	
 	//Look at every other line, but not the chosen line itself
-	//for(int i = (arrayPos + 1) % 8; i != arrayPos; i = (i + 1) % 8)
-	for(int i = 0; i < 8; i++)
+	for(int i = (arrayPos + 1) % 8; i != arrayPos; i = (i + 1) % 8)
 	{
-		if(i == arrayPos)
-		{
-			continue;
-		}
-
 		//(-b1 - b2) / (m2 - m1) = x
 		
-		float areParallel = step(abs(lines[arrayPos].m - lines[i].m), 1e-3);
-		float gradient = areParallel * (lines[arrayPos].m + 10) + (1 - areParallel) * lines[arrayPos].m; //Surpress division by zero
+		//float areParallel = step(abs(lines[i].m - lines[arrayPos].m), 1e-3);
+		//float gradientTwo = areParallel * (lines[arrayPos].m + 10) + (1 - areParallel) * lines[arrayPos].m; //Surpress division by zero
+
+		//float xIntersect = (-lines[i].b - lines[arrayPos].b) / (lines[i].m - gradientTwo);
+		//float yIntersect = lines[i].m * xIntersect + lines[i].b;
 
 		
-        float m1 = gradient;
+        float m1 = lines[arrayPos].m;
         float b1 = lines[arrayPos].b;
-
 //		float m1 = 0;
-//		float b1 = 0;
+//        float b1 = 0;
 
-        float m2 = lines[i].m;
-        float b2 = lines[i].b;
+        float m2 = 1;
+        float b2 = 4;
 
-        float xIntersect = (b2 - b1) / (m1 - m2);
-        float yIntersect = m2 * xIntersect + b2;
+        float xIntersect = (b1 + b2) / (m1 - m2);
+        float yIntersect = m1 * xIntersect + b1;
 
-		intersections[i] = areParallel * (center.xz + vec2(1e30)) + (1 - areParallel) * vec2(xIntersect, yIntersect); //If parallel the intersection is pretty far away ^^
-		
+		//intersections[i] = areParallel * (center.xz + vec2(1e30)) + (1 - areParallel) * vec2(xIntersect, yIntersect); //If parallel the intersection is pretty far away ^^
+
+		intersections[i] = vec2(xIntersect, yIntersect);
 
 		//Squared length of intersection, because center of coord is center of gridPoint only the length matters
 		float dist = dot(intersections[i], intersections[i]);
@@ -216,21 +199,18 @@ vec4 getPosition()
 		{
 			nearestIntersectionDistance = dist;
 			nearestIntersection = intersections[i];
-			nearestIntersectionIndex = i;
 		}
 	}
 	
 	
 	vec4 newPos = pos;
 
-	if(x == 1 && y == 2)
+	if(x == 1 && y == 0)
 	{
 		newPos = vec4(nearestIntersection.x, 0, nearestIntersection.y, 0) + center;
-		newPos = vec4(lines[int(floor(iGlobalTime)) % 8].m, 0, 0, 0) + center;
-//		newPos = vec4(intersections[int(floor(iGlobalTime)) % 8].x, 0, intersections[int(floor(iGlobalTime)) % 8].y, 0) + center;
-//		newPos = vec4(centerBetweenCenters[arrayPos].x, 0, centerBetweenCenters[arrayPos].y, 0) + center + (vec4(myRotatedVector.x, 0, myRotatedVector.y, 0) * sin(iGlobalTime));
-//		newPos = vec4(intersections[arrayPos + 1].x, 0, intersections[arrayPos + 1].y, 0) + center;
-//		newPos = vec4(-4, 0, 0, 0) + center;
+		newPos = vec4(centerBetweenCenters[arrayPos].x, 0, centerBetweenCenters[arrayPos].y, 0) + center;
+		newPos = vec4(intersections[arrayPos + 1].x, 0, intersections[arrayPos + 1].y, 0) + center;
+		//newPos = vec4(-4, 0, 0, 0) + center;
 	}
 
 	return isCenter * pos + (1 - isCenter) * newPos;
