@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using Zenseless.Geometry;
 
 namespace GraphicsWar.View
@@ -140,6 +142,63 @@ namespace GraphicsWar.View
             mesh.Normal.Add(Vector3.UnitZ);
             mesh.Normal.Add(Vector3.UnitZ);
             mesh.Normal.Add(Vector3.UnitZ);
+
+
+            return mesh;
+        }
+
+
+
+
+        private static DefaultMesh VoronoiMeshTower(Vector2 center, IEnumerable<Vector2> neighbors, float height)
+        {
+            DefaultMesh mesh = new DefaultMesh();
+
+
+
+            return mesh;
+        }
+        public static DefaultMesh VoronoiMesh(int sizeX, int sizeZ)
+        {
+            Random rand = new Random(0);
+            DefaultMesh mesh = new DefaultMesh();
+
+            float RandFloat() => (float)rand.NextDouble();
+
+            float[,] heights = new float[sizeX + 2, sizeZ + 2];
+            Vector2[,] centers = new Vector2[sizeX + 2, sizeZ + 2];
+
+            for (int x = 0; x < sizeX + 2; x++)
+            {
+                for (int z = 0; z < sizeZ + 2; z++)
+                {
+                    heights[x, z] = RandFloat();
+                    centers[x, z] = new Vector2(RandFloat(), RandFloat());
+                }
+            }
+
+            for (int x = 1; x < sizeX + 1; x++)
+            {
+                for (int z = 1; z < sizeZ + 1; z++)
+                {
+                    List<Vector2> neighbors = new List<Vector2>()
+                    {
+                        centers[x-1,z-1],
+                        centers[x-1,z],
+                        centers[x-1,z+1],
+                        centers[x,z-1],
+                        centers[x,z+1],
+                        centers[x+1,z-1],
+                        centers[x+1,z],
+                        centers[x+1,z+1]
+                    };
+                    mesh.Add(VoronoiMeshTower(centers[x, z], neighbors, heights[x, z]));
+                }
+            }
+
+            
+
+            mesh.Add(VoronoiMeshTower(0, 0))
 
 
             return mesh;

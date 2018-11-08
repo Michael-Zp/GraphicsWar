@@ -276,9 +276,7 @@
     <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyHeights.png" />
     <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyNormals.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="doub\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_bk.png" />
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_dn.png" />
