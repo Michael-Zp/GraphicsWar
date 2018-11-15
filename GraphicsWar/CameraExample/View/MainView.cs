@@ -50,6 +50,7 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.NvidiaParticle, CustomMeshes.CreateIcosaeder());
             _meshes.Add(Enums.EntityType.RadeonParticle, CustomMeshes.CreateIcosaeder());
+            _meshes.Add(Enums.EntityType.Voronoi, CustomMeshes.VoronoiMesh(30, 30));
 
             _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
 
@@ -64,6 +65,7 @@ namespace GraphicsWar.View
             _intensities.Add(Enums.EntityType.Nvidia, new Vector4(.1f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Radeon, new Vector4(.0f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
+            _intensities.Add(Enums.EntityType.Voronoi, new Vector4(.1f, 1, 0.5f, 0));
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
