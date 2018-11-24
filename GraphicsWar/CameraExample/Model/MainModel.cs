@@ -39,6 +39,32 @@ namespace GraphicsWar.Model
             Entities.Add(new Entity(Enums.EntityType.Voronoi, Vector3.Zero, Vector3.Zero, new Vector3(10, 5, 10)));
         }
 
+        public void AddEntity(Enums.EntityType type, Vector3 position, Vector3 rotation, float size)
+        {
+            AddEntity(type, position, rotation, new Vector3(size));
+        }
+
+        public void AddEntity(Enums.EntityType type, Vector3 position, Vector3 rotation, Vector3 size)
+        {
+            Entities.Add(new Entity(type, position, rotation, size));
+        }
+
+        public void AddEntities(Enums.EntityType type, List<Vector3> positions, Vector3 rotation, float size)
+        {
+            foreach(var position in positions)
+            {
+                AddEntity(type, position, rotation, new Vector3(size));
+            }
+        }
+
+        public void AddEntities(Enums.EntityType type, List<Vector3> positions, Vector3 rotation, Vector3 size)
+        {
+            foreach (var position in positions)
+            {
+                AddEntity(type, position, rotation, size);
+            }
+        }
+
         public void Update(float deltaTime)
         {
             _orbit1.Update(deltaTime);

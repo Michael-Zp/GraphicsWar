@@ -37,7 +37,7 @@ namespace GraphicsWar.View
         private readonly Bloom _bloom;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
-        private readonly VoronoiMesh _voronoiMesh;
+        private readonly Voronoi _voronoiMesh;
 
         public bool Bloom { get; set; }
 
@@ -51,8 +51,6 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.NvidiaParticle, CustomMeshes.CreateIcosaeder());
             _meshes.Add(Enums.EntityType.RadeonParticle, CustomMeshes.CreateIcosaeder());
-            _voronoiMesh = CustomMeshes.VoronoiMesh(30, 30);
-            _meshes.Add(Enums.EntityType.Voronoi, _voronoiMesh);
             _meshes.Add(Enums.EntityType.Crystal1, contentLoader.Load<DefaultMesh>("Crystal1.obj"));
             _meshes.Add(Enums.EntityType.Crystal2, contentLoader.Load<DefaultMesh>("Crystal2.obj"));
 
@@ -69,7 +67,6 @@ namespace GraphicsWar.View
             _intensities.Add(Enums.EntityType.Nvidia, new Vector4(.1f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Radeon, new Vector4(.0f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
-            _intensities.Add(Enums.EntityType.Voronoi, new Vector4(.1f, 1, 0.5f, 0));
             _intensities.Add(Enums.EntityType.Crystal1, new Vector4(.1f, 1, 0.5f, 0));
             _intensities.Add(Enums.EntityType.Crystal2, new Vector4(.1f, 1, 0.5f, 0));
 
@@ -91,6 +88,32 @@ namespace GraphicsWar.View
 
 
             Bloom = true;
+        }
+
+        public void SetMesh(Enums.EntityType type, DefaultMesh mesh)
+        {
+            SetMesh(type, mesh, new Vector4(.1f, 1, 0.5f, 0));
+        }
+
+        public void SetMesh(Enums.EntityType type, DefaultMesh mesh, Vector4 intensity)
+        {
+            if(_meshes.ContainsKey(type))
+            {
+                _meshes[type] = mesh;
+            }
+            else
+            {
+                _meshes.Add(type, mesh);
+            }
+
+            if(_intensities.ContainsKey(type))
+            {
+                _intensities[type] = intensity;
+            }
+            else
+            {
+                _intensities.Add(type, intensity);
+            }
         }
 
         public void Render(List<ViewEntity> entities, float time, ITransformation camera)
@@ -154,13 +177,6 @@ namespace GraphicsWar.View
                 _transforms.Add(type, new List<Matrix4x4>());
             }
 
-
-
-            foreach (var type in _voronoiMesh.Crystals.Keys)
-            {
-                _instanceCounts[type] = _voronoiMesh.Crystals[type].Count;
-                _transforms[type] = _voronoiMesh.Crystals[type];
-            }
             
             foreach (var entity in entities)
             {

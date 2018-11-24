@@ -103,7 +103,6 @@
     <Compile Include="ExtensionMethods\MatrixHelper.cs" />
     <Compile Include="ExtensionMethods\Position.cs" />
     <Compile Include="ExtensionMethods\TextureDrawer.cs" />
-    <Compile Include="ExtensionMethods\VoronoiMeshExtensionMethods.cs" />
     <Compile Include="Model\Triangles\BoomMovement.cs" />
     <Compile Include="Model\Triangles\ArchMovement.cs" />
     <Compile Include="Model\Triangles\ITriangleMovement.cs" />
@@ -140,7 +139,7 @@
     <Compile Include="View\Rendering\Management\IRenderInstance.cs" />
     <Compile Include="View\Rendering\Management\RenderInstanceGroup.cs" />
     <Compile Include="View\Rendering\Instances\OnePassPostProcessShader.cs" />
-    <Compile Include="View\VoronoiMesh.cs" />
+    <Compile Include="Controller\Voronoi.cs" />
     <Compile Include="View\TBNMesh.cs" />
     <Compile Include="View\ViewEntity.cs" />
   </ItemGroup>
