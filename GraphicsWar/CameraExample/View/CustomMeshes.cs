@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Zenseless.Geometry;
+using GraphicsWar.ExtensionMethods;
 
 namespace GraphicsWar.View
 {
@@ -178,9 +179,9 @@ namespace GraphicsWar.View
 
 
 
-        private static DefaultMesh VoronoiMeshTower(Vector2 center, List<Vector2> neighbors, float height)
+        private static VoronoiMesh VoronoiMeshTower(Vector2 center, List<Vector2> neighbors, float height)
         {
-            DefaultMesh mesh = new DefaultMesh();
+            VoronoiMesh mesh = new VoronoiMesh(new DefaultMesh());
 
             List<OrthogonalLine> orthogonals = new List<OrthogonalLine>();
 
@@ -244,9 +245,17 @@ namespace GraphicsWar.View
                 mesh.Normal.Add(Vector3.UnitY);
                 if (i > 1)
                 {
+                    if(i == 2)
+                    {
+                        mesh.Plateaus.Add(new List<int[]>());
+                    }
+
                     mesh.IDs.Add(0);
                     mesh.IDs.Add(id - 1);
                     mesh.IDs.Add(id);
+
+                    int count = mesh.IDs.Count;
+                    mesh.Plateaus[mesh.Plateaus.Count - 1].Add(new int[] { (int)mesh.IDs[count - 3], (int)mesh.IDs[count - 2], (int)mesh.IDs[count - 1] });
                 }
                 id++;
             }
@@ -289,10 +298,10 @@ namespace GraphicsWar.View
         }
 
 
-        public static DefaultMesh VoronoiMesh(int sizeX, int sizeY)
+        public static VoronoiMesh VoronoiMesh(int sizeX, int sizeY)
         {
             Random rand = new Random(345546);
-            DefaultMesh mesh = new DefaultMesh();
+            VoronoiMesh mesh = new VoronoiMesh(new DefaultMesh());
 
             float RandFloat() => (float)rand.NextDouble();
 
@@ -330,6 +339,8 @@ namespace GraphicsWar.View
             DefaultMesh plane = Meshes.CreatePlane(sizeX, sizeY, 1, 1);
             plane.TexCoord.Clear();
             mesh.Add(plane);
+
+            mesh.GenerateRandomPositionsOnPlateau();
 
             return mesh;
         }

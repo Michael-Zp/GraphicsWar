@@ -37,6 +37,7 @@ namespace GraphicsWar.View
         private readonly Bloom _bloom;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
+        private readonly VoronoiMesh _voronoiMesh;
 
         public bool Bloom { get; set; }
 
@@ -50,7 +51,10 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.NvidiaParticle, CustomMeshes.CreateIcosaeder());
             _meshes.Add(Enums.EntityType.RadeonParticle, CustomMeshes.CreateIcosaeder());
-            _meshes.Add(Enums.EntityType.Voronoi, CustomMeshes.VoronoiMesh(30, 30));
+            _voronoiMesh = CustomMeshes.VoronoiMesh(30, 30);
+            _meshes.Add(Enums.EntityType.Voronoi, _voronoiMesh);
+            _meshes.Add(Enums.EntityType.Crystal1, contentLoader.Load<DefaultMesh>("Crystal1.obj"));
+            _meshes.Add(Enums.EntityType.Crystal2, contentLoader.Load<DefaultMesh>("Crystal2.obj"));
 
             _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
 
@@ -66,6 +70,8 @@ namespace GraphicsWar.View
             _intensities.Add(Enums.EntityType.Radeon, new Vector4(.0f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
             _intensities.Add(Enums.EntityType.Voronoi, new Vector4(.1f, 1, 0.5f, 0));
+            _intensities.Add(Enums.EntityType.Crystal1, new Vector4(.1f, 1, 0.5f, 0));
+            _intensities.Add(Enums.EntityType.Crystal2, new Vector4(.1f, 1, 0.5f, 0));
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
@@ -148,6 +154,14 @@ namespace GraphicsWar.View
                 _transforms.Add(type, new List<Matrix4x4>());
             }
 
+
+
+            foreach (var type in _voronoiMesh.Crystals.Keys)
+            {
+                _instanceCounts[type] = _voronoiMesh.Crystals[type].Count;
+                _transforms[type] = _voronoiMesh.Crystals[type];
+            }
+            
             foreach (var entity in entities)
             {
                 _instanceCounts[entity.Type]++;
