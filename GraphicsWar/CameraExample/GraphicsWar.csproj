@@ -139,6 +139,7 @@
     <Compile Include="View\Rendering\Management\IRenderInstance.cs" />
     <Compile Include="View\Rendering\Management\RenderInstanceGroup.cs" />
     <Compile Include="View\Rendering\Instances\OnePassPostProcessShader.cs" />
+    <Compile Include="Controller\Voronoi.cs" />
     <Compile Include="View\TBNMesh.cs" />
     <Compile Include="View\ViewEntity.cs" />
   </ItemGroup>
@@ -223,6 +224,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\Models\Crystals\Crystal1.mtl" />
+    <EmbeddedResource Include="Content\Models\Crystals\Crystal1.obj" />
+    <EmbeddedResource Include="Content\Models\Crystals\Crystal2.obj" />
     <None Include="Content\Models\GPUs\Nvidia\GTX_690.skp" />
     <None Include="Content\Models\GPUs\Nvidia\GTX_690.stl" />
     <None Include="Content\Models\GPUs\Nvidia\Nvidia.blend" />

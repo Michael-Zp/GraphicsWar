@@ -36,6 +36,33 @@ namespace GraphicsWar.Model
                 Entities.Add(triangle);
                 _baseTriangleIndices.Add(Entities.Count - 1);
             }
+            Entities.Add(new Entity(Enums.EntityType.Voronoi, Vector3.Zero, Vector3.Zero, 1));
+        }
+
+        public void AddEntity(Enums.EntityType type, Vector3 position, Vector3 rotation, float size)
+        {
+            AddEntity(type, position, rotation, new Vector3(size));
+        }
+
+        public void AddEntity(Enums.EntityType type, Vector3 position, Vector3 rotation, Vector3 size)
+        {
+            Entities.Add(new Entity(type, position, rotation, size));
+        }
+
+        public void AddEntities(Enums.EntityType type, List<Vector3> positions, Vector3 rotation, float size)
+        {
+            foreach(var position in positions)
+            {
+                AddEntity(type, position, rotation, new Vector3(size));
+            }
+        }
+
+        public void AddEntities(Enums.EntityType type, List<Vector3> positions, Vector3 rotation, Vector3 size)
+        {
+            foreach (var position in positions)
+            {
+                AddEntity(type, position, rotation, size);
+            }
         }
 
         public void Update(float deltaTime)
@@ -45,11 +72,11 @@ namespace GraphicsWar.Model
             _orbit2.Update(deltaTime);
             Entities[1].AdditionalTransformation = _orbit2.Transformation;
             Entities[2].Rotate(new Vector3(0, -deltaTime, 0));
-            for(int i = 0; i < Entities.Count; i++)
+            for (int i = 0; i < Entities.Count; i++)
             {
                 if (Entities[i] is TriangleEntity triangleEntity)
                 {
-                    if(_baseTriangleIndices.Contains(i))
+                    if (_baseTriangleIndices.Contains(i))
                     {
                         switch (triangleEntity.Type)
                         {
@@ -82,7 +109,7 @@ namespace GraphicsWar.Model
 
         private void TriangleDied(Vector3 position, Enums.EntityType triangleType)
         {
-            for(int i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 TriangleEntity triangle = new TriangleEntity(triangleType, position, Vector3.Zero, 0.3f, new BoomMovement());
                 triangle.TriangleDied += (p) => EntitiesToDelete.Add(triangle);

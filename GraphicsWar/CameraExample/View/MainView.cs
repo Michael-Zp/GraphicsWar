@@ -6,6 +6,7 @@ using Zenseless.HLGL;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Instances;
 using GraphicsWar.View.Rendering.Management;
+using System;
 
 namespace GraphicsWar.View
 {
@@ -40,7 +41,7 @@ namespace GraphicsWar.View
 
         public bool Bloom { get; set; }
 
-        public MainView(IRenderState renderState, IContentLoader contentLoader)
+        public MainView(IRenderState renderState, IContentLoader contentLoader, Dictionary<Enums.EntityType, Tuple<DefaultMesh, Vector4>> additionalMeshes)
         {
             _renderState = renderState;
             _renderState.Set(new BackFaceCulling(true));
@@ -50,6 +51,8 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.NvidiaParticle, CustomMeshes.CreateIcosaeder());
             _meshes.Add(Enums.EntityType.RadeonParticle, CustomMeshes.CreateIcosaeder());
+            _meshes.Add(Enums.EntityType.Crystal1, contentLoader.Load<DefaultMesh>("Crystal1.obj"));
+            _meshes.Add(Enums.EntityType.Crystal2, contentLoader.Load<DefaultMesh>("Crystal2.obj"));
 
             _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
 
@@ -64,6 +67,30 @@ namespace GraphicsWar.View
             _intensities.Add(Enums.EntityType.Nvidia, new Vector4(.1f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Radeon, new Vector4(.0f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
+            _intensities.Add(Enums.EntityType.Crystal1, new Vector4(1, 0, 0, 0));
+            _intensities.Add(Enums.EntityType.Crystal2, new Vector4(1, 0, 0, 0));
+
+
+            foreach(var type in additionalMeshes.Keys)
+            {
+                if (_meshes.ContainsKey(type))
+                {
+                    _meshes[type] = additionalMeshes[type].Item1;
+                }
+                else
+                {
+                    _meshes[type] = additionalMeshes[type].Item1;
+                }
+
+                if (_intensities.ContainsKey(type))
+                {
+                    _intensities[type] = additionalMeshes[type].Item2;
+                }
+                else
+                {
+                    _intensities[type] = additionalMeshes[type].Item2;
+                }
+            }
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             //_directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
@@ -146,6 +173,7 @@ namespace GraphicsWar.View
                 _transforms.Add(type, new List<Matrix4x4>());
             }
 
+            
             foreach (var entity in entities)
             {
                 _instanceCounts[entity.Type]++;

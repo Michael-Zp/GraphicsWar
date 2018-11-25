@@ -26,14 +26,14 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly Tesselation _tesselation;
         private readonly AddWithDepthTest _addTesselation;
 
-        public ITexture2D Color => _tesselation.Color;
+        public ITexture2D Color => _addProjectilesRadeon.Color;
 
-        public ITexture2D Normal => _tesselation.Normal;
+        public ITexture2D Normal => _addProjectilesRadeon.Normal;
 
-        public ITexture2D Depth => _tesselation.Depth;
+        public ITexture2D Depth => _addProjectilesRadeon.Depth;
 
-        public ITexture2D Position => _tesselation.Position;
-        public ITexture2D IntensityMap => _tesselation.IntensityMap;
+        public ITexture2D Position => _addProjectilesRadeon.Position;
+        public ITexture2D IntensityMap => _addProjectilesRadeon.IntensityMap;
 
 
         public Deferred(IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
@@ -152,7 +152,22 @@ namespace GraphicsWar.View.Rendering.Instances
                 }
                 else
                 {
-                    _deferredProgram.Uniform("materialColor", System.Drawing.Color.LightGray);
+                    switch(type)
+                    {
+                        case Enums.EntityType.Voronoi:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.FromArgb(255, 41, 49, 51));
+                            break;
+                        case Enums.EntityType.Crystal1:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.Pink);
+                            break;
+                        case Enums.EntityType.Crystal2:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.Cyan);
+                            break;
+                        default:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.LightGray);
+                            break;
+                    }
+
                     _deferredProgram.Uniform("textured", 0f);
                 }
 
@@ -194,8 +209,8 @@ namespace GraphicsWar.View.Rendering.Instances
             _projectilesGenerationRadeon.Draw(renderState, camera, instanceCounts[Enums.EntityType.RadeonParticle], intensityMap[Enums.EntityType.RadeonParticle], time);
             _addProjectilesRadeon.Draw(_addProjectilesNvidia.Depth, _projectilesGenerationRadeon.Depth, _addProjectilesNvidia.Color, _projectilesGenerationRadeon.Color, _addProjectilesNvidia.Normal, _projectilesGenerationRadeon.Normal, _addProjectilesNvidia.Position, _projectilesGenerationRadeon.Position, _addProjectilesNvidia.IntensityMap, _projectilesGenerationRadeon.IntensityMap);
 
-            _tesselation.Draw(renderState, camera, time);
-            _addTesselation.Draw(_addProjectilesRadeon.Depth, _tesselation.Depth, _addProjectilesRadeon.Color, _tesselation.Color, _addProjectilesRadeon.Normal, _tesselation.Normal, _addProjectilesRadeon.Position, _tesselation.Position, _addProjectilesRadeon.IntensityMap, _tesselation.IntensityMap);
+            //_tesselation.Draw(renderState, camera, time);
+            //_addTesselation.Draw(_addProjectilesRadeon.Depth, _tesselation.Depth, _addProjectilesRadeon.Color, _tesselation.Color, _addProjectilesRadeon.Normal, _tesselation.Normal, _addProjectilesRadeon.Position, _tesselation.Position, _addProjectilesRadeon.IntensityMap, _tesselation.IntensityMap);
         }
     }
 }
