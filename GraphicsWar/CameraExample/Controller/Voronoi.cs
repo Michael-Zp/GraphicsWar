@@ -8,6 +8,20 @@ namespace GraphicsWar.View
 {
     public class Voronoi
     {
+        public struct VoronoiCrystal
+        {
+            public readonly Vector3 Position;
+            public readonly float ScaleFactor;
+            public readonly float RotationFactor;
+
+            public VoronoiCrystal(Vector3 position, float scaleFactor, float rotationFactor)
+            {
+                Position = position;
+                ScaleFactor = scaleFactor;
+                RotationFactor = rotationFactor;
+            }
+        }
+
         /// <summary>
         /// Tangent vector.
         /// </summary>
@@ -18,7 +32,7 @@ namespace GraphicsWar.View
 
         public DefaultMesh Mesh;
 
-        public Dictionary<Shared.Enums.EntityType, List<Vector3>> CrystalPositions {
+        public Dictionary<Shared.Enums.EntityType, List<VoronoiCrystal>> Crystals {
             get {
                 if(_crystals == null)
                 {
@@ -30,17 +44,17 @@ namespace GraphicsWar.View
         }
 
 
-        private Dictionary<Shared.Enums.EntityType, List<Vector3>> _crystals = null;
+        private Dictionary<Shared.Enums.EntityType, List<VoronoiCrystal>> _crystals = null;
         private uint _id = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultMesh"/> class.
         /// </summary>
 
-        public Voronoi(int sizeX, int sizeY)
+        public Voronoi(int sizeX, int sizeY, Vector3 scale)
         {
             Mesh = new DefaultMesh();
-            GenerateVoronoi(sizeX, sizeY);
+            GenerateVoronoi(sizeX, sizeY, scale);
             GenerateRandomPositionsOnPlateau();
         }
 
@@ -190,7 +204,7 @@ namespace GraphicsWar.View
         }
 
 
-        private void GenerateVoronoi(int sizeX, int sizeY)
+        private void GenerateVoronoi(int sizeX, int sizeY, Vector3 scale)
         {
             Random rand = new Random(345546);
 
@@ -203,8 +217,8 @@ namespace GraphicsWar.View
             {
                 for (int y = 0; y < sizeY + 2; y++)
                 {
-                    heights[x, y] = RandFloat();
-                    centers[x, y] = new Vector2(RandFloat() + x - ((sizeX + 2) / 2), RandFloat() + y - ((sizeY + 2) / 2));
+                    heights[x, y] = RandFloat() * scale.Y;
+                    centers[x, y] = new Vector2((RandFloat() + x - ((sizeX + 2)) / 2) * scale.X, (RandFloat() + y - ((sizeY + 2) / 2)) * scale.Z);
                 }
             }
 
@@ -228,7 +242,7 @@ namespace GraphicsWar.View
                 }
             }
 
-            DefaultMesh plane = Meshes.CreatePlane(sizeX, sizeY, 1, 1);
+            DefaultMesh plane = Meshes.CreatePlane(sizeX * scale.X, sizeY * scale.Z, 1, 1);
             plane.TexCoord.Clear();
             Mesh.Add(plane);
         }
@@ -237,40 +251,69 @@ namespace GraphicsWar.View
         {
             if(_crystals == null)
             {
-                _crystals = new Dictionary<Shared.Enums.EntityType, List<Vector3>>();
+                _crystals = new Dictionary<Shared.Enums.EntityType, List<VoronoiCrystal>>();
 
                 Random random = new Random();
 
-                _crystals.Add(Shared.Enums.EntityType.Crystal1, new List<Vector3>());
-                _crystals.Add(Shared.Enums.EntityType.Crystal2, new List<Vector3>());
+                _crystals.Add(Shared.Enums.EntityType.Crystal1, new List<VoronoiCrystal>());
+                _crystals.Add(Shared.Enums.EntityType.Crystal2, new List<VoronoiCrystal>());
 
 
                 foreach (var plateauIds in Plateaus)
                 {
                     float height = Mesh.Position[plateauIds[0][0]].Y;
-                    int trianglesCount = plateauIds.Count / 3;
+                    int trianglesCount = plateauIds.Count;
 
-                    int crystalCount = random.Next(0, 2);
-
+                    int crystalCount = random.Next(0, 11);
+                    
 
                     for (int i = 0; i < crystalCount; i++)
                     {
                         int selectedTriangle = random.Next(0, trianglesCount);
-                        Vector2 barycentricCoords = new Vector2((float)random.NextDouble(), (float)random.NextDouble());
+                        Vector3 barycentricCoords = Vector3.Normalize(new Vector3((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble()));
 
                         Vector2 point0 = new Vector2(Mesh.Position[plateauIds[selectedTriangle][0]].X, Mesh.Position[plateauIds[selectedTriangle][0]].Z);
                         Vector2 point1 = new Vector2(Mesh.Position[plateauIds[selectedTriangle][1]].X, Mesh.Position[plateauIds[selectedTriangle][1]].Z);
                         Vector2 point2 = new Vector2(Mesh.Position[plateauIds[selectedTriangle][2]].X, Mesh.Position[plateauIds[selectedTriangle][2]].Z);
 
-                        Vector2 vecA = point1 - point0;
-                        Vector2 vecB = point2 - point0;
 
-                        Vector2 point2D = point0;// + vecA * barycentricCoords.X + vecB * barycentricCoords.Y;
+                        //Has to be Length and not LengthSquared, otherwise is bigger than semiperimeter and Sqrt = NaN because negative
+                        float p0Len = (point0 - point1).Length();
+                        float p1Len = (point0 - point2).Length();
+                        float p2Len = (point1 - point2).Length();
+
+                        //Heron`s formula
+                        float semiperimeter = (p0Len + p1Len + p2Len) / 2;
+                        float surfaceArea = (float)Math.Sqrt(semiperimeter * (semiperimeter - p0Len) * (semiperimeter - p1Len) * (semiperimeter - p2Len));
+                        
+                        if(surfaceArea < 8)
+                        {
+                            continue;
+                        }
+
+                        Vector2 half = (point2 - point0) / 2 + point0;
+                        Vector2 center = half + (point1 - half) / 3;
+
+                        Vector2 vec0 = point0 - center;
+                        Vector2 vec1 = point1 - center;
+                        Vector2 vec2 = point2 - center;
+
+                        vec0 *= 0.5f;
+                        vec1 *= 0.5f;
+                        vec2 *= 0.5f;
+
+                        float x = barycentricCoords.X * vec0.X + barycentricCoords.Y * vec1.X + barycentricCoords.Z * vec2.X;
+                        float y = barycentricCoords.X * vec0.Y + barycentricCoords.Y * vec1.Y + barycentricCoords.Z * vec2.Y;
+
+
+                        Vector2 point2D = new Vector2(x, y) + center;
 
                         Shared.Enums.EntityType type = random.Next(0, 2) == 0 ? Shared.Enums.EntityType.Crystal1 : Shared.Enums.EntityType.Crystal2;
 
-                        _crystals[type].Add(new Vector3(point2D.X, height, point2D.Y));
-                        //_crystals[type].Add(Mesh.Position[plateauIds[0][0]]);
+                        float scaleFactor = (float)(type == Shared.Enums.EntityType.Crystal1 ? random.NextDouble() * 0.4 + 0.8 : random.NextDouble() * 0.05 + 0.2);
+                        float rotationFactor = (float)(random.NextDouble() * 2 * Math.PI);
+
+                        _crystals[type].Add(new VoronoiCrystal(new Vector3(point2D.X, height, point2D.Y), scaleFactor, rotationFactor));
                     }
                 }
             }

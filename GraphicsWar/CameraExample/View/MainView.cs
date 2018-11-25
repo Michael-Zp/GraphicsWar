@@ -6,6 +6,7 @@ using Zenseless.HLGL;
 using GraphicsWar.Shared;
 using GraphicsWar.View.Rendering.Instances;
 using GraphicsWar.View.Rendering.Management;
+using System;
 
 namespace GraphicsWar.View
 {
@@ -37,11 +38,10 @@ namespace GraphicsWar.View
         private readonly Bloom _bloom;
 
         private readonly List<LightSource> _lights = new List<LightSource>();
-        private readonly Voronoi _voronoiMesh;
 
         public bool Bloom { get; set; }
 
-        public MainView(IRenderState renderState, IContentLoader contentLoader)
+        public MainView(IRenderState renderState, IContentLoader contentLoader, Dictionary<Enums.EntityType, Tuple<DefaultMesh, Vector4>> additionalMeshes)
         {
             _renderState = renderState;
             _renderState.Set(new BackFaceCulling(true));
@@ -67,8 +67,30 @@ namespace GraphicsWar.View
             _intensities.Add(Enums.EntityType.Nvidia, new Vector4(.1f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Radeon, new Vector4(.0f, 0, 1, 1));
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
-            _intensities.Add(Enums.EntityType.Crystal1, new Vector4(.1f, 1, 0.5f, 0));
-            _intensities.Add(Enums.EntityType.Crystal2, new Vector4(.1f, 1, 0.5f, 0));
+            _intensities.Add(Enums.EntityType.Crystal1, new Vector4(1, 0, 0, 0));
+            _intensities.Add(Enums.EntityType.Crystal2, new Vector4(1, 0, 0, 0));
+
+
+            foreach(var type in additionalMeshes.Keys)
+            {
+                if (_meshes.ContainsKey(type))
+                {
+                    _meshes[type] = additionalMeshes[type].Item1;
+                }
+                else
+                {
+                    _meshes[type] = additionalMeshes[type].Item1;
+                }
+
+                if (_intensities.ContainsKey(type))
+                {
+                    _intensities[type] = additionalMeshes[type].Item2;
+                }
+                else
+                {
+                    _intensities[type] = additionalMeshes[type].Item2;
+                }
+            }
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
             _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
@@ -88,32 +110,6 @@ namespace GraphicsWar.View
 
 
             Bloom = true;
-        }
-
-        public void SetMesh(Enums.EntityType type, DefaultMesh mesh)
-        {
-            SetMesh(type, mesh, new Vector4(.1f, 1, 0.5f, 0));
-        }
-
-        public void SetMesh(Enums.EntityType type, DefaultMesh mesh, Vector4 intensity)
-        {
-            if(_meshes.ContainsKey(type))
-            {
-                _meshes[type] = mesh;
-            }
-            else
-            {
-                _meshes.Add(type, mesh);
-            }
-
-            if(_intensities.ContainsKey(type))
-            {
-                _intensities[type] = intensity;
-            }
-            else
-            {
-                _intensities.Add(type, intensity);
-            }
         }
 
         public void Render(List<ViewEntity> entities, float time, ITransformation camera)

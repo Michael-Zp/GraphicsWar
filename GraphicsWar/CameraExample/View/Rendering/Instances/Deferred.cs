@@ -152,14 +152,22 @@ namespace GraphicsWar.View.Rendering.Instances
                 }
                 else
                 {
-                    if (type == Enums.EntityType.Voronoi)
+                    switch(type)
                     {
-                        _deferredProgram.Uniform("materialColor", System.Drawing.Color.FromArgb(255, 41, 49, 51));
+                        case Enums.EntityType.Voronoi:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.FromArgb(255, 41, 49, 51));
+                            break;
+                        case Enums.EntityType.Crystal1:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.Pink);
+                            break;
+                        case Enums.EntityType.Crystal2:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.Cyan);
+                            break;
+                        default:
+                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.LightGray);
+                            break;
                     }
-                    else
-                    {
-                        _deferredProgram.Uniform("materialColor", System.Drawing.Color.LightGray);
-                    }
+
                     _deferredProgram.Uniform("textured", 0f);
                 }
 
