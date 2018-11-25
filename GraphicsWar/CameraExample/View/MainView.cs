@@ -93,17 +93,17 @@ namespace GraphicsWar.View
             }
 
             _deferred = _renderInstanceGroup.AddShader<Deferred>(new Deferred(contentLoader, _meshes));
-            //_directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
-            //_blurredShadowMap = _renderInstanceGroup.AddShader<ShadowBlur>(new ShadowBlur(contentLoader, 5));
-            //_ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
-            //_environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
-            //_addEnvMap = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
-            //_lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
-            //_addProjectileColor = _renderInstanceGroup.AddShader<AddWithDepthTest>(new AddWithDepthTest(contentLoader));
-            //_sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
-            //_skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "blue"));
-            //_addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
-            //_bloom = _renderInstanceGroup.AddShader<Bloom>(new Bloom(contentLoader));
+            _directShadowMap = _renderInstanceGroup.AddShader<DirectionalShadowMapping>(new DirectionalShadowMapping(contentLoader, _meshes));
+            _blurredShadowMap = _renderInstanceGroup.AddShader<ShadowBlur>(new ShadowBlur(contentLoader, 5));
+            _ssaoWithBlur = _renderInstanceGroup.AddShader<SSAOWithBlur>(new SSAOWithBlur(contentLoader, 15));
+            _environmentMap = _renderInstanceGroup.AddShader<EnvironmentMap>(new EnvironmentMap(1024, contentLoader, _meshes));
+            _addEnvMap = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _lighting = _renderInstanceGroup.AddShader<Lighting>(new Lighting(contentLoader));
+            _addProjectileColor = _renderInstanceGroup.AddShader<AddWithDepthTest>(new AddWithDepthTest(contentLoader));
+            _sphereCut = _renderInstanceGroup.AddShader<SphereCut>(new SphereCut(contentLoader, 100));
+            _skybox = _renderInstanceGroup.AddShader<Skybox>(new Skybox(contentLoader, 100, "blue"));
+            _addSkybox = _renderInstanceGroup.AddShader<Add>(new Add(contentLoader));
+            _bloom = _renderInstanceGroup.AddShader<Bloom>(new Bloom(contentLoader));
 
 
             _lights.Add(new LightSource(Vector3.Zero, Vector3.Normalize(new Vector3(-1f, -1f, 0.6f)), new Vector3(0.8f, 0.8f, 0.9f)));
@@ -127,34 +127,34 @@ namespace GraphicsWar.View
 
             _deferred.Draw(_renderState, camera, _instanceCounts, _textures, _normalMaps, _heightMaps, _intensities, _disableBackFaceCulling, time);
 
-            //_directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling, _deferred.Position, _deferred.Normal);
-            //_blurredShadowMap.Draw(_directShadowMap.Output);
+            _directShadowMap.Draw(_renderState, camera, _instanceCounts, _deferred.Depth, _lights[0].Direction, _disableBackFaceCulling, _deferred.Position, _deferred.Normal);
+            _blurredShadowMap.Draw(_directShadowMap.Output);
 
-            //_environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _intensities, _disableBackFaceCulling, _lights, camera, time);
-            //_environmentMap.Draw(_renderState, _deferred.Depth);
-            //_addEnvMap.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
+            _environmentMap.CreateMap(entities[2], _renderState, 0, arrTrans, _instanceCounts, _textures, _normalMaps, _heightMaps, _intensities, _disableBackFaceCulling, _lights, camera, time);
+            _environmentMap.Draw(_renderState, _deferred.Depth);
+            _addEnvMap.Draw(_deferred.Color, _environmentMap.Output, 0.5f);
 
-            //_lighting.Draw(camera, _addEnvMap.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _deferred.IntensityMap, _lights);
+            _lighting.Draw(camera, _addEnvMap.Output, _deferred.Normal, _deferred.Position, _blurredShadowMap.Output, _deferred.IntensityMap, _lights);
 
-            ////_addProjectileColor.Draw(_deferred.ProjectileDepth, _deferred.Depth, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output);
+            //_addProjectileColor.Draw(_deferred.ProjectileDepth, _deferred.Depth, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output, _deferred.ProjectileColor, _lighting.Output);
 
-            //_sphereCut.Draw(camera, _lighting.Output, _deferred.Depth);
+            _sphereCut.Draw(camera, _lighting.Output, _deferred.Depth);
 
-            //_skybox.Draw(camera);
-            //_addSkybox.Draw(_skybox.Output, _sphereCut.Output);
+            _skybox.Draw(camera);
+            _addSkybox.Draw(_skybox.Output, _sphereCut.Output);
 
-            //if (Bloom)
-            //{
-            //    _bloom.Draw(_addSkybox.Output);
-            //    _ssaoWithBlur.Draw(_deferred.Depth, _bloom.Output);
-            //}
-            //else
-            //{
-            //    _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
-            //}
+            if (Bloom)
+            {
+                _bloom.Draw(_addSkybox.Output);
+                _ssaoWithBlur.Draw(_deferred.Depth, _bloom.Output);
+            }
+            else
+            {
+                _ssaoWithBlur.Draw(_deferred.Depth, _addSkybox.Output);
+            }
 
 
-            TextureDrawer.Draw(_deferred.Color);
+            TextureDrawer.Draw(_ssaoWithBlur.Output);
         }
 
         public void Resize(int width, int height)
