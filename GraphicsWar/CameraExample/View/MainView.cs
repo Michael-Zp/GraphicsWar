@@ -114,9 +114,17 @@ namespace GraphicsWar.View
             Bloom = true;
         }
 
+
+
         public void Render(List<ViewEntity> entities, float time, ITransformation camera)
         {
             UpdateInstancing(entities);
+
+
+            _intensities[Enums.EntityType.VoronoiTops] = new Vector4((float)Math.Sin(time) * 0.5f + 1.5f, 0, 0, 0);
+
+            //_intensities[Enums.EntityType.VoronoiSides] = new Vector4((float)Math.Sin(time) * 0.5f + 1.5f, 0, 0, 0);
+            _intensities[Enums.EntityType.VoronoiSides] = new Vector4((float)Math.Sin(time) * 0.3f + 0.6f, 0, 0, 0);
 
             var arrTrans = new Dictionary<Enums.EntityType, Matrix4x4[]>();
 
@@ -163,7 +171,7 @@ namespace GraphicsWar.View
         {
             _renderInstanceGroup.UpdateResolution(width, height);
         }
-
+        
         private void UpdateInstancing(IEnumerable<ViewEntity> entities)
         {
             _transforms.Clear();

@@ -28,6 +28,7 @@ namespace GraphicsWar.Controller
 
             var additionalMeshes = new Dictionary<Shared.Enums.EntityType, Tuple<DefaultMesh, Vector4>>();
             additionalMeshes.Add(Shared.Enums.EntityType.VoronoiTops, Tuple.Create(voronoi.Tops, new Vector4(1, 0, 0, 0)));
+            //additionalMeshes.Add(Shared.Enums.EntityType.VoronoiTops, Tuple.Create(voronoi.Tops, new Vector4(.1f, 1, 0.5f, 0)));
             additionalMeshes.Add(Shared.Enums.EntityType.VoronoiSides, Tuple.Create(voronoi.Sides, new Vector4(1, 0, 0, 0)));
 
             var visual = new MainView(window.RenderContext.RenderState, window.ContentLoader, additionalMeshes);
