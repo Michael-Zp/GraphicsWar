@@ -27,7 +27,8 @@ namespace GraphicsWar.Controller
             Voronoi voronoi = new Voronoi(30, 30, new Vector3(10, 5, 10));
 
             var additionalMeshes = new Dictionary<Shared.Enums.EntityType, Tuple<DefaultMesh, Vector4>>();
-            additionalMeshes.Add(Shared.Enums.EntityType.Voronoi, Tuple.Create(voronoi.Mesh, new Vector4(.1f, 1, 0.5f, 0)));
+            additionalMeshes.Add(Shared.Enums.EntityType.VoronoiTops, Tuple.Create(voronoi.Tops, new Vector4(1, 0, 0, 0)));
+            additionalMeshes.Add(Shared.Enums.EntityType.VoronoiSides, Tuple.Create(voronoi.Sides, new Vector4(1, 0, 0, 0)));
 
             var visual = new MainView(window.RenderContext.RenderState, window.ContentLoader, additionalMeshes);
             var model = new MainModel();

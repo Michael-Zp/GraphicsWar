@@ -280,7 +280,9 @@
     <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyHeights.png" />
     <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyNormals.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\colorBlendingVoronoiSides.png" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_bk.png" />
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_dn.png" />
@@ -338,6 +340,9 @@
     <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_lf.png" />
     <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_rt.png" />
     <EmbeddedResource Include="Content\Textures\Skybox\Skybox1\skybox_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Content\Textures\veins.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

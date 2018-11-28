@@ -154,9 +154,9 @@ namespace GraphicsWar.View.Rendering.Instances
                 {
                     switch(type)
                     {
-                        case Enums.EntityType.Voronoi:
-                            _deferredProgram.Uniform("materialColor", System.Drawing.Color.FromArgb(255, 41, 49, 51));
-                            break;
+                        //case Enums.EntityType.VoronoiTops:
+                        //    _deferredProgram.Uniform("materialColor", System.Drawing.Color.FromArgb(255, 41, 49, 51));
+                        //    break;
                         case Enums.EntityType.Crystal1:
                             _deferredProgram.Uniform("materialColor", System.Drawing.Color.Pink);
                             break;

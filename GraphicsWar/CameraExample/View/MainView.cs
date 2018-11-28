@@ -61,6 +61,8 @@ namespace GraphicsWar.View
 
             _textures.Add(Enums.EntityType.Nvidia, contentLoader.Load<ITexture2D>("Nvidia.png"));
             _textures.Add(Enums.EntityType.Radeon, contentLoader.Load<ITexture2D>("Radeon.png"));
+            _textures.Add(Enums.EntityType.VoronoiTops, contentLoader.Load<ITexture2D>("veins.jpg"));
+            _textures.Add(Enums.EntityType.VoronoiSides, contentLoader.Load<ITexture2D>("colorBlendingVoronoiSides.png"));
 
             _intensities.Add(Enums.EntityType.NvidiaParticle, new Vector4(1, 0, 0, 0));
             _intensities.Add(Enums.EntityType.RadeonParticle, new Vector4(1, 0, 0, 0));

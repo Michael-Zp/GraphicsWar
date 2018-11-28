@@ -36,7 +36,8 @@ namespace GraphicsWar.Model
                 Entities.Add(triangle);
                 _baseTriangleIndices.Add(Entities.Count - 1);
             }
-            Entities.Add(new Entity(Enums.EntityType.Voronoi, Vector3.Zero, Vector3.Zero, 1));
+            Entities.Add(new Entity(Enums.EntityType.VoronoiTops, Vector3.Zero, Vector3.Zero, 1));
+            Entities.Add(new Entity(Enums.EntityType.VoronoiSides, Vector3.Zero, Vector3.Zero, 1));
         }
 
         public void AddEntity(Enums.EntityType type, Vector3 position, Vector3 rotation, float size)

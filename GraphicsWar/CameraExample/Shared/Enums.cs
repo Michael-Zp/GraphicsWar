@@ -5,9 +5,10 @@
         public enum EntityType
         {
             Sphere, Nvidia, Radeon, NvidiaParticle, RadeonParticle,
-            Voronoi,
+            VoronoiTops,
             Crystal1,
-            Crystal2
+            Crystal2,
+            VoronoiSides
         }
     }
 }

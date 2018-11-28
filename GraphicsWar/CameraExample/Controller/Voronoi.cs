@@ -30,7 +30,8 @@ namespace GraphicsWar.View
         /// </value>
         public List<List<int[]>> Plateaus { get; } = new List<List<int[]>>();
 
-        public DefaultMesh Mesh;
+        public DefaultMesh Tops;
+        public DefaultMesh Sides;
 
         public Dictionary<Shared.Enums.EntityType, List<VoronoiCrystal>> Crystals {
             get {
@@ -45,7 +46,8 @@ namespace GraphicsWar.View
 
 
         private Dictionary<Shared.Enums.EntityType, List<VoronoiCrystal>> _crystals = null;
-        private uint _id = 0;
+        private uint _topsIds = 0;
+        private uint _sidesIds = 0;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultMesh"/> class.
@@ -53,7 +55,8 @@ namespace GraphicsWar.View
 
         public Voronoi(int sizeX, int sizeY, Vector3 scale)
         {
-            Mesh = new DefaultMesh();
+            Tops = new DefaultMesh();
+            Sides = new DefaultMesh();
             GenerateVoronoi(sizeX, sizeY, scale);
             GenerateRandomPositionsOnPlateau();
         }
@@ -145,12 +148,14 @@ namespace GraphicsWar.View
                                                    .Distinct()
                                                    .ToList();
 
-            uint baseId = _id;
+            uint baseId = _topsIds;
 
             for (int i = 0; i < validIntersections.Count; i++)
             {
-                Mesh.Position.Add(new Vector3(validIntersections[i].Point.X, height, validIntersections[i].Point.Y));
-                Mesh.Normal.Add(Vector3.UnitY);
+                Tops.Position.Add(new Vector3(validIntersections[i].Point.X, height, validIntersections[i].Point.Y));
+                Vector4 texCoord = Vector4.Transform(new Vector4(1, 0, 0, 1), Matrix4x4.CreateRotationY(validIntersections[i].Angle));
+                Tops.TexCoord.Add(new Vector2(texCoord.X, texCoord.Z) / 5 + new Vector2((float)(new Random()).NextDouble() * 0.5f, (float)(new Random()).NextDouble()) * 0.5f);
+                Tops.Normal.Add(Vector3.UnitY);
                 if (i > 1)
                 {
                     if (i == 2)
@@ -158,15 +163,16 @@ namespace GraphicsWar.View
                         Plateaus.Add(new List<int[]>());
                     }
 
-                    Mesh.IDs.Add(baseId);
-                    Mesh.IDs.Add(_id - 1);
-                    Mesh.IDs.Add(_id);
+                    Tops.IDs.Add(baseId);
+                    Tops.IDs.Add(_topsIds - 1);
+                    Tops.IDs.Add(_topsIds);
 
-                    int count = Mesh.IDs.Count;
-                    Plateaus[Plateaus.Count - 1].Add(new int[] { (int)Mesh.IDs[count - 3], (int)Mesh.IDs[count - 2], (int)Mesh.IDs[count - 1] });
+                    int count = Tops.IDs.Count;
+                    Plateaus[Plateaus.Count - 1].Add(new int[] { (int)Tops.IDs[count - 3], (int)Tops.IDs[count - 2], (int)Tops.IDs[count - 1] });
                 }
-                _id++;
+                _topsIds++;
             }
+            
 
             for (int i = 0; i < validIntersections.Count; i++)
             {
@@ -182,24 +188,28 @@ namespace GraphicsWar.View
 
                 Vector3 normal = Vector3.Cross(points[1] - points[0], points[2] - points[0]);
 
-                Mesh.Position.Add(points[0]);
-                Mesh.Normal.Add(normal);
-                Mesh.Position.Add(points[1]);
-                Mesh.Normal.Add(normal);
-                Mesh.Position.Add(points[2]);
-                Mesh.Normal.Add(normal);
-                Mesh.Position.Add(points[3]);
-                Mesh.Normal.Add(normal);
+                Sides.Position.Add(points[0]);
+                Sides.Normal.Add(normal);
+                Sides.TexCoord.Add(new Vector2(1, 1));
+                Sides.Position.Add(points[1]);
+                Sides.Normal.Add(normal);
+                Sides.TexCoord.Add(new Vector2(1, 0f));
+                Sides.Position.Add(points[2]);
+                Sides.Normal.Add(normal);
+                Sides.TexCoord.Add(new Vector2(0f, 0f));
+                Sides.Position.Add(points[3]);
+                Sides.Normal.Add(normal);
+                Sides.TexCoord.Add(new Vector2(0f, 1));
 
-                Mesh.IDs.Add(_id);
-                Mesh.IDs.Add(_id + 1);
-                Mesh.IDs.Add(_id + 2);
+                Sides.IDs.Add(_sidesIds);
+                Sides.IDs.Add(_sidesIds + 1);
+                Sides.IDs.Add(_sidesIds + 2);
 
-                Mesh.IDs.Add(_id);
-                Mesh.IDs.Add(_id + 2);
-                Mesh.IDs.Add(_id + 3);
+                Sides.IDs.Add(_sidesIds);
+                Sides.IDs.Add(_sidesIds + 2);
+                Sides.IDs.Add(_sidesIds + 3);
 
-                _id += 4;
+                _sidesIds += 4;
             }
         }
 
@@ -244,7 +254,7 @@ namespace GraphicsWar.View
 
             DefaultMesh plane = Meshes.CreatePlane(sizeX * scale.X, sizeY * scale.Z, 1, 1);
             plane.TexCoord.Clear();
-            Mesh.Add(plane);
+            Tops.Add(plane);
         }
 
         public void GenerateRandomPositionsOnPlateau()
@@ -261,7 +271,7 @@ namespace GraphicsWar.View
 
                 foreach (var plateauIds in Plateaus)
                 {
-                    float height = Mesh.Position[plateauIds[0][0]].Y;
+                    float height = Tops.Position[plateauIds[0][0]].Y;
                     int trianglesCount = plateauIds.Count;
 
                     int crystalCount = random.Next(0, 11);
@@ -272,9 +282,9 @@ namespace GraphicsWar.View
                         int selectedTriangle = random.Next(0, trianglesCount);
                         Vector3 barycentricCoords = Vector3.Normalize(new Vector3((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble()));
 
-                        Vector2 point0 = new Vector2(Mesh.Position[plateauIds[selectedTriangle][0]].X, Mesh.Position[plateauIds[selectedTriangle][0]].Z);
-                        Vector2 point1 = new Vector2(Mesh.Position[plateauIds[selectedTriangle][1]].X, Mesh.Position[plateauIds[selectedTriangle][1]].Z);
-                        Vector2 point2 = new Vector2(Mesh.Position[plateauIds[selectedTriangle][2]].X, Mesh.Position[plateauIds[selectedTriangle][2]].Z);
+                        Vector2 point0 = new Vector2(Tops.Position[plateauIds[selectedTriangle][0]].X, Tops.Position[plateauIds[selectedTriangle][0]].Z);
+                        Vector2 point1 = new Vector2(Tops.Position[plateauIds[selectedTriangle][1]].X, Tops.Position[plateauIds[selectedTriangle][1]].Z);
+                        Vector2 point2 = new Vector2(Tops.Position[plateauIds[selectedTriangle][2]].X, Tops.Position[plateauIds[selectedTriangle][2]].Z);
 
 
                         //Has to be Length and not LengthSquared, otherwise is bigger than semiperimeter and Sqrt = NaN because negative
