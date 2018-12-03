@@ -253,7 +253,7 @@ namespace GraphicsWar.View
             {
                 _crystals = new Dictionary<Shared.Enums.EntityType, List<VoronoiCrystal>>();
 
-                Random random = new Random();
+                Random random = new Random(236578);
 
                 _crystals.Add(Shared.Enums.EntityType.Crystal1, new List<VoronoiCrystal>());
                 _crystals.Add(Shared.Enums.EntityType.Crystal2, new List<VoronoiCrystal>());
@@ -298,9 +298,9 @@ namespace GraphicsWar.View
                         Vector2 vec1 = point1 - center;
                         Vector2 vec2 = point2 - center;
 
-                        vec0 *= 0.5f;
-                        vec1 *= 0.5f;
-                        vec2 *= 0.5f;
+                        vec0 *= 0.4f;
+                        vec1 *= 0.4f;
+                        vec2 *= 0.4f;
 
                         float x = barycentricCoords.X * vec0.X + barycentricCoords.Y * vec1.X + barycentricCoords.Z * vec2.X;
                         float y = barycentricCoords.X * vec0.Y + barycentricCoords.Y * vec1.Y + barycentricCoords.Z * vec2.Y;
