@@ -34,8 +34,19 @@ namespace GraphicsWar.View.Rendering.Instances
         private readonly IShaderProgram _environmentMapProgram;
         private IRenderSurface _outputSurface;
 
+        private Bloom[] _bloom;
+
         public EnvironmentMap(int size, IContentLoader contentLoader, Dictionary<Enums.EntityType, DefaultMesh> meshes)
         {
+            _bloom = new[]{
+                new Bloom(contentLoader),
+                new Bloom(contentLoader),
+                new Bloom(contentLoader),
+                new Bloom(contentLoader),
+                new Bloom(contentLoader),
+                new Bloom(contentLoader)
+                    };
+
             _positions = new[]
             {
                 new Position(Vector3.Zero,-90, 180), //right
@@ -105,12 +116,17 @@ namespace GraphicsWar.View.Rendering.Instances
             transforms[entity.Type][index] = entity.Transform;
             instanceCounts[entity.Type]++;
 
+            for (int i = 0; i < 6; i++)
+            {
+                _bloom[i].Draw(_mapSurfaces[i].Texture);
+            }
+
             _cubeFbo.Activate();
             for (int i = 0; i < 6; i++)
             {
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMapPositiveX + i, _cubeFbo.Texture.ID, 0);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                TextureDrawer.Draw(_mapSurfaces[i].Texture);
+                TextureDrawer.Draw(_bloom[i].Output);
             }
             _cubeFbo.Deactivate();
 
@@ -149,6 +165,10 @@ namespace GraphicsWar.View.Rendering.Instances
         {
             ((FBO)_outputSurface)?.Dispose();
             _outputSurface = new FBO(Texture2dGL.Create(width, height));
+            for (int i = 0; i < _bloom.Length; i++)
+            {
+                _bloom[i].UpdateResolution(width, height);
+            }
 
             _environmentMapProgram.Activate();
             _environmentMapProgram.Uniform("iResolution", new Vector2(width, height));
