@@ -46,7 +46,7 @@ namespace GraphicsWar.View
             _renderState = renderState;
             _renderState.Set(new BackFaceCulling(true));
 
-            _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("sphereBlocky.obj")));
+            _meshes.Add(Enums.EntityType.Sphere, new TBNMesh(contentLoader.Load<DefaultMesh>("icosphere.obj")));
             _meshes.Add(Enums.EntityType.Nvidia, contentLoader.Load<DefaultMesh>("Nvidia.obj"));
             _meshes.Add(Enums.EntityType.Radeon, contentLoader.Load<DefaultMesh>("Radeon.obj"));
             _meshes.Add(Enums.EntityType.NvidiaParticle, CustomMeshes.CreateIcosaeder());
@@ -54,7 +54,7 @@ namespace GraphicsWar.View
             _meshes.Add(Enums.EntityType.Crystal1, contentLoader.Load<DefaultMesh>("Crystal1.obj"));
             _meshes.Add(Enums.EntityType.Crystal2, contentLoader.Load<DefaultMesh>("Crystal2.obj"));
 
-            _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("sphereBlockyNormals.png"));
+            _normalMaps.Add(Enums.EntityType.Sphere, contentLoader.Load<ITexture2D>("icosphere_normal.png"));
 
             _disableBackFaceCulling.Add(Enums.EntityType.Nvidia);
             _disableBackFaceCulling.Add(Enums.EntityType.Radeon);

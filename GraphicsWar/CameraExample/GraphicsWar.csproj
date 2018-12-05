@@ -257,12 +257,12 @@
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.tese" />
     <EmbeddedResource Include="Content\Shaders\Tesselation\TerrainTessellation.vert" />
     <EmbeddedResource Include="Content\Shaders\Util\addWithDepthTest.glsl" />
-    <EmbeddedResource Include="Content\Models\sphereSmooth.obj" />
     <EmbeddedResource Include="Content\Models\plane.obj" />
-    <EmbeddedResource Include="Content\Models\sphereBlocky.obj" />
     <EmbeddedResource Include="Content\Shaders\ProjectileGeneration\ProjectileGeneration.vert" />
     <EmbeddedResource Include="Content\Shaders\Extract\Extract.glsl" />
     <EmbeddedResource Include="Content\Shaders\Util\addition.glsl" />
+    <EmbeddedResource Include="Content\Models\icosphere.obj" />
+    <EmbeddedResource Include="Content\Models\icosphere_flat.obj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\h4.jpg" />
@@ -271,16 +271,9 @@
     <EmbeddedResource Include="Content\Textures\n4.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Textures\SphereSmooth\sphereSmoothNormals.png" />
+    <EmbeddedResource Include="Content\Textures\Icosphere\icosphere.png" />
+    <EmbeddedResource Include="Content\Textures\Icosphere\icosphere_normal.png" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Content\Textures\SphereSmooth\sphereSmoothHeights.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyHeights.png" />
-    <EmbeddedResource Include="Content\Textures\SphereBlocky\sphereBlockyNormals.png" />
-  </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_bk.png" />
     <EmbeddedResource Include="Content\Textures\Skybox\violentdays\violentdays_dn.png" />

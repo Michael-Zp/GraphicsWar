@@ -21,7 +21,7 @@ namespace GraphicsWar.Model
             _orbit1 = new Orbit(new Vector3(2, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0), Vector3.Zero);
             Entities.Add(new Entity(Enums.EntityType.Radeon, new Vector3(5, 15, 0), new Vector3((float)Math.PI, (float)Math.PI / 2, (float)Math.PI / 30), 1f));
             _orbit2 = new Orbit(new Vector3(2, 0, 0), new Vector3(0, 0.5f, 0), new Vector3(0, 0, 0), new Vector3(0, (float)Math.PI, 0));
-            Entities.Add(new Entity(Enums.EntityType.Sphere, new Vector3(0f, 10f, 0f), Vector3.Zero, 3f));
+            Entities.Add(new Entity(Enums.EntityType.Sphere, new Vector3(0f, 10f, 0f), new Vector3(2, 0, 0.5f), 3f));
             for (int i = 0; i < 6; i++)
             {
                 TriangleEntity triangle = new TriangleEntity(Enums.EntityType.NvidiaParticle, new Vector3(5, 15, 0), Vector3.Zero, 0.4f, new ArchMovement(i * 2));
@@ -51,7 +51,7 @@ namespace GraphicsWar.Model
 
         public void AddEntities(Enums.EntityType type, List<Vector3> positions, Vector3 rotation, float size)
         {
-            foreach(var position in positions)
+            foreach (var position in positions)
             {
                 AddEntity(type, position, rotation, new Vector3(size));
             }
