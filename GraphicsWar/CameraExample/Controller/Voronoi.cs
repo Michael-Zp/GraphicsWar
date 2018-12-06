@@ -154,7 +154,7 @@ namespace GraphicsWar.View
             {
                 Tops.Position.Add(new Vector3(validIntersections[i].Point.X, height, validIntersections[i].Point.Y));
                 Vector4 texCoord = Vector4.Transform(new Vector4(1, 0, 0, 1), Matrix4x4.CreateRotationY(validIntersections[i].Angle));
-                Tops.TexCoord.Add(new Vector2(texCoord.X, texCoord.Z) / 5 + new Vector2((float)(new Random()).NextDouble() * 0.5f, (float)(new Random()).NextDouble()) * 0.5f);
+                Tops.TexCoord.Add(new Vector2(texCoord.X, texCoord.Z) / 3 + new Vector2((float)(new Random()).NextDouble() * 0.5f, (float)(new Random()).NextDouble()) * 0.5f);
                 Tops.Normal.Add(Vector3.UnitY);
                 if (i > 1)
                 {

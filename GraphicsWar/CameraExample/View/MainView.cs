@@ -61,8 +61,8 @@ namespace GraphicsWar.View
 
             _textures.Add(Enums.EntityType.Nvidia, contentLoader.Load<ITexture2D>("Nvidia.png"));
             _textures.Add(Enums.EntityType.Radeon, contentLoader.Load<ITexture2D>("Radeon.png"));
-            _textures.Add(Enums.EntityType.VoronoiTops, contentLoader.Load<ITexture2D>("veins.jpg"));
-            _textures.Add(Enums.EntityType.VoronoiSides, contentLoader.Load<ITexture2D>("colorBlendingVoronoiSides.png"));
+            _textures.Add(Enums.EntityType.VoronoiTops, contentLoader.Load<ITexture2D>("veinsSmooth.png"));
+            //_textures.Add(Enums.EntityType.VoronoiSides, contentLoader.Load<ITexture2D>("colorBlendingVoronoiSides.png"));
 
             _intensities.Add(Enums.EntityType.NvidiaParticle, new Vector4(1, 0, 0, 0));
             _intensities.Add(Enums.EntityType.RadeonParticle, new Vector4(1, 0, 0, 0));
@@ -71,9 +71,11 @@ namespace GraphicsWar.View
             _intensities.Add(Enums.EntityType.Sphere, new Vector4(.1f, 1, 1, 0));
             _intensities.Add(Enums.EntityType.Crystal1, new Vector4(1, 0, 0, 0));
             _intensities.Add(Enums.EntityType.Crystal2, new Vector4(1, 0, 0, 0));
+            _intensities.Add(Enums.EntityType.VoronoiTops, new Vector4(1, 0, 0, 0));
+            _intensities.Add(Enums.EntityType.VoronoiSides, new Vector4(1, 0, 0, 0));
 
 
-            foreach(var type in additionalMeshes.Keys)
+            foreach (var type in additionalMeshes.Keys)
             {
                 if (_meshes.ContainsKey(type))
                 {
@@ -121,10 +123,10 @@ namespace GraphicsWar.View
             UpdateInstancing(entities);
 
 
-            _intensities[Enums.EntityType.VoronoiTops] = new Vector4((float)Math.Sin(time) * 0.5f + 1.5f, 0, 0, 0);
+            _intensities[Enums.EntityType.VoronoiTops] = new Vector4((float)Math.Sin(time) * 0.1f + 1.1f, 1, 0.5f, 0);
 
-            //_intensities[Enums.EntityType.VoronoiSides] = new Vector4((float)Math.Sin(time) * 0.5f + 1.5f, 0, 0, 0);
-            _intensities[Enums.EntityType.VoronoiSides] = new Vector4((float)Math.Sin(time) * 0.3f + 0.6f, 0, 0, 0);
+            ////_intensities[Enums.EntityType.VoronoiSides] = new Vector4((float)Math.Sin(time) * 0.5f + 1.5f, 0, 0, 0);
+            //_intensities[Enums.EntityType.VoronoiSides] = new Vector4((float)Math.Sin(time) * 0.3f + 0.6f, 0, 0, 0);
 
             var arrTrans = new Dictionary<Enums.EntityType, Matrix4x4[]>();
 
